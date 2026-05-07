@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyOS — Your Personal Exam Command Center</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Syne', 'sans-serif'],
+            body: ['DM Sans', 'sans-serif'],
+          },
+          colors: {
+            ink: '#0f1117',
+            surface: '#f5f6fa',
+            glass: 'rgba(255,255,255,0.65)',
+            'glass-border': 'rgba(255,255,255,0.4)',
+            indigo: {
+              50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe',
+              400: '#818cf8', 500: '#6366f1', 600: '#4f46e5',
+              700: '#4338ca', 800: '#3730a3', 900: '#312e81',
+            },
+          },
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* ── Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #f0f2fb;
+      background-image:
+        radial-gradient(ellipse 80% 60% at 20% -10%, rgba(99,102,241,.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 85% 100%, rgba(129,140,248,.14) 0%, transparent 55%);
+      min-height: 100vh;
+      color: #0f1117;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Glassmorphism card ── */
+    .glass {
+      background: rgba(255,255,255,0.62);
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      border: 1px solid rgba(255,255,255,0.55);
+      border-radius: 20px;
+      box-shadow: 0 4px 32px rgba(79,70,229,0.07), 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    .glass-dark {
+      background: rgba(15,17,23,0.80);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(245,246,250,0.80);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(99,102,241,0.10);
+    }
+
+    /* ── Countdown ring ── */
+    .countdown-ring { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+    .countdown-ring svg { transform: rotate(-90deg); }
+    .ring-bg { fill: none; stroke: rgba(99,102,241,.14); stroke-width: 8; }
+    .ring-fill {
+      fill: none; stroke: #6366f1; stroke-width: 8;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1s cubic-bezier(.4,0,.2,1);
+    }
+    .ring-label {
+      position: absolute; text-align: center;
+      font-family: 'Syne', sans-serif;
+    }
+
+    /* ── Accent button ── */
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+      color: #fff; border: none; cursor: pointer;
+      font-family: 'Syne', sans-serif; font-weight: 600;
+      border-radius: 12px; padding: .6rem 1.3rem;
+      transition: transform .15s, box-shadow .15s, opacity .15s;
+      box-shadow: 0 4px 14px rgba(99,102,241,0.30);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99,102,241,0.40); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+
+    .btn-ghost {
+      background: rgba(99,102,241,0.09); color: #4338ca;
+      border: 1px solid rgba(99,102,241,0.18); cursor:pointer;
+      font-family:'Syne',sans-serif; font-weight:600;
+      border-radius:12px; padding:.55rem 1.2rem;
+      transition: background .15s, transform .15s;
+    }
+    .btn-ghost:hover { background:rgba(99,102,241,0.16); transform:translateY(-1px); }
+
+    /* ── Input / Textarea ── */
+    .field {
+      width:100%; border:1px solid rgba(99,102,241,0.20);
+      border-radius:12px; padding:.65rem 1rem;
+      background:rgba(255,255,255,0.85); font-family:'DM Sans',sans-serif;
+      font-size:.95rem; color:#0f1117; outline:none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .field:focus { border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,.13); }
+    textarea.field { resize:vertical; min-height:130px; }
+
+    /* ── Schedule grid ── */
+    .day-card {
+      border-radius:14px; padding:.85rem 1rem;
+      font-size:.82rem; line-height:1.5;
+      border:1px solid transparent;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .day-card:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.07); }
+    .day-study { background:#eef2ff; border-color:#c7d2fe; }
+    .day-review { background:#f0fdf4; border-color:#bbf7d0; }
+    .day-mock   { background:#fff7ed; border-color:#fed7aa; }
+    .day-rest   { background:#fdf4ff; border-color:#e9d5ff; }
+
+    /* ── Pomodoro ── */
+    #pomo-display {
+      font-family:'Syne',sans-serif; font-size:3.8rem;
+      font-weight:800; letter-spacing:-2px; color:#4338ca;
+      line-height:1;
+    }
+    .pomo-mode-btn {
+      padding:.35rem .9rem; border-radius:99px; font-size:.8rem;
+      font-weight:600; cursor:pointer; border:none;
+      transition: background .2s, color .2s;
+      font-family:'Syne',sans-serif;
+    }
+    .pomo-mode-btn.active { background:#6366f1; color:#fff; }
+    .pomo-mode-btn:not(.active) { background:rgba(99,102,241,.10); color:#4338ca; }
+
+    /* ── Quick notes ── */
+    #quick-notes {
+      min-height:160px; font-family:'DM Sans',sans-serif;
+      font-size:.9rem; color:#0f1117; line-height:1.7;
+    }
+
+    /* ── Resource links ── */
+    .resource-link {
+      display:flex; align-items:center; gap:.6rem;
+      padding:.7rem 1rem; border-radius:12px;
+      background:rgba(255,255,255,0.70); border:1px solid rgba(99,102,241,0.14);
+      color:#4338ca; text-decoration:none; font-weight:500;
+      font-size:.88rem; transition: background .2s, transform .15s, box-shadow .15s;
+    }
+    .resource-link:hover { background:#fff; transform:translateX(4px); box-shadow:0 4px 16px rgba(99,102,241,0.12); }
+    .resource-link i { width:18px; text-align:center; color:#6366f1; }
+
+    /* ── Tab navigation ── */
+    .tab-btn {
+      padding:.5rem 1rem; border-radius:10px; border:none; cursor:pointer;
+      font-family:'Syne',sans-serif; font-weight:600; font-size:.85rem;
+      color:#64748b; background:transparent; transition:all .2s;
+    }
+    .tab-btn.active { background:#6366f1; color:#fff; box-shadow:0 2px 10px rgba(99,102,241,0.30); }
+
+    /* ── Misc ── */
+    .section-label {
+      font-family:'Syne',sans-serif; font-weight:700;
+      font-size:1.25rem; color:#0f1117; letter-spacing:-.3px;
+    }
+    .badge {
+      display:inline-block; padding:.2rem .65rem; border-radius:99px;
+      font-size:.72rem; font-weight:700; font-family:'Syne',sans-serif;
+    }
+    .scrollbar-hide::-webkit-scrollbar { display:none; }
+    .scrollbar-hide { -ms-overflow-style:none; scrollbar-width:none; }
+
+    /* fade-in animation */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
+    .fade-up { animation: fadeUp .5s ease both; }
+
+    /* pomo progress arc */
+    #pomo-ring-fill { transition: stroke-dashoffset .95s linear; }
+
+    /* mobile fixes */
+    @media(max-width:640px){
+      #pomo-display { font-size:2.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════  NAV  ══════════════════════ -->
+<nav class="px-4 py-3">
+  <div class="max-w-6xl mx-auto flex items-center justify-between">
+    <span class="font-display font-800 text-lg tracking-tight text-indigo-700 flex items-center gap-2">
+      <i class="fa-solid fa-graduation-cap"></i> StudyOS
+    </span>
+    <!-- Tab buttons -->
+    <div class="flex gap-1 bg-white/60 p-1 rounded-xl border border-white/80 overflow-x-auto scrollbar-hide">
+      <button class="tab-btn active" onclick="showSection('hero')"><i class="fa-regular fa-calendar-days mr-1"></i>Countdown</button>
+      <button class="tab-btn" onclick="showSection('syllabus')"><i class="fa-solid fa-list-check mr-1"></i>Syllabus</button>
+      <button class="tab-btn" onclick="showSection('resources')"><i class="fa-solid fa-link mr-1"></i>Resources</button>
+      <button class="tab-btn" onclick="showSection('tools')"><i class="fa-solid fa-stopwatch mr-1"></i>Tools</button>
+    </div>
+  </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+
+  <!-- ══════════════════════  COUNTDOWN HERO  ══════════════════════ -->
+  <section id="hero" class="glass p-6 md:p-10 fade-up">
+    <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+
+      <!-- Ring -->
+      <div class="countdown-ring shrink-0">
+        <svg width="180" height="180" viewBox="0 0 180 180">
+          <circle class="ring-bg" cx="90" cy="90" r="80"/>
+          <circle class="ring-fill" id="ring-fill" cx="90" cy="90" r="80"
+            stroke-dasharray="502.65" stroke-dashoffset="502.65"/>
+        </svg>
+        <div class="ring-label">
+          <div id="days-number" class="font-display text-5xl font-800 text-indigo-600">—</div>
+          <div class="text-xs font-medium text-slate-500 mt-1 uppercase tracking-widest">Days Left</div>
+        </div>
+      </div>
+
+      <!-- Info + date picker -->
+      <div class="flex-1 w-full">
+        <p class="text-sm font-semibold text-indigo-400 uppercase tracking-widest mb-1">Exam Countdown</p>
+        <h1 id="exam-title-display" class="font-display text-3xl md:text-4xl font-800 leading-tight mb-4 text-ink">
+          Set your exam date to begin.
+        </h1>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          <div>
+            <label class="text-xs font-semibold text-slate-500 block mb-1">Exam Name</label>
+            <input id="exam-name" class="field" type="text" placeholder="e.g. IGCSE Biology Paper 2" />
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-500 block mb-1">Exam Date</label>
+            <input id="exam-date" class="field" type="date" />
+          </div>
+        </div>
+        <button class="btn-primary" onclick="saveExamInfo()">
+          <i class="fa-solid fa-floppy-disk mr-2"></i>Save &amp; Start Countdown
+        </button>
+
+        <!-- Stats row -->
+        <div class="flex gap-4 mt-5 flex-wrap">
+          <div class="glass rounded-xl px-4 py-2 text-center">
+            <div id="stat-weeks" class="font-display font-700 text-xl text-indigo-600">—</div>
+            <div class="text-xs text-slate-400">Weeks</div>
+          </div>
+          <div class="glass rounded-xl px-4 py-2 text-center">
+            <div id="stat-hours" class="font-display font-700 text-xl text-indigo-600">—</div>
+            <div class="text-xs text-slate-400">Study Hours (4/day)</div>
+          </div>
+          <div class="glass rounded-xl px-4 py-2 text-center">
+            <div id="stat-urgency" class="font-display font-700 text-xl text-indigo-600">—</div>
+            <div class="text-xs text-slate-400">Urgency</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════  SYLLABUS ARCHITECT  ══════════════════════ -->
+  <section id="syllabus" class="hidden space-y-5 fade-up">
+    <div class="glass p-6">
+      <div class="section-label mb-1 flex items-center gap-2">
+        <i class="fa-solid fa-wand-magic-sparkles text-indigo-500"></i> Syllabus Architect
+      </div>
+      <p class="text-sm text-slate-500 mb-4">Paste your syllabus (one topic per line) and let StudyOS build your daily plan.</p>
+
+      <textarea id="syllabus-input" class="field mb-3"
+        placeholder="1.1 Cell structure&#10;1.2 Biological molecules&#10;1.3 Enzymes&#10;2.1 Cell membranes&#10;2.2 Transport in cells&#10;..."></textarea>
+
+      <div class="flex gap-2 flex-wrap">
+        <button class="btn-primary" onclick="generatePlan()">
+          <i class="fa-solid fa-bolt mr-2"></i>Generate Plan
+        </button>
+        <button class="btn-ghost" onclick="clearSchedule()">
+          <i class="fa-solid fa-trash mr-2"></i>Clear
+        </button>
+      </div>
+      <p id="plan-warning" class="text-xs text-amber-500 mt-2 hidden">
+        <i class="fa-solid fa-triangle-exclamation mr-1"></i>Please set an exam date first in the Countdown tab.
+      </p>
+    </div>
+
+    <!-- Schedule output -->
+    <div id="schedule-container" class="glass p-6 hidden">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <div class="section-label">📅 Your Study Schedule</div>
+        <div class="flex gap-2 text-xs flex-wrap">
+          <span class="badge bg-indigo-100 text-indigo-700">Study</span>
+          <span class="badge bg-green-100 text-green-700">Review</span>
+          <span class="badge bg-orange-100 text-orange-700">Mock Exam</span>
+        </div>
+      </div>
+      <div id="schedule-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════  RESOURCE HUB  ══════════════════════ -->
+  <section id="resources" class="hidden glass p-6 fade-up">
+    <div class="section-label mb-1 flex items-center gap-2">
+      <i class="fa-solid fa-database text-indigo-500"></i> Resource Hub
+    </div>
+    <p class="text-sm text-slate-500 mb-4">Enter your subject code to instantly generate links for past papers, mark schemes, and notes.</p>
+
+    <div class="flex gap-2 mb-5 flex-wrap">
+      <input id="subject-code" class="field max-w-xs" type="text" placeholder="e.g. IGCSE 0610" />
+      <button class="btn-primary" onclick="generateResources()">
+        <i class="fa-solid fa-magnifying-glass mr-2"></i>Find Resources
+      </button>
+    </div>
+
+    <div id="resource-links" class="grid grid-cols-1 sm:grid-cols-2 gap-2 hidden"></div>
+    <p id="resource-hint" class="text-sm text-slate-400 italic">Resources will appear here once you enter a subject code.</p>
+  </section>
+
+  <!-- ══════════════════════  TOOLS (Pomodoro + Notes)  ══════════════════════ -->
+  <section id="tools" class="hidden grid grid-cols-1 md:grid-cols-2 gap-5 fade-up">
+
+    <!-- Pomodoro -->
+    <div class="glass p-6 flex flex-col items-center">
+      <div class="section-label mb-3 flex items-center gap-2 self-start">
+        <i class="fa-solid fa-stopwatch text-indigo-500"></i> Pomodoro Timer
+      </div>
+
+      <!-- Mode selector -->
+      <div class="flex gap-2 mb-5">
+        <button class="pomo-mode-btn active" id="mode-focus" onclick="setPomoMode('focus')">Focus 25m</button>
+        <button class="pomo-mode-btn" id="mode-short" onclick="setPomoMode('short')">Short 5m</button>
+        <button class="pomo-mode-btn" id="mode-long" onclick="setPomoMode('long')">Long 15m</button>
+      </div>
+
+      <!-- Arc ring -->
+      <div class="countdown-ring mb-4">
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle class="ring-bg" cx="80" cy="80" r="68" stroke-width="9"/>
+          <circle id="pomo-ring-fill" cx="80" cy="80" r="68"
+            fill="none" stroke="#6366f1" stroke-width="9"
+            stroke-linecap="round" stroke-dasharray="427.26" stroke-dashoffset="0"
+            style="transform:rotate(-90deg);transform-origin:center"/>
+        </svg>
+        <div class="ring-label">
+          <div id="pomo-display">25:00</div>
+          <div id="pomo-status" class="text-xs text-slate-400 mt-1 uppercase tracking-widest">Ready</div>
+        </div>
+      </div>
+
+      <div class="flex gap-2 mb-4">
+        <button class="btn-primary px-6" id="pomo-start-btn" onclick="togglePomo()">
+          <i class="fa-solid fa-play mr-2"></i>Start
+        </button>
+        <button class="btn-ghost" onclick="resetPomo()">
+          <i class="fa-solid fa-rotate-left mr-2"></i>Reset
+        </button>
+      </div>
+
+      <!-- Session counter -->
+      <div class="flex gap-2" id="pomo-sessions"></div>
+      <p class="text-xs text-slate-400 mt-1">Sessions completed today</p>
+    </div>
+
+    <!-- Quick Notes -->
+    <div class="glass p-6 flex flex-col">
+      <div class="section-label mb-3 flex items-center gap-2">
+        <i class="fa-solid fa-note-sticky text-indigo-500"></i> Quick Notes
+      </div>
+      <textarea id="quick-notes" class="field flex-1 mb-3"
+        placeholder="Jot down formulas, key terms, reminders…"></textarea>
+      <div class="flex justify-between items-center">
+        <span id="notes-chars" class="text-xs text-slate-400">0 characters</span>
+        <div class="flex gap-2">
+          <button class="btn-ghost text-sm" onclick="clearNotes()"><i class="fa-solid fa-trash mr-1"></i>Clear</button>
+          <button class="btn-primary text-sm" onclick="saveNotes()"><i class="fa-solid fa-floppy-disk mr-1"></i>Save</button>
+        </div>
+      </div>
+      <p id="notes-saved-msg" class="text-xs text-green-500 mt-1 hidden"><i class="fa-solid fa-circle-check mr-1"></i>Saved!</p>
+    </div>
+
+  </section>
+
+</main>
+
+<!-- ══════════════════════  FOOTER  ══════════════════════ -->
+<footer class="text-center text-xs text-slate-400 py-8">
+  StudyOS · All data stored locally in your browser · Built with ♥ for exam warriors
+</footer>
+
+<!-- ══════════════════════  JAVASCRIPT  ══════════════════════ -->
+<script>
+  /* ════════════════════════════════════════
+     1. SECTION ROUTING
+  ════════════════════════════════════════ */
+  const sections = ['hero','syllabus','resources','tools'];
+
+  function showSection(id) {
+    sections.forEach(s => {
+      const el = document.getElementById(s);
+      el.classList.toggle('hidden', s !== id);
+    });
+    // update tab buttons
+    document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+      btn.classList.toggle('active', sections[i] === id);
+    });
+  }
+
+  /* ════════════════════════════════════════
+     2. COUNTDOWN
+  ════════════════════════════════════════ */
+  function getDaysRemaining(dateStr) {
+    if (!dateStr) return null;
+    const exam = new Date(dateStr);
+    exam.setHours(0,0,0,0);
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const diff = Math.round((exam - today) / 86400000);
+    return diff;
+  }
+
+  function updateCountdownUI() {
+    const name = localStorage.getItem('examName') || '';
+    const date = localStorage.getItem('examDate') || '';
+    const days = getDaysRemaining(date);
+
+    if (name) {
+      document.getElementById('exam-name').value = name;
+      document.getElementById('exam-title-display').textContent = `Exam: ${name}`;
+    }
+    if (date) document.getElementById('exam-date').value = date;
+
+    if (days === null || days < 0) {
+      document.getElementById('days-number').textContent = days < 0 ? 'Done!' : '—';
+      return;
+    }
+
+    document.getElementById('days-number').textContent = days;
+
+    // Ring: base = 100 days for full circle
+    const total = Math.max(days, 1);
+    const base = Math.max(total, 100);
+    const circ = 502.65;
+    const offset = circ - (circ * Math.min(days / base, 1));
+    document.getElementById('ring-fill').style.strokeDashoffset = offset;
+
+    // Stats
+    document.getElementById('stat-weeks').textContent = (days / 7).toFixed(1);
+    document.getElementById('stat-hours').textContent = days * 4;
+    const urgency = days <= 7 ? '🔴 Critical' : days <= 21 ? '🟠 High' : days <= 45 ? '🟡 Medium' : '🟢 Plenty';
+    document.getElementById('stat-urgency').textContent = urgency;
+  }
+
+  function saveExamInfo() {
+    const name = document.getElementById('exam-name').value.trim();
+    const date = document.getElementById('exam-date').value;
+    if (!name || !date) { alert('Please fill in both exam name and date.'); return; }
+    localStorage.setItem('examName', name);
+    localStorage.setItem('examDate', date);
+    updateCountdownUI();
+    // flash feedback
+    const btn = event.currentTarget;
+    btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Saved!';
+    setTimeout(() => btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i>Save & Start Countdown', 1500);
+  }
+
+  /* ════════════════════════════════════════
+     3. SYLLABUS ARCHITECT
+  ════════════════════════════════════════ */
+  function generatePlan() {
+    const examDate = localStorage.getItem('examDate');
+    const days = getDaysRemaining(examDate);
+
+    if (days === null || days <= 0) {
+      document.getElementById('plan-warning').classList.remove('hidden');
+      return;
+    }
+    document.getElementById('plan-warning').classList.add('hidden');
+
+    const raw = document.getElementById('syllabus-input').value.trim();
+    if (!raw) { alert('Please paste your syllabus first.'); return; }
+
+    const topics = raw.split('\n').map(l => l.trim()).filter(Boolean);
+    localStorage.setItem('syllabusText', raw);
+
+    // Build schedule array
+    const schedule = [];
+    let topicIdx = 0;
+    let topicPerDay = Math.max(1, Math.floor(topics.length / Math.max(days - 3, 1)));
+
+    for (let d = 1; d <= days; d++) {
+      const isMock = d >= days - 1;
+      const isReview = !isMock && d % 4 === 0;
+
+      if (isMock) {
+        schedule.push({ day: d, type: 'mock', content: d === days - 1 ? 'Mock Exam Day 1 — Full Paper Attempt' : 'Mock Exam Day 2 — Review & Corrections' });
+      } else if (isReview) {
+        schedule.push({ day: d, type: 'review', content: 'Review Day — Revisit topics from the past 3 days' });
+      } else {
+        const batch = topics.slice(topicIdx, topicIdx + topicPerDay);
+        topicIdx += topicPerDay;
+        schedule.push({ day: d, type: 'study', content: batch.length ? batch.join(' · ') : 'Catch-up / Extra Practice' });
+      }
+    }
+
+    localStorage.setItem('schedule', JSON.stringify(schedule));
+    renderSchedule(schedule);
+  }
+
+  function renderSchedule(schedule) {
+    const grid = document.getElementById('schedule-grid');
+    grid.innerHTML = '';
+
+    const examDate = new Date(localStorage.getItem('examDate'));
+    const today = new Date(); today.setHours(0,0,0,0);
+
+    schedule.forEach(item => {
+      const cardDate = new Date(today);
+      cardDate.setDate(today.getDate() + (item.day - 1));
+      const dateStr = cardDate.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' });
+
+      const typeClass = { study:'day-study', review:'day-review', mock:'day-mock' }[item.type];
+      const icon = { study:'📖', review:'🔁', mock:'🎯' }[item.type];
+      const badge = { study:'Study', review:'Review Day', mock:'Mock Exam' }[item.type];
+      const badgeColor = { study:'bg-indigo-100 text-indigo-700', review:'bg-green-100 text-green-700', mock:'bg-orange-100 text-orange-700' }[item.type];
+
+      const div = document.createElement('div');
+      div.className = `day-card ${typeClass}`;
+      div.innerHTML = `
+        <div class="flex items-start justify-between mb-1">
+          <span class="font-display font-700 text-sm text-slate-700">Day ${item.day} · ${dateStr}</span>
+          <span class="badge ${badgeColor} ml-2 shrink-0">${badge}</span>
+        </div>
+        <p class="text-slate-600">${icon} ${item.content}</p>
+      `;
+      grid.appendChild(div);
+    });
+
+    document.getElementById('schedule-container').classList.remove('hidden');
+  }
+
+  function clearSchedule() {
+    localStorage.removeItem('schedule');
+    localStorage.removeItem('syllabusText');
+    document.getElementById('syllabus-input').value = '';
+    document.getElementById('schedule-container').classList.add('hidden');
+  }
+
+  /* ════════════════════════════════════════
+     4. RESOURCE HUB
+  ════════════════════════════════════════ */
+  function generateResources() {
+    const raw = document.getElementById('subject-code').value.trim();
+    if (!raw) { alert('Enter a subject code first.'); return; }
+
+    const code = encodeURIComponent(raw);
+    const plain = raw;
+
+    const links = [
+      { label: 'Past Papers — PapaCambridge', icon: 'fa-file-pdf', url: `https://papacambridge.com/?s=${code}` },
+      { label: 'Past Papers — Save My Exams', icon: 'fa-book-open', url: `https://www.savemyexams.com/search/?q=${code}` },
+      { label: 'Mark Schemes — PapaCambridge', icon: 'fa-check-double', url: `https://papacambridge.com/?s=${code}+mark+scheme` },
+      { label: 'Revision Notes — Save My Exams', icon: 'fa-pen-to-square', url: `https://www.savemyexams.com/search/?q=${code}+revision+notes` },
+      { label: `Google: "${plain}" past papers`, icon: 'fa-magnifying-glass', url: `https://www.google.com/search?q=${code}+past+papers` },
+      { label: `Google: "${plain}" mark scheme`, icon: 'fa-magnifying-glass', url: `https://www.google.com/search?q=${code}+mark+scheme` },
+      { label: `YouTube: "${plain}" revision`, icon: 'fa-brands fa-youtube', url: `https://www.youtube.com/results?search_query=${code}+revision` },
+      { label: `Quizlet: "${plain}" flashcards`, icon: 'fa-layer-group', url: `https://quizlet.com/search?query=${code}&type=sets` },
+      { label: 'Physics & Maths Tutor resources', icon: 'fa-square-root-variable', url: `https://www.physicsandmathstutor.com/?s=${code}` },
+      { label: 'Revision World notes', icon: 'fa-globe', url: `https://revisionworld.com/search/node/${code}` },
+    ];
+
+    const container = document.getElementById('resource-links');
+    container.innerHTML = '';
+    links.forEach(link => {
+      const a = document.createElement('a');
+      a.className = 'resource-link';
+      a.href = link.url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.innerHTML = `<i class="fa-solid ${link.icon}"></i> ${link.label} <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-xs opacity-50"></i>`;
+      container.appendChild(a);
+    });
+
+    container.classList.remove('hidden');
+    document.getElementById('resource-hint').classList.add('hidden');
+  }
+
+  /* ════════════════════════════════════════
+     5. POMODORO TIMER
+  ════════════════════════════════════════ */
+  const POMO_MODES = { focus: 25*60, short: 5*60, long: 15*60 };
+  let pomoMode = 'focus';
+  let pomoSeconds = POMO_MODES.focus;
+  let pomoTotal = POMO_MODES.focus;
+  let pomoRunning = false;
+  let pomoInterval = null;
+  let pomoSessionsToday = parseInt(localStorage.getItem('pomoSessions') || '0');
+
+  const lastDate = localStorage.getItem('pomoDate');
+  const todayStr = new Date().toDateString();
+  if (lastDate !== todayStr) {
+    pomoSessionsToday = 0;
+    localStorage.setItem('pomoDate', todayStr);
+    localStorage.setItem('pomoSessions', '0');
+  }
+
+  function setPomoMode(mode) {
+    if (pomoRunning) return;
+    pomoMode = mode;
+    pomoSeconds = POMO_MODES[mode];
+    pomoTotal = POMO_MODES[mode];
+    updatePomoUI();
+    document.querySelectorAll('.pomo-mode-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`mode-${mode}`).classList.add('active');
+  }
+
+  function updatePomoUI() {
+    const m = String(Math.floor(pomoSeconds / 60)).padStart(2, '0');
+    const s = String(pomoSeconds % 60).padStart(2, '0');
+    document.getElementById('pomo-display').textContent = `${m}:${s}`;
+
+    // Arc
+    const circ = 427.26;
+    const offset = circ * (1 - pomoSeconds / pomoTotal);
+    document.getElementById('pomo-ring-fill').style.strokeDashoffset = offset;
+  }
+
+  function togglePomo() {
+    if (pomoRunning) {
+      clearInterval(pomoInterval);
+      pomoRunning = false;
+      document.getElementById('pomo-start-btn').innerHTML = '<i class="fa-solid fa-play mr-2"></i>Resume';
+      document.getElementById('pomo-status').textContent = 'Paused';
+    } else {
+      pomoRunning = true;
+      document.getElementById('pomo-start-btn').innerHTML = '<i class="fa-solid fa-pause mr-2"></i>Pause';
+      document.getElementById('pomo-status').textContent = pomoMode === 'focus' ? 'Focusing…' : 'Resting…';
+      pomoInterval = setInterval(() => {
+        pomoSeconds--;
+        updatePomoUI();
+        if (pomoSeconds <= 0) {
+          clearInterval(pomoInterval);
+          pomoRunning = false;
+          if (pomoMode === 'focus') {
+            pomoSessionsToday++;
+            localStorage.setItem('pomoSessions', pomoSessionsToday);
+            localStorage.setItem('pomoDate', todayStr);
+            renderPomoSessions();
+          }
+          document.getElementById('pomo-status').textContent = '✅ Done!';
+          document.getElementById('pomo-start-btn').innerHTML = '<i class="fa-solid fa-play mr-2"></i>Start';
+          // browser notification
+          if (Notification.permission === 'granted') {
+            new Notification('StudyOS', { body: pomoMode === 'focus' ? '🎉 Focus session complete! Take a break.' : '💪 Break over. Back to work!' });
+          }
+        }
+      }, 1000);
+    }
+  }
+
+  function resetPomo() {
+    clearInterval(pomoInterval);
+    pomoRunning = false;
+    pomoSeconds = POMO_MODES[pomoMode];
+    pomoTotal = POMO_MODES[pomoMode];
+    document.getElementById('pomo-start-btn').innerHTML = '<i class="fa-solid fa-play mr-2"></i>Start';
+    document.getElementById('pomo-status').textContent = 'Ready';
+    updatePomoUI();
+  }
+
+  function renderPomoSessions() {
+    const container = document.getElementById('pomo-sessions');
+    container.innerHTML = '';
+    for (let i = 0; i < Math.min(pomoSessionsToday, 8); i++) {
+      const dot = document.createElement('div');
+      dot.className = 'w-3 h-3 rounded-full bg-indigo-500';
+      container.appendChild(dot);
+    }
+    if (pomoSessionsToday > 8) {
+      const more = document.createElement('span');
+      more.className = 'text-xs text-indigo-500 font-semibold';
+      more.textContent = `+${pomoSessionsToday - 8}`;
+      container.appendChild(more);
+    }
+  }
+
+  // Ask notification permission on load
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+
+  /* ════════════════════════════════════════
+     6. QUICK NOTES
+  ════════════════════════════════════════ */
+  const notesEl = document.getElementById('quick-notes');
+
+  function loadNotes() {
+    const saved = localStorage.getItem('quickNotes') || '';
+    notesEl.value = saved;
+    updateNoteChars();
+  }
+
+  function saveNotes() {
+    localStorage.setItem('quickNotes', notesEl.value);
+    const msg = document.getElementById('notes-saved-msg');
+    msg.classList.remove('hidden');
+    setTimeout(() => msg.classList.add('hidden'), 1800);
+  }
+
+  function clearNotes() {
+    if (!confirm('Clear all notes?')) return;
+    notesEl.value = '';
+    localStorage.removeItem('quickNotes');
+    updateNoteChars();
+  }
+
+  function updateNoteChars() {
+    document.getElementById('notes-chars').textContent = `${notesEl.value.length} characters`;
+  }
+
+  notesEl.addEventListener('input', () => {
+    updateNoteChars();
+    // auto-save debounce
+    clearTimeout(notesEl._timer);
+    notesEl._timer = setTimeout(() => localStorage.setItem('quickNotes', notesEl.value), 800);
+  });
+
+  /* ════════════════════════════════════════
+     7. INIT — restore persisted state
+  ════════════════════════════════════════ */
+  function init() {
+    updateCountdownUI();
+    loadNotes();
+    updatePomoUI();
+    renderPomoSessions();
+
+    // restore syllabus text
+    const saved = localStorage.getItem('syllabusText');
+    if (saved) document.getElementById('syllabus-input').value = saved;
+
+    // restore schedule
+    const sched = localStorage.getItem('schedule');
+    if (sched) renderSchedule(JSON.parse(sched));
+  }
+
+  init();
+</script>
+</body>
+</html>
