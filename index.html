@@ -3,427 +3,921 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>StudyOS — Exam Command Center</title>
+  <title>StudyOS Pro — Elite Exam Command Center</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;700;900&family=Poppins:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
   <style>
     :root {
-      --bg: #080b12;
-      --bg2: #0d111c;
-      --bg3: #111827;
-      --card: rgba(17,24,39,0.85);
-      --border: rgba(99,102,241,0.18);
-      --border2: rgba(255,255,255,0.07);
-      --indigo: #6366f1;
-      --indigo2: #818cf8;
-      --violet: #7c3aed;
-      --cyan: #06b6d4;
-      --emerald: #10b981;
-      --amber: #f59e0b;
-      --rose: #f43f5e;
-      --text: #f1f5f9;
-      --text2: #94a3b8;
-      --text3: #475569;
-      --glow: 0 0 40px rgba(99,102,241,0.15);
-      --radius: 16px;
-      --radius-sm: 10px;
+      --bg-primary: #0a0e27;
+      --bg-secondary: #0f1438;
+      --bg-tertiary: #1a1f3a;
+      --bg-card: rgba(20, 27, 60, 0.6);
+      --border: rgba(147, 112, 219, 0.25);
+      --border-light: rgba(255, 255, 255, 0.08);
+      --neon-purple: #a78bfa;
+      --neon-pink: #f472b6;
+      --neon-cyan: #06d6d6;
+      --neon-blue: #3b82f6;
+      --neon-green: #10b981;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-tertiary: #64748b;
+      --accent-1: #7c3aed;
+      --accent-2: #ec4899;
+      --accent-3: #06b6d4;
+      --glow-purple: 0 0 20px rgba(167, 139, 250, 0.3);
+      --glow-pink: 0 0 20px rgba(244, 114, 182, 0.2);
+      --glow-cyan: 0 0 20px rgba(6, 214, 214, 0.2);
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'Space Grotesk', sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      color: var(--text-primary);
       min-height: 100vh;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+      position: relative;
     }
 
-    /* ── NOISE TEXTURE OVERLAY ── */
+    /* Animated background gradient */
     body::before {
       content: '';
-      position: fixed; inset: 0; z-index: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at 20% 50%, rgba(167, 139, 250, 0.15) 0%, transparent 50%),
+                  radial-gradient(ellipse at 80% 80%, rgba(6, 214, 214, 0.1) 0%, transparent 50%);
+      animation: gradientShift 15s ease infinite;
       pointer-events: none;
-      opacity: 0.4;
+      z-index: 0;
     }
 
-    /* ── AMBIENT GRADIENT ORBS ── */
-    .orb {
-      position: fixed; border-radius: 50%;
-      filter: blur(80px); pointer-events: none; z-index: 0;
+    @keyframes gradientShift {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
     }
-    .orb-1 { width: 500px; height: 500px; background: rgba(99,102,241,0.12); top: -150px; left: -100px; }
-    .orb-2 { width: 400px; height: 400px; background: rgba(124,58,237,0.08); bottom: -100px; right: -100px; }
-    .orb-3 { width: 300px; height: 300px; background: rgba(6,182,212,0.06); top: 50%; left: 50%; transform: translate(-50%,-50%); }
 
-    /* ── LAYOUT ── */
+    /* Animated grid background */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(0deg, rgba(167, 139, 250, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(167, 139, 250, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: 0;
+      animation: gridMove 20s linear infinite;
+    }
+
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+
     #app { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
-    /* ── NAV ── */
+    /* ═══════════════════════════════════════
+       NAVIGATION
+    ═══════════════════════════════════════ */
     nav {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(8,11,18,0.85);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 14, 39, 0.8);
       backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border2);
+      border-bottom: 1px solid var(--border-light);
       padding: 0 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     }
+
     .nav-inner {
-      max-width: 1280px; margin: 0 auto;
-      display: flex; align-items: center; justify-content: space-between;
-      height: 60px;
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+      gap: 20px;
     }
+
     .logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.6rem; letter-spacing: 2px;
-      background: linear-gradient(135deg, var(--indigo2), var(--cyan));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      display: flex; align-items: center; gap: 8px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink), var(--neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: float 3s ease-in-out infinite;
     }
-    .logo-icon { font-size: 1.2rem; -webkit-text-fill-color: var(--indigo2); }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-3px); }
+    }
+
+    .logo-icon {
+      font-size: 1.4rem;
+      filter: drop-shadow(0 0 10px var(--neon-purple));
+    }
 
     .nav-tabs {
-      display: flex; gap: 2px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border2);
-      border-radius: 12px; padding: 4px;
+      display: flex;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-light);
+      border-radius: 14px;
+      padding: 6px;
       overflow-x: auto;
     }
+
     .nav-tabs::-webkit-scrollbar { display: none; }
 
     .tab-btn {
-      padding: 7px 14px; border-radius: 8px; border: none;
-      background: transparent; color: var(--text2);
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.8rem; font-weight: 600; cursor: pointer;
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
       white-space: nowrap;
-      transition: all 0.2s;
-      display: flex; align-items: center; gap: 6px;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .tab-btn i { font-size: 0.75rem; }
-    .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+
+    .tab-btn i { font-size: 0.9rem; }
+
+    .tab-btn:hover {
+      color: var(--neon-cyan);
+      transform: translateY(-2px);
+      background: rgba(6, 214, 214, 0.1);
+    }
+
     .tab-btn.active {
-      background: var(--indigo); color: #fff;
-      box-shadow: 0 0 20px rgba(99,102,241,0.3);
-    }
-
-    /* ── MAIN CONTENT ── */
-    main { max-width: 1280px; margin: 0 auto; width: 100%; padding: 28px 24px 60px; flex: 1; }
-
-    /* ── SECTION ── */
-    section { animation: fadeSlideUp 0.4s ease both; }
-    @keyframes fadeSlideUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: none; }
-    }
-
-    /* ── CARD ── */
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border2);
-      border-radius: var(--radius);
-      backdrop-filter: blur(20px);
-      box-shadow: var(--glow);
-    }
-    .card-p { padding: 24px; }
-
-    /* ── GRID HELPERS ── */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
-    @media(max-width: 900px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
-
-    /* ── SECTION HEADER ── */
-    .sec-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.5rem; letter-spacing: 1.5px;
-      color: var(--text); display: flex; align-items: center; gap: 10px;
-      margin-bottom: 6px;
-    }
-    .sec-title i { color: var(--indigo2); font-size: 1.1rem; }
-    .sec-sub { color: var(--text2); font-size: 0.85rem; margin-bottom: 20px; line-height: 1.5; }
-
-    /* ── BUTTONS ── */
-    .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 9px 18px; border-radius: var(--radius-sm);
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.85rem; font-weight: 600;
-      cursor: pointer; border: none;
-      transition: all 0.18s;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--indigo) 0%, var(--violet) 100%);
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
       color: #fff;
-      box-shadow: 0 4px 20px rgba(99,102,241,0.3);
+      border-color: var(--neon-pink);
+      box-shadow: 0 0 20px rgba(167, 139, 250, 0.4);
+      transform: translateY(-2px);
     }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(99,102,241,0.45); }
-    .btn-primary:active { transform: none; }
-    .btn-ghost {
-      background: rgba(99,102,241,0.1);
-      color: var(--indigo2);
-      border: 1px solid rgba(99,102,241,0.2);
-    }
-    .btn-ghost:hover { background: rgba(99,102,241,0.2); transform: translateY(-1px); }
-    .btn-danger { background: rgba(244,63,94,0.12); color: var(--rose); border: 1px solid rgba(244,63,94,0.2); }
-    .btn-danger:hover { background: rgba(244,63,94,0.22); }
-    .btn-sm { padding: 6px 12px; font-size: 0.78rem; }
-    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
 
-    /* ── INPUTS ── */
-    .field {
-      width: 100%; background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 10px 14px;
-      color: var(--text); font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.9rem; outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
+    /* ═══════════════════════════════════════
+       MAIN CONTENT
+    ═══════════════════════════════════════ */
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 40px 24px 80px;
+      flex: 1;
     }
-    .field:focus { border-color: var(--indigo); box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
-    .field::placeholder { color: var(--text3); }
-    textarea.field { resize: vertical; min-height: 120px; line-height: 1.6; }
+
+    section {
+      animation: fadeInUp 0.5s ease both;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    /* ═══════════════════════════════════════
+       CARDS & CONTAINERS
+    ═══════════════════════════════════════ */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      padding: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: var(--neon-purple);
+      box-shadow: var(--glow-purple);
+      transform: translateY(-4px);
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+    @media (max-width: 1024px) {
+      .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    }
+
+    /* ═══════════════════════════════════════
+       TYPOGRAPHY
+    ═══════════════════════════════════════ */
+    .sec-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .sec-title i {
+      font-size: 1.4rem;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 8px rgba(167, 139, 250, 0.4));
+    }
+
+    .sec-sub {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    /* ═══════════════════════════════════════
+       BUTTONS
+    ═══════════════════════════════════════ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 100%);
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(167, 139, 250, 0.4);
+      border: 1px solid rgba(244, 114, 182, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(167, 139, 250, 0.6);
+    }
+
+    .btn-secondary {
+      background: rgba(167, 139, 250, 0.15);
+      color: var(--neon-purple);
+      border: 1px solid var(--neon-purple);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(167, 139, 250, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-light);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--neon-cyan);
+      border-color: var(--neon-cyan);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ff6b9d;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    .btn-sm { padding: 8px 16px; font-size: 0.85rem; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+    /* ═══════════════════════════════════════
+       INPUTS
+    ═══════════════════════════════════════ */
+    .field {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .field:focus {
+      border-color: var(--neon-purple);
+      background: rgba(167, 139, 250, 0.08);
+      box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2);
+    }
+
+    .field::placeholder { color: var(--text-tertiary); }
+
+    textarea.field {
+      resize: vertical;
+      min-height: 120px;
+      line-height: 1.6;
+    }
 
     label.lbl {
-      display: block; font-size: 0.75rem; font-weight: 600;
-      color: var(--text2); text-transform: uppercase; letter-spacing: 0.8px;
-      margin-bottom: 6px;
-    }
-
-    /* ── BADGE ── */
-    .badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 3px 10px; border-radius: 99px;
-      font-size: 0.7rem; font-weight: 700;
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    /* ── TAG / CHIP ── */
-    .chip {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 4px 10px; border-radius: 6px;
-      font-size: 0.75rem; font-weight: 600;
-      background: rgba(99,102,241,0.12);
-      color: var(--indigo2);
-      border: 1px solid rgba(99,102,241,0.2);
-    }
-
-    /* ── DIVIDER ── */
-    .divider { border: none; border-top: 1px solid var(--border2); margin: 20px 0; }
-
-    /* ══════════════════════════════════
-       SECTION: EXAMS (Multi-exam)
-    ══════════════════════════════════ */
-    #section-exams .exams-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
-    }
-    .exam-cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 16px; margin-bottom: 24px;
-    }
-    .exam-card {
-      border-radius: var(--radius);
-      border: 1px solid var(--border2);
-      background: rgba(17,24,39,0.7);
-      padding: 18px 20px;
-      position: relative; overflow: hidden;
-      transition: transform 0.2s, box-shadow 0.2s;
-      cursor: default;
-    }
-    .exam-card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-      border-radius: var(--radius) var(--radius) 0 0;
-    }
-    .exam-card.urgency-critical::before { background: var(--rose); }
-    .exam-card.urgency-high::before { background: var(--amber); }
-    .exam-card.urgency-medium::before { background: var(--indigo); }
-    .exam-card.urgency-plenty::before { background: var(--emerald); }
-    .exam-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
-
-    .exam-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-    .exam-card-name { font-size: 1rem; font-weight: 700; color: var(--text); }
-    .exam-card-date { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text2); margin-top: 3px; }
-    .exam-card-days {
-      font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem;
-      line-height: 1; letter-spacing: 1px;
-    }
-    .exam-card-days-label { font-size: 0.65rem; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; }
-    .exam-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
-    .exam-card-actions { display: flex; gap: 6px; }
-    .progress-bar { height: 4px; background: rgba(255,255,255,0.08); border-radius: 99px; margin-top: 10px; overflow: hidden; }
-    .progress-fill { height: 100%; border-radius: 99px; transition: width 0.6s ease; }
-
-    /* Add exam modal */
-    .modal-overlay {
-      display: none; position: fixed; inset: 0; z-index: 200;
-      background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
-      align-items: center; justify-content: center;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal {
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 20px; padding: 28px; width: 100%; max-width: 480px;
-      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
-      animation: modalIn 0.25s ease;
-    }
-    @keyframes modalIn { from { opacity:0; transform: scale(0.94) translateY(12px); } to { opacity:1; transform: none; } }
-    .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 1px; margin-bottom: 20px; color: var(--text); }
-    .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
-
-    /* ══════════════════════════════════
-       SECTION: SYLLABUS
-    ══════════════════════════════════ */
-    .day-card {
-      border-radius: 10px; padding: 12px 14px;
-      font-size: 0.8rem; line-height: 1.5;
-      border: 1px solid transparent;
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-    .day-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
-    .day-study  { background: rgba(99,102,241,0.08); border-color: rgba(99,102,241,0.2); }
-    .day-review { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.2); }
-    .day-mock   { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.2); }
-
-    /* ══════════════════════════════════
-       SECTION: RESOURCES
-    ══════════════════════════════════ */
-    .resource-link {
-      display: flex; align-items: center; gap: 10px;
-      padding: 12px 16px; border-radius: 10px;
-      background: rgba(255,255,255,0.03); border: 1px solid var(--border2);
-      color: var(--indigo2); text-decoration: none; font-weight: 500;
-      font-size: 0.85rem; transition: all 0.2s;
-    }
-    .resource-link:hover { background: rgba(99,102,241,0.12); transform: translateX(4px); border-color: var(--border); }
-    .resource-link .r-icon { width: 32px; height: 32px; border-radius: 8px; background: rgba(99,102,241,0.15); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; }
-
-    /* ══════════════════════════════════
-       SECTION: TOOLS
-    ══════════════════════════════════ */
-
-    /* Pomodoro */
-    .pomo-ring-wrap {
-      position: relative; display: inline-flex;
-      align-items: center; justify-content: center;
-    }
-    .pomo-ring-wrap svg { transform: rotate(-90deg); }
-    #pomo-display {
-      font-family: 'Bebas Neue', sans-serif; font-size: 4rem;
-      letter-spacing: 3px; color: var(--text); line-height: 1;
-    }
-    .pomo-label-wrap { position: absolute; text-align: center; }
-    .pomo-mode-btn {
-      padding: 6px 14px; border-radius: 99px; font-size: 0.78rem;
-      font-weight: 600; cursor: pointer; border: none;
-      font-family: 'Space Grotesk', sans-serif;
-      transition: all 0.2s;
-    }
-    .pomo-mode-btn.active { background: var(--indigo); color: #fff; }
-    .pomo-mode-btn:not(.active) { background: rgba(99,102,241,0.1); color: var(--indigo2); }
-
-    /* Flashcards */
-    .flashcard-scene { perspective: 1000px; width: 100%; max-width: 460px; height: 200px; margin: 0 auto 20px; cursor: pointer; }
-    .flashcard { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(.4,0,.2,1); border-radius: 16px; }
-    .flashcard.flipped { transform: rotateY(180deg); }
-    .flashcard-face {
-      position: absolute; inset: 0; border-radius: 16px;
-      display: flex; align-items: center; justify-content: center;
-      padding: 24px; text-align: center;
-      backface-visibility: hidden; -webkit-backface-visibility: hidden;
-    }
-    .flashcard-front { background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(124,58,237,0.15)); border: 1px solid rgba(99,102,241,0.3); color: var(--text); font-size: 1.05rem; font-weight: 600; }
-    .flashcard-back  { background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(16,185,129,0.1)); border: 1px solid rgba(6,182,212,0.25); color: var(--text); font-size: 0.92rem; line-height: 1.6; transform: rotateY(180deg); }
-    .flashcard-hint { font-size: 0.7rem; color: var(--text3); margin-top: 8px; text-align: center; }
-
-    /* Habit Tracker */
-    .habit-item {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 14px; border-radius: 10px;
-      background: rgba(255,255,255,0.03); border: 1px solid var(--border2);
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
       margin-bottom: 8px;
     }
-    .habit-item-name { font-size: 0.88rem; font-weight: 500; }
-    .habit-days { display: flex; gap: 4px; }
-    .habit-day {
-      width: 22px; height: 22px; border-radius: 4px;
-      font-size: 0.6rem; font-weight: 700; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      border: 1px solid var(--border2); color: var(--text3);
-      background: rgba(255,255,255,0.03);
-      transition: all 0.15s;
-    }
-    .habit-day.done { background: var(--emerald); border-color: var(--emerald); color: #fff; }
 
-    /* ══════════════════════════════════
-       SECTION: AI VIDEO SUMMARIZER
-    ══════════════════════════════════ */
-    .video-preview {
-      border-radius: 12px; overflow: hidden;
-      background: rgba(0,0,0,0.4); border: 1px solid var(--border2);
-      aspect-ratio: 16/9; display: flex; align-items: center;
-      justify-content: center; position: relative;
+    /* ═══════════════════════════════════════
+       BADGES & CHIPS
+    ═══════════════════════════════════════ */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(167, 139, 250, 0.2);
+      color: var(--neon-purple);
+      border: 1px solid rgba(167, 139, 250, 0.3);
     }
-    .video-preview iframe { width: 100%; height: 100%; border: none; }
-    .video-preview-placeholder {
-      display: flex; flex-direction: column; align-items: center; gap: 10px;
-      color: var(--text3); text-align: center; padding: 20px;
-    }
-    .video-preview-placeholder i { font-size: 2.5rem; color: var(--border); }
 
-    .ai-summary-output {
-      background: rgba(99,102,241,0.05); border: 1px solid rgba(99,102,241,0.15);
-      border-radius: 12px; padding: 20px;
-      font-size: 0.88rem; line-height: 1.7; color: var(--text2);
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: rgba(6, 214, 214, 0.15);
+      color: var(--neon-cyan);
+      border: 1px solid rgba(6, 214, 214, 0.3);
+      transition: all 0.2s ease;
     }
-    .ai-summary-output h4 { font-size: 0.75rem; font-weight: 700; color: var(--indigo2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
-    .ai-key-point {
-      display: flex; gap: 10px; padding: 8px 0;
-      border-bottom: 1px solid var(--border2);
-    }
-    .ai-key-point:last-child { border-bottom: none; }
-    .ai-key-point-num {
-      width: 22px; height: 22px; border-radius: 50%;
-      background: rgba(99,102,241,0.2); color: var(--indigo2);
-      font-size: 0.7rem; font-weight: 700; display: flex;
-      align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
-    }
-    .loading-dots span {
-      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
-      background: var(--indigo2); margin: 0 3px;
-      animation: dotPulse 1.2s infinite ease-in-out;
-    }
-    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes dotPulse { 0%,80%,100%{transform:scale(0.7);opacity:0.5} 40%{transform:scale(1);opacity:1} }
 
-    /* ══════════════════════════════════
-       STATS WIDGET
-    ══════════════════════════════════ */
+    .chip:hover {
+      background: rgba(6, 214, 214, 0.25);
+      transform: scale(1.05);
+    }
+
+    /* ═══════════════════════════════════════
+       DIVIDER
+    ═══════════════════════════════════════ */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 24px 0;
+    }
+
+    /* ═══════════════════════════════════════
+       EXAM CARDS
+    ═══════════════════════════════════════ */
+    .exam-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    .exam-card {
+      position: relative;
+      border-radius: 16px;
+      border: 1px solid var(--border-light);
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.08), rgba(6, 214, 214, 0.05));
+      padding: 24px;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
+    }
+
+    .exam-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink));
+    }
+
+    .exam-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--neon-purple);
+      box-shadow: 0 12px 40px rgba(167, 139, 250, 0.3);
+    }
+
+    .exam-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .exam-card-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .exam-card-date {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text-tertiary);
+      margin-top: 4px;
+    }
+
+    .exam-card-days {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 3.2rem;
+      font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .exam-card-days-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+      margin: 16px 0;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink), var(--neon-cyan));
+      border-radius: 99px;
+      transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ═══════════════════════════════════════
+       SUBJECT TABS
+    ═══════════════════════════════════════ */
+    .subject-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+
+    .subject-tab {
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: 1px solid var(--border-light);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .subject-tab:hover {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+      transform: translateY(-2px);
+    }
+
+    .subject-tab.active {
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+      border-color: var(--neon-pink);
+      color: #fff;
+      box-shadow: var(--glow-purple);
+    }
+
+    /* ═══════════════════════════════════════
+       SUBJECT CONTENT
+    ═══════════════════════════════════════ */
+    .subject-content-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 28px;
+      border-bottom: 2px solid var(--border-light);
+    }
+
+    .content-tab {
+      padding: 12px 20px;
+      border-bottom: 3px solid transparent;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    .content-tab:hover {
+      color: var(--neon-cyan);
+    }
+
+    .content-tab.active {
+      color: var(--neon-purple);
+      border-bottom-color: var(--neon-purple);
+    }
+
+    .content-panel {
+      display: none;
+    }
+
+    .content-panel.active {
+      display: block;
+      animation: fadeInUp 0.3s ease;
+    }
+
+    /* ═══════════════════════════════════════
+       SYLLABUS CONTENT
+    ═══════════════════════════════════════ */
+    .syllabus-section {
+      margin-bottom: 28px;
+    }
+
+    .syllabus-section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      padding-left: 12px;
+      border-left: 3px solid var(--neon-purple);
+    }
+
+    .topic-list {
+      list-style: none;
+    }
+
+    .topic-item {
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 3px solid var(--neon-cyan);
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .topic-item:hover {
+      background: rgba(167, 139, 250, 0.1);
+      border-left-color: var(--neon-purple);
+      transform: translateX(4px);
+    }
+
+    .topic-item::before {
+      content: '▸';
+      color: var(--neon-cyan);
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    /* ═══════════════════════════════════════
+       RESOURCE LINKS
+    ═══════════════════════════════════════ */
+    .resource-link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-light);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    .resource-link:hover {
+      background: rgba(167, 139, 250, 0.15);
+      border-color: var(--neon-purple);
+      transform: translateX(6px);
+      color: var(--neon-purple);
+    }
+
+    .resource-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(167, 139, 250, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .resource-link:hover .resource-icon {
+      background: rgba(167, 139, 250, 0.4);
+      transform: scale(1.1);
+    }
+
+    /* ═══════════════════════════════════════
+       YOUTUBE VIDEOS
+    ═══════════════════════════════════════ */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .video-card {
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .video-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--neon-pink);
+      box-shadow: 0 12px 32px rgba(244, 114, 182, 0.2);
+    }
+
+    .video-thumbnail {
+      width: 100%;
+      height: 160px;
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(6, 214, 214, 0.2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      color: var(--neon-pink);
+    }
+
+    .video-info {
+      padding: 14px;
+    }
+
+    .video-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+
+    .video-channel {
+      font-size: 0.8rem;
+      color: var(--text-tertiary);
+    }
+
+    /* ═══════════════════════════════════════
+       MODAL
+    ═══════════════════════════════════════ */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+      animation: modalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes modalSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .modal-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 24px;
+      color: var(--text-primary);
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 24px;
+    }
+
+    /* ═══════════════════════════════════════
+       STATS
+    ═══════════════════════════════════════ */
     .stat-box {
-      padding: 14px 18px; border-radius: 12px;
-      background: rgba(255,255,255,0.03); border: 1px solid var(--border2);
+      padding: 20px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-light);
       text-align: center;
+      transition: all 0.3s ease;
     }
-    .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 1px; }
-    .stat-lbl { font-size: 0.7rem; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
 
-    /* ══════════════════════════════════
-       NOTES
-    ══════════════════════════════════ */
-    #quick-notes { min-height: 180px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.8; }
+    .stat-box:hover {
+      border-color: var(--neon-purple);
+      background: rgba(167, 139, 250, 0.08);
+    }
 
-    /* ══════════════════════════════════
-       MISC
-    ══════════════════════════════════ */
+    .stat-val {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+    }
+
+    .stat-lbl {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 8px;
+    }
+
+    /* ═══════════════════════════════════════
+       POMODORO
+    ═══════════════════════════════════════ */
+    .pomo-display {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 5rem;
+      font-weight: 900;
+      letter-spacing: 4px;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      line-height: 1;
+      margin: 20px 0;
+    }
+
+    .pomo-mode-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .pomo-mode-btn {
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--border-light);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .pomo-mode-btn.active {
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+      color: #fff;
+      border-color: var(--neon-pink);
+      box-shadow: var(--glow-purple);
+    }
+
+    .pomo-mode-btn:hover:not(.active) {
+      border-color: var(--neon-purple);
+      color: var(--neon-purple);
+    }
+
+    /* ═══════════════════════════════════════
+       FLASHCARDS
+    ═══════════════════════════════════════ */
+    .flashcard-scene {
+      perspective: 1200px;
+      width: 100%;
+      max-width: 480px;
+      height: 260px;
+      margin: 20px auto;
+      cursor: pointer;
+    }
+
+    .flashcard {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border-radius: 16px;
+    }
+
+    .flashcard.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .flashcard-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      text-align: center;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: 2px solid var(--border);
+    }
+
+    .flashcard-front {
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.15), rgba(124, 58, 237, 0.1));
+      color: var(--neon-purple);
+    }
+
+    .flashcard-back {
+      background: linear-gradient(135deg, rgba(6, 214, 214, 0.15), rgba(16, 185, 129, 0.1));
+      color: var(--neon-cyan);
+      transform: rotateY(180deg);
+    }
+
+    /* ═══════════════════════════════════════
+       UTILITIES
+    ═══════════════════════════════════════ */
     .flex { display: flex; }
     .flex-col { display: flex; flex-direction: column; }
     .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
     .justify-between { justify-content: space-between; }
     .gap-2 { gap: 8px; }
     .gap-3 { gap: 12px; }
@@ -434,1151 +928,1373 @@
     .mt-4 { margin-top: 16px; }
     .mb-2 { margin-bottom: 8px; }
     .mb-3 { margin-bottom: 12px; }
+    .mb-4 { margin-bottom: 16px; }
     .w-full { width: 100%; }
     .text-center { text-align: center; }
+    .text-dim { color: var(--text-secondary); }
+    .text-xs { font-size: 0.8rem; }
+    .text-sm { font-size: 0.9rem; }
     .hidden { display: none !important; }
 
-    .mono { font-family: 'JetBrains Mono', monospace; }
-    .text-indigo { color: var(--indigo2); }
-    .text-dim { color: var(--text2); }
-    .text-xs { font-size: 0.75rem; }
-    .text-sm { font-size: 0.85rem; }
-    .text-danger { color: var(--rose); }
-    .text-success { color: var(--emerald); }
-    .text-warn { color: var(--amber); }
-
+    /* ═══════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════ */
     footer {
-      text-align: center; font-size: 0.75rem; color: var(--text3);
-      padding: 20px; border-top: 1px solid var(--border2);
-      position: relative; z-index: 1;
-    }
-    footer span { color: var(--indigo2); }
-
-    @media(max-width: 640px) {
-      main { padding: 16px 14px 50px; }
-      nav { padding: 0 12px; }
-      #pomo-display { font-size: 3rem; }
-      .exam-cards-grid { grid-template-columns: 1fr; }
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-tertiary);
+      padding: 24px;
+      border-top: 1px solid var(--border-light);
+      margin-top: 40px;
     }
 
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+    footer span {
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+    }
 
-    /* Toast */
+    /* ═══════════════════════════════════════
+       TOAST
+    ═══════════════════════════════════════ */
     #toast {
-      position: fixed; bottom: 24px; right: 24px; z-index: 999;
-      background: rgba(17,24,39,0.95); border: 1px solid var(--border);
-      border-radius: 12px; padding: 12px 20px;
-      font-size: 0.85rem; color: var(--text);
-      display: flex; align-items: center; gap: 10px;
-      transform: translateY(80px); opacity: 0;
-      transition: all 0.3s cubic-bezier(.4,0,.2,1);
-      backdrop-filter: blur(12px);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 999;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
     }
-    #toast.show { transform: none; opacity: 1; }
-    #toast i { color: var(--emerald); }
+
+    #toast.show {
+      transform: none;
+      opacity: 1;
+    }
+
+    /* ═══════════════════════════════════════
+       SCROLLBAR
+    ═══════════════════════════════════════ */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--neon-purple);
+      border-radius: 99px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--neon-pink);
+    }
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════ */
+    @media (max-width: 768px) {
+      main { padding: 28px 16px 60px; }
+      nav { padding: 0 16px; }
+      .nav-inner { height: 60px; }
+      .logo { font-size: 1.4rem; }
+      .sec-title { font-size: 1.6rem; }
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .exam-card-days { font-size: 2.4rem; }
+      .pomo-display { font-size: 3.5rem; }
+      .modal { padding: 24px; }
+    }
   </style>
 </head>
 <body>
 
-<div class="orb orb-1"></div>
-<div class="orb orb-2"></div>
-<div class="orb orb-3"></div>
-
 <div id="app">
 
-<!-- ══════════════  NAV  ══════════════ -->
+<!-- ═══════════════════════════════════════════════════════
+     NAVIGATION
+══════════════════════════════════════════════════════════ -->
 <nav>
   <div class="nav-inner">
     <div class="logo">
-      <i class="fa-solid fa-graduation-cap logo-icon"></i> StudyOS
+      <i class="fas fa-brain logo-icon"></i> StudyOS Pro
     </div>
     <div class="nav-tabs" id="nav-tabs">
-      <button class="tab-btn active" onclick="showSection('exams')"><i class="fa-solid fa-calendar-days"></i>Exams</button>
-      <button class="tab-btn" onclick="showSection('syllabus')"><i class="fa-solid fa-list-check"></i>Syllabus</button>
-      <button class="tab-btn" onclick="showSection('resources')"><i class="fa-solid fa-link"></i>Resources</button>
-      <button class="tab-btn" onclick="showSection('summarizer')"><i class="fa-brands fa-youtube"></i>AI Tutor</button>
-      <button class="tab-btn" onclick="showSection('tools')"><i class="fa-solid fa-toolbox"></i>Tools</button>
+      <button class="tab-btn active" onclick="showSection('dashboard')">
+        <i class="fas fa-chart-line"></i> Dashboard
+      </button>
+      <button class="tab-btn" onclick="showSection('subjects')">
+        <i class="fas fa-book"></i> Subjects
+      </button>
+      <button class="tab-btn" onclick="showSection('exams')">
+        <i class="fas fa-calendar-alt"></i> Exams
+      </button>
+      <button class="tab-btn" onclick="showSection('ai-tools')">
+        <i class="fas fa-magic"></i> AI Tools
+      </button>
+      <button class="tab-btn" onclick="showSection('tools')">
+        <i class="fas fa-tools"></i> Tools
+      </button>
     </div>
   </div>
 </nav>
 
 <main>
 
-<!-- ══════════════  SECTION: EXAMS  ══════════════ -->
-<section id="section-exams">
-  <div class="exams-header">
-    <div>
-      <div class="sec-title"><i class="fa-solid fa-calendar-days"></i> My Exams</div>
-      <p class="sec-sub" style="margin-bottom:0">Track all your upcoming exams in one place.</p>
+<!-- ═══════════════════════════════════════════════════════
+     SECTION: DASHBOARD
+══════════════════════════════════════════════════════════ -->
+<section id="section-dashboard">
+  <div class="sec-title">
+    <i class="fas fa-chart-line"></i> Welcome Back
+  </div>
+  <p class="sec-sub">Your personalized study dashboard — track progress and master your exams.</p>
+
+  <div class="grid-4">
+    <div class="stat-box">
+      <div class="stat-val" id="stat-total-exams">0</div>
+      <div class="stat-lbl">Total Exams</div>
     </div>
-    <button class="btn btn-primary" onclick="openAddExamModal()">
-      <i class="fa-solid fa-plus"></i> Add Exam
+    <div class="stat-box">
+      <div class="stat-val" id="stat-study-hours">0</div>
+      <div class="stat-lbl">Study Hours</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="stat-subjects">0</div>
+      <div class="stat-lbl">Subjects</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="stat-progress">0%</div>
+      <div class="stat-lbl">Overall Progress</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION: SUBJECTS
+══════════════════════════════════════════════════════════ -->
+<section id="section-subjects" class="hidden">
+  <div class="sec-title">
+    <i class="fas fa-book-open"></i> Subjects & Syllabus
+  </div>
+  <p class="sec-sub">Complete O Level and A Level subject syllabi with comprehensive study notes.</p>
+
+  <!-- Level Selector -->
+  <div class="subject-tabs" style="margin-bottom: 24px;">
+    <button class="subject-tab active" onclick="selectLevel('o-level')">📚 O Level</button>
+    <button class="subject-tab" onclick="selectLevel('a-level')">🎓 A Level</button>
+  </div>
+
+  <!-- Subjects Grid -->
+  <div class="grid-3" id="subjects-grid">
+    <!-- Populated by JS -->
+  </div>
+
+  <!-- Subject Detail Modal -->
+  <div class="modal-overlay" id="subject-modal">
+    <div class="modal">
+      <div class="modal-title" id="subject-modal-title">Subject Details</div>
+      <div class="subject-content-tabs" id="subject-tabs">
+        <!-- Populated by JS -->
+      </div>
+      <div id="syllabus-panel" class="content-panel active"></div>
+      <div id="resources-panel" class="content-panel"></div>
+      <div id="videos-panel" class="content-panel"></div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeSubjectModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION: EXAMS
+══════════════════════════════════════════════════════════ -->
+<section id="section-exams" class="hidden">
+  <div class="sec-title">
+    <i class="fas fa-calendar-alt"></i> My Exams
+  </div>
+  <p class="sec-sub">Track all your upcoming exams and manage deadlines.</p>
+
+  <button class="btn btn-primary mb-4" onclick="openAddExamModal()">
+    <i class="fas fa-plus"></i> Add Exam
+  </button>
+
+  <div class="exam-cards-grid" id="exam-cards-grid">
+    <!-- Populated by JS -->
+  </div>
+
+  <div id="no-exams-msg" class="card text-center hidden" style="padding: 40px;">
+    <i class="fas fa-calendar-plus" style="font-size: 3rem; color: var(--neon-purple); margin-bottom: 16px;"></i>
+    <p class="text-dim">No exams yet. Click <strong style="color: var(--neon-pink)">+ Add Exam</strong> to get started.</p>
+  </div>
+
+  <!-- Add Exam Modal -->
+  <div class="modal-overlay" id="exam-modal">
+    <div class="modal">
+      <div class="modal-title">
+        <i class="fas fa-plus"></i> Add Exam
+      </div>
+      <div style="display: grid; gap: 16px;">
+        <div>
+          <label class="lbl">Exam Name</label>
+          <input id="modal-exam-name" class="field" type="text" placeholder="e.g. Biology Paper 1" />
+        </div>
+        <div>
+          <label class="lbl">Exam Date</label>
+          <input id="modal-exam-date" class="field" type="date" />
+        </div>
+        <div>
+          <label class="lbl">Subject</label>
+          <input id="modal-exam-subject" class="field" type="text" placeholder="e.g. Biology" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeExamModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveExam()">Save Exam</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION: AI TOOLS
+══════════════════════════════════════════════════════════ -->
+<section id="section-ai-tools" class="hidden">
+  <div class="sec-title">
+    <i class="fas fa-magic"></i> AI Study Tools
+  </div>
+  <p class="sec-sub">Powered by Google Gemini AI — summarize videos, generate notes, and more.</p>
+
+  <!-- AI Tool Tabs -->
+  <div class="subject-tabs" style="margin-bottom: 28px;">
+    <button class="subject-tab active" onclick="showAITool('video-summarizer')">
+      <i class="fab fa-youtube"></i> Video Summarizer
+    </button>
+    <button class="subject-tab" onclick="showAITool('note-generator')">
+      <i class="fas fa-pen"></i> Note Generator
+    </button>
+    <button class="subject-tab" onclick="showAITool('quiz-creator')">
+      <i class="fas fa-question"></i> Quiz Creator
     </button>
   </div>
 
-  <div class="exam-cards-grid" id="exam-cards-grid">
-    <!-- populated by JS -->
-  </div>
-
-  <div id="no-exams-msg" class="card card-p text-center hidden">
-    <i class="fa-solid fa-calendar-plus" style="font-size:2.5rem;color:var(--border);display:block;margin-bottom:12px;"></i>
-    <p class="text-dim text-sm">No exams yet. Click <strong style="color:var(--indigo2)">+ Add Exam</strong> to get started.</p>
-  </div>
-
-  <!-- Summary stats -->
-  <div id="exam-stats-row" class="hidden" style="margin-top:8px;">
-    <div class="flex gap-3 flex-wrap">
-      <div class="stat-box flex-1" style="min-width:120px">
-        <div class="stat-val text-indigo" id="stat-total-exams">0</div>
-        <div class="stat-lbl">Total Exams</div>
-      </div>
-      <div class="stat-box flex-1" style="min-width:120px">
-        <div class="stat-val" style="color:var(--rose)" id="stat-critical">0</div>
-        <div class="stat-lbl">Critical (≤7d)</div>
-      </div>
-      <div class="stat-box flex-1" style="min-width:120px">
-        <div class="stat-val" style="color:var(--amber)" id="stat-nearest-name">—</div>
-        <div class="stat-lbl">Nearest Exam</div>
-      </div>
-      <div class="stat-box flex-1" style="min-width:120px">
-        <div class="stat-val" style="color:var(--emerald)" id="stat-total-prep-hours">0</div>
-        <div class="stat-lbl">Total Prep Hours</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════  SECTION: SYLLABUS  ══════════════ -->
-<section id="section-syllabus" class="hidden">
-  <div class="sec-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Syllabus Architect</div>
-  <p class="sec-sub">Pick an exam, paste your syllabus topics, and get a personalised daily plan generated instantly.</p>
-
-  <div class="card card-p mb-3" style="margin-bottom:16px">
-    <div class="grid-2" style="margin-bottom:14px">
-      <div>
-        <label class="lbl">Select Exam</label>
-        <select id="syllabus-exam-select" class="field">
-          <option value="">— choose an exam —</option>
-        </select>
-      </div>
-      <div>
-        <label class="lbl">Topics per day (auto if blank)</label>
-        <input id="topics-per-day" class="field" type="number" min="1" max="10" placeholder="Auto" />
-      </div>
-    </div>
-    <label class="lbl">Syllabus Topics (one per line)</label>
-    <textarea id="syllabus-input" class="field" style="margin-bottom:14px"
-      placeholder="1.1 Cell structure&#10;1.2 Biological molecules&#10;1.3 Enzymes&#10;2.1 Cell membranes&#10;..."></textarea>
-    <div class="flex gap-2 flex-wrap">
-      <button class="btn btn-primary" onclick="generatePlan()"><i class="fa-solid fa-bolt"></i> Generate Plan</button>
-      <button class="btn btn-ghost" onclick="clearSchedule()"><i class="fa-solid fa-trash"></i> Clear</button>
-    </div>
-    <p id="plan-warning" class="text-warn text-xs mt-2 hidden"><i class="fa-solid fa-triangle-exclamation"></i> Please add an exam first and select it above.</p>
-  </div>
-
-  <div id="schedule-container" class="card card-p hidden">
-    <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
-      <div class="sec-title" style="margin-bottom:0;font-size:1.2rem;">📅 Your Study Schedule</div>
-      <div class="flex gap-2">
-        <span class="badge" style="background:rgba(99,102,241,0.15);color:var(--indigo2)">📖 Study</span>
-        <span class="badge" style="background:rgba(16,185,129,0.12);color:var(--emerald)">🔁 Review</span>
-        <span class="badge" style="background:rgba(245,158,11,0.12);color:var(--amber)">🎯 Mock</span>
-      </div>
-    </div>
-    <div id="schedule-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;"></div>
-  </div>
-</section>
-
-<!-- ══════════════  SECTION: RESOURCES  ══════════════ -->
-<section id="section-resources" class="hidden">
-  <div class="sec-title"><i class="fa-solid fa-database"></i> Resource Hub</div>
-  <p class="sec-sub">Enter your subject code to instantly get curated links for past papers, mark schemes, notes, and more.</p>
-
-  <div class="card card-p" style="margin-bottom:16px">
-    <div class="flex gap-2 flex-wrap" style="margin-bottom:0">
-      <input id="subject-code" class="field" style="max-width:280px" type="text" placeholder="e.g. IGCSE 0610 or A-Level Chemistry" />
-      <button class="btn btn-primary" onclick="generateResources()"><i class="fa-solid fa-magnifying-glass"></i> Find Resources</button>
-    </div>
-  </div>
-
-  <p id="resource-hint" class="text-dim text-sm" style="padding:8px 0">Resources will appear here once you enter a subject code.</p>
-  <div id="resource-links" class="hidden" style="display:none;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;"></div>
-</section>
-
-<!-- ══════════════  SECTION: AI VIDEO SUMMARIZER  ══════════════ -->
-<section id="section-summarizer" class="hidden">
-  <div class="sec-title"><i class="fa-brands fa-youtube" style="color:#ff4444"></i> AI Video Tutor</div>
-  <p class="sec-sub">Paste any YouTube study video link — the AI will extract the key learning points so you can study smarter.</p>
-
-  <div class="grid-2" style="gap:20px;align-items:start">
-    <div class="flex-col gap-3" style="display:flex;flex-direction:column;gap:16px">
-      <div class="card card-p">
+  <!-- Video Summarizer -->
+  <div id="video-summarizer-tool" class="grid-2" style="gap: 24px;">
+    <div class="card">
+      <div style="margin-bottom: 16px;">
         <label class="lbl">YouTube Video URL</label>
-        <div class="flex gap-2" style="margin-bottom:12px">
-          <input id="yt-url-input" class="field" type="url" placeholder="https://youtube.com/watch?v=..." />
-          <button class="btn btn-ghost btn-sm" onclick="previewVideo()" style="white-space:nowrap"><i class="fa-solid fa-eye"></i> Preview</button>
-        </div>
-
-        <label class="lbl">Your Subject / Context (optional)</label>
-        <input id="yt-subject" class="field" style="margin-bottom:12px" type="text" placeholder="e.g. A-Level Physics — Waves" />
-
-        <label class="lbl">What should AI focus on?</label>
-        <select id="yt-focus" class="field" style="margin-bottom:14px">
-          <option value="key-points">Key Learning Points</option>
-          <option value="definitions">Definitions & Terminology</option>
-          <option value="exam-tips">Exam Tips & Techniques</option>
-          <option value="formulas">Formulas & Equations</option>
-          <option value="summary">Full Comprehensive Summary</option>
-        </select>
-
-        <button class="btn btn-primary w-full" id="summarize-btn" onclick="summarizeVideo()">
-          <i class="fa-solid fa-robot"></i> Summarize with AI
-        </button>
-        <p class="text-xs text-dim mt-2" style="margin-top:8px">
-          <i class="fa-solid fa-circle-info"></i> AI summarizes based on the video title & topic — works best with clear, educational videos.
-        </p>
+        <input id="yt-url" class="field" type="url" placeholder="https://youtube.com/watch?v=..." />
       </div>
+      <div style="margin-bottom: 16px;">
+        <label class="lbl">Subject (Optional)</label>
+        <input id="yt-subject" class="field" type="text" placeholder="e.g. A-Level Biology" />
+      </div>
+      <button class="btn btn-primary w-full" id="summarize-btn" onclick="summarizeVideo()">
+        <i class="fas fa-wand-magic-sparkles"></i> Summarize
+      </button>
+      <p class="text-xs text-dim mt-3">Uses Google Gemini AI to extract key points</p>
+    </div>
+    <div class="card">
+      <div style="font-weight: 700; margin-bottom: 12px; color: var(--neon-purple);">AI Summary</div>
+      <div id="video-summary-output" class="text-dim" style="line-height: 1.8; font-size: 0.95rem;">
+        Your AI-generated summary will appear here...
+      </div>
+      <button class="btn btn-secondary btn-sm mt-3 w-full" id="copy-summary-btn" onclick="copySummary()" style="display: none;">
+        <i class="fas fa-copy"></i> Copy to Clipboard
+      </button>
+    </div>
+  </div>
 
-      <div class="card card-p">
-        <div class="video-preview" id="video-preview-box">
-          <div class="video-preview-placeholder" id="video-placeholder">
-            <i class="fa-brands fa-youtube"></i>
-            <p class="text-sm">Enter a YouTube URL and click Preview</p>
-          </div>
+  <!-- Note Generator -->
+  <div id="note-generator-tool" class="hidden">
+    <div class="grid-2" style="gap: 24px;">
+      <div class="card">
+        <label class="lbl">Topic</label>
+        <input id="note-topic" class="field" type="text" placeholder="e.g. Photosynthesis" />
+        <label class="lbl mt-3">Subject</label>
+        <input id="note-subject" class="field" type="text" placeholder="e.g. Biology" />
+        <button class="btn btn-primary w-full mt-3" onclick="generateNotes()">
+          <i class="fas fa-wand-magic-sparkles"></i> Generate Notes
+        </button>
+      </div>
+      <div class="card">
+        <div style="font-weight: 700; margin-bottom: 12px; color: var(--neon-cyan);">Generated Notes</div>
+        <div id="notes-output" class="text-dim" style="line-height: 1.8; font-size: 0.95rem; max-height: 400px; overflow-y: auto;">
+          Your study notes will appear here...
         </div>
+        <button class="btn btn-secondary btn-sm mt-3 w-full" id="copy-notes-btn" onclick="copyNotes()" style="display: none;">
+          <i class="fas fa-copy"></i> Copy Notes
+        </button>
       </div>
     </div>
+  </div>
 
-    <div>
-      <div class="card card-p" id="ai-output-card">
-        <div class="flex items-center justify-between mb-3" style="margin-bottom:14px">
-          <div class="sec-title" style="font-size:1.1rem;margin-bottom:0"><i class="fa-solid fa-brain"></i> AI Summary</div>
-          <button class="btn btn-ghost btn-sm hidden" id="copy-summary-btn" onclick="copySummary()"><i class="fa-solid fa-copy"></i> Copy</button>
-        </div>
-        <div id="ai-summary-placeholder" class="text-center" style="padding:40px 0;color:var(--text3)">
-          <i class="fa-solid fa-wand-sparkles" style="font-size:2rem;display:block;margin-bottom:10px;opacity:0.3"></i>
-          <p class="text-sm">Your AI-generated study summary will appear here</p>
-        </div>
-        <div id="ai-loading" class="hidden text-center" style="padding:40px 0">
-          <div class="loading-dots" style="margin-bottom:12px"><span></span><span></span><span></span></div>
-          <p class="text-dim text-sm" id="loading-msg">Analyzing video content…</p>
-        </div>
-        <div id="ai-summary-output" class="hidden"></div>
+  <!-- Quiz Creator -->
+  <div id="quiz-creator-tool" class="hidden">
+    <div class="grid-2" style="gap: 24px;">
+      <div class="card">
+        <label class="lbl">Topic</label>
+        <input id="quiz-topic" class="field" type="text" placeholder="e.g. Cellular Respiration" />
+        <label class="lbl mt-3">Number of Questions</label>
+        <input id="quiz-count" class="field" type="number" min="1" max="20" value="5" />
+        <button class="btn btn-primary w-full mt-3" onclick="generateQuiz()">
+          <i class="fas fa-wand-magic-sparkles"></i> Generate Quiz
+        </button>
       </div>
-
-      <!-- Saved Summaries -->
-      <div class="card card-p" style="margin-top:16px" id="saved-summaries-card">
-        <div class="flex items-center justify-between mb-3" style="margin-bottom:12px">
-          <div style="font-weight:700;font-size:0.9rem"><i class="fa-solid fa-bookmark" style="color:var(--indigo2);margin-right:6px"></i>Saved Summaries</div>
-          <button class="btn btn-ghost btn-sm hidden" id="save-summary-btn" onclick="saveSummary()"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+      <div class="card">
+        <div style="font-weight: 700; margin-bottom: 12px; color: var(--neon-pink);">Quiz Questions</div>
+        <div id="quiz-output" class="text-dim" style="line-height: 1.8; font-size: 0.95rem; max-height: 400px; overflow-y: auto;">
+          Your quiz will appear here...
         </div>
-        <div id="saved-summaries-list">
-          <p class="text-dim text-xs" id="no-saved-msg">No saved summaries yet.</p>
-        </div>
+        <button class="btn btn-secondary btn-sm mt-3 w-full" id="copy-quiz-btn" onclick="copyQuiz()" style="display: none;">
+          <i class="fas fa-copy"></i> Copy Quiz
+        </button>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════  SECTION: TOOLS  ══════════════ -->
+<!-- ═══════════════════════════════════════════════════════
+     SECTION: TOOLS
+══════════════════════════════════════════════════════════ -->
 <section id="section-tools" class="hidden">
-  <div class="sec-title"><i class="fa-solid fa-toolbox"></i> Study Tools</div>
-  <p class="sec-sub">Pomodoro timer, flashcards, notes, and habit tracker — everything in one place.</p>
+  <div class="sec-title">
+    <i class="fas fa-tools"></i> Study Tools
+  </div>
+  <p class="sec-sub">Pomodoro timer, flashcards, notes, and more.</p>
 
-  <!-- Tools tabs -->
-  <div class="flex gap-2 flex-wrap" style="margin-bottom:16px">
-    <button class="btn btn-primary btn-sm" id="tool-tab-pomo" onclick="showTool('pomo')">⏱ Pomodoro</button>
-    <button class="btn btn-ghost btn-sm" id="tool-tab-flash" onclick="showTool('flash')">🃏 Flashcards</button>
-    <button class="btn btn-ghost btn-sm" id="tool-tab-notes" onclick="showTool('notes')">📝 Notes</button>
-    <button class="btn btn-ghost btn-sm" id="tool-tab-habit" onclick="showTool('habit')">✅ Habit Tracker</button>
+  <div class="subject-tabs" style="margin-bottom: 28px;">
+    <button class="subject-tab active" onclick="showStudyTool('pomodoro')">⏱ Pomodoro</button>
+    <button class="subject-tab" onclick="showStudyTool('flashcards')">🃏 Flashcards</button>
+    <button class="subject-tab" onclick="showStudyTool('notes')">📝 Notes</button>
+    <button class="subject-tab" onclick="showStudyTool('tracker')">✅ Tracker</button>
   </div>
 
-  <!-- ── Pomodoro ── -->
-  <div id="tool-pomo" class="grid-2">
-    <div class="card card-p flex-col items-center" style="display:flex;flex-direction:column;align-items:center">
-      <div class="sec-title" style="font-size:1rem;margin-bottom:14px;align-self:flex-start"><i class="fa-solid fa-stopwatch"></i> Pomodoro Timer</div>
-      <div class="flex gap-2 mb-3" style="margin-bottom:16px">
-        <button class="pomo-mode-btn active" id="mode-focus" onclick="setPomoMode('focus')">Focus 25m</button>
-        <button class="pomo-mode-btn" id="mode-short" onclick="setPomoMode('short')">Break 5m</button>
-        <button class="pomo-mode-btn" id="mode-long" onclick="setPomoMode('long')">Long 15m</button>
-      </div>
-      <div class="pomo-ring-wrap" style="margin-bottom:16px">
-        <svg width="180" height="180" viewBox="0 0 180 180">
-          <circle fill="none" stroke="rgba(99,102,241,0.12)" stroke-width="10" cx="90" cy="90" r="78"/>
-          <circle id="pomo-ring-fill" fill="none" stroke="url(#pomoGrad)" stroke-width="10"
-            stroke-linecap="round" cx="90" cy="90" r="78"
-            stroke-dasharray="490" stroke-dashoffset="0"
-            style="transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset 0.95s linear"/>
-          <defs>
-            <linearGradient id="pomoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#6366f1"/>
-              <stop offset="100%" stop-color="#06b6d4"/>
-            </linearGradient>
-          </defs>
-        </svg>
-        <div class="pomo-label-wrap">
-          <div id="pomo-display">25:00</div>
-          <div id="pomo-status" style="font-size:0.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:4px">Ready</div>
+  <!-- Pomodoro Timer -->
+  <div id="pomodoro-tool">
+    <div class="grid-2" style="gap: 24px;">
+      <div class="card flex-col items-center">
+        <div style="font-weight: 700; margin-bottom: 20px; font-size: 1.2rem;">Pomodoro Timer</div>
+        <div class="pomo-mode-buttons">
+          <button class="pomo-mode-btn active" onclick="setPomoMode('focus')">Focus 25m</button>
+          <button class="pomo-mode-btn" onclick="setPomoMode('short')">Break 5m</button>
+          <button class="pomo-mode-btn" onclick="setPomoMode('long')">Long 15m</button>
+        </div>
+        <div class="pomo-display" id="pomo-display">25:00</div>
+        <div class="flex gap-2 mb-2">
+          <button class="btn btn-primary" onclick="togglePomo()">
+            <i class="fas fa-play"></i> Start
+          </button>
+          <button class="btn btn-ghost" onclick="resetPomo()">
+            <i class="fas fa-redo"></i> Reset
+          </button>
         </div>
       </div>
-      <div class="flex gap-2" style="margin-bottom:14px">
-        <button class="btn btn-primary" id="pomo-start-btn" onclick="togglePomo()"><i class="fa-solid fa-play"></i> Start</button>
-        <button class="btn btn-ghost" onclick="resetPomo()"><i class="fa-solid fa-rotate-left"></i> Reset</button>
-      </div>
-      <div class="flex gap-2 flex-wrap" id="pomo-sessions" style="margin-bottom:6px;justify-content:center"></div>
-      <p class="text-xs text-dim">Sessions completed today</p>
-    </div>
-
-    <div class="card card-p">
-      <div class="sec-title" style="font-size:1rem;margin-bottom:14px"><i class="fa-solid fa-chart-simple"></i> Focus Stats</div>
-      <div class="grid-2" style="margin-bottom:16px">
-        <div class="stat-box">
-          <div class="stat-val text-indigo" id="stat-sessions-today">0</div>
-          <div class="stat-lbl">Sessions Today</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-val" style="color:var(--cyan)" id="stat-focus-mins">0</div>
-          <div class="stat-lbl">Focus Mins</div>
-        </div>
-      </div>
-      <hr class="divider">
-      <div class="sec-title" style="font-size:0.9rem;margin-bottom:10px"><i class="fa-solid fa-music"></i> Ambient Sound</div>
-      <div class="flex gap-2 flex-wrap">
-        <button class="btn btn-ghost btn-sm" onclick="playAmbient('rain')">🌧 Rain</button>
-        <button class="btn btn-ghost btn-sm" onclick="playAmbient('forest')">🌿 Forest</button>
-        <button class="btn btn-ghost btn-sm" onclick="playAmbient('cafe')">☕ Café</button>
-        <button class="btn btn-ghost btn-sm" onclick="playAmbient('off')">⏹ Off</button>
-      </div>
-      <p class="text-xs text-dim mt-2" style="margin-top:8px"><i class="fa-solid fa-circle-info"></i> Opens ambient sound on YouTube in a new tab.</p>
-    </div>
-  </div>
-
-  <!-- ── Flashcards ── -->
-  <div id="tool-flash" class="hidden">
-    <div class="grid-2">
-      <div class="card card-p">
-        <div class="sec-title" style="font-size:1rem;margin-bottom:4px"><i class="fa-solid fa-layer-group"></i> Create Flashcards</div>
-        <p class="text-dim text-xs" style="margin-bottom:14px">Add a question and answer, then click the deck to flip.</p>
-        <label class="lbl">Question (Front)</label>
-        <input id="fc-q" class="field" style="margin-bottom:10px" placeholder="e.g. What is osmosis?" />
-        <label class="lbl">Answer (Back)</label>
-        <textarea id="fc-a" class="field" style="min-height:80px;margin-bottom:12px" placeholder="Movement of water molecules from high to low concentration across a partially permeable membrane."></textarea>
-        <button class="btn btn-primary w-full" onclick="addFlashcard()"><i class="fa-solid fa-plus"></i> Add Card</button>
-      </div>
-
-      <div class="card card-p flex-col items-center" style="display:flex;flex-direction:column;align-items:center">
-        <div class="flex items-center justify-between w-full mb-3" style="margin-bottom:12px;width:100%">
-          <div style="font-weight:700;font-size:0.9rem">Card <span id="fc-current">0</span> / <span id="fc-total">0</span></div>
-          <button class="btn btn-danger btn-sm" onclick="deleteCurrentCard()"><i class="fa-solid fa-trash"></i></button>
-        </div>
-        <div class="flashcard-scene" id="flashcard-scene" onclick="flipCard()">
-          <div class="flashcard" id="flashcard-el">
-            <div class="flashcard-face flashcard-front" id="fc-front">Add a card to get started</div>
-            <div class="flashcard-face flashcard-back" id="fc-back">Answer appears here</div>
+      <div class="card">
+        <div style="font-weight: 700; margin-bottom: 20px; font-size: 1.2rem;">Focus Stats</div>
+        <div class="grid-2" style="gap: 12px;">
+          <div class="stat-box">
+            <div class="stat-val" id="stat-sessions">0</div>
+            <div class="stat-lbl">Sessions</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="stat-focus-mins">0</div>
+            <div class="stat-lbl">Focus Mins</div>
           </div>
         </div>
-        <p class="flashcard-hint">Click card to flip · Tap arrows to navigate</p>
-        <div class="flex gap-2 mt-2" style="margin-top:10px">
-          <button class="btn btn-ghost btn-sm" onclick="prevCard()"><i class="fa-solid fa-chevron-left"></i> Prev</button>
-          <button class="btn btn-ghost btn-sm" onclick="nextCard()">Next <i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flashcards -->
+  <div id="flashcards-tool" class="hidden">
+    <div class="grid-2" style="gap: 24px;">
+      <div class="card">
+        <div style="font-weight: 700; margin-bottom: 16px;">Create Flashcards</div>
+        <label class="lbl">Question</label>
+        <input id="fc-question" class="field mb-3" type="text" placeholder="Enter question" />
+        <label class="lbl">Answer</label>
+        <textarea id="fc-answer" class="field mb-3" placeholder="Enter answer" style="min-height: 100px;"></textarea>
+        <button class="btn btn-primary w-full" onclick="addFlashcard()">
+          <i class="fas fa-plus"></i> Add Card
+        </button>
+      </div>
+      <div class="card flex-col items-center">
+        <div style="font-weight: 700; margin-bottom: 16px;">Card <span id="fc-current">0</span> / <span id="fc-total">0</span></div>
+        <div class="flashcard-scene" onclick="flipCard()">
+          <div class="flashcard" id="flashcard">
+            <div class="flashcard-face flashcard-front" id="fc-front">No cards yet</div>
+            <div class="flashcard-face flashcard-back" id="fc-back">Add a card to start</div>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-3">
+          <button class="btn btn-secondary btn-sm" onclick="prevCard()"><i class="fas fa-chevron-left"></i></button>
+          <button class="btn btn-secondary btn-sm" onclick="nextCard()"><i class="fas fa-chevron-right"></i></button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── Notes ── -->
-  <div id="tool-notes" class="hidden">
-    <div class="card card-p">
-      <div class="flex items-center justify-between mb-3" style="margin-bottom:14px">
-        <div class="sec-title" style="font-size:1rem;margin-bottom:0"><i class="fa-solid fa-note-sticky"></i> Quick Notes</div>
-        <div class="flex gap-2">
-          <span id="notes-chars" class="text-xs text-dim" style="display:flex;align-items:center">0 chars</span>
-          <button class="btn btn-danger btn-sm" onclick="clearNotes()"><i class="fa-solid fa-trash"></i></button>
-          <button class="btn btn-primary btn-sm" onclick="saveNotes()"><i class="fa-solid fa-floppy-disk"></i> Save</button>
-        </div>
+  <!-- Notes -->
+  <div id="notes-tool" class="hidden">
+    <div class="card">
+      <div style="font-weight: 700; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+        <span>Quick Notes</span>
+        <button class="btn btn-primary btn-sm" onclick="saveStudyNotes()">
+          <i class="fas fa-save"></i> Save
+        </button>
       </div>
-      <textarea id="quick-notes" class="field" placeholder="Jot down key formulas, definitions, reminders, or anything you need to remember…"></textarea>
-      <p id="notes-saved-msg" class="text-success text-xs mt-2 hidden" style="margin-top:8px"><i class="fa-solid fa-circle-check"></i> Saved to browser!</p>
+      <textarea id="study-notes" class="field" style="min-height: 300px;" placeholder="Jot down your study notes..."></textarea>
+      <p class="text-xs text-dim mt-2" id="notes-status"></p>
     </div>
   </div>
 
-  <!-- ── Habit Tracker ── -->
-  <div id="tool-habit" class="hidden">
-    <div class="card card-p">
-      <div class="flex items-center justify-between mb-3" style="margin-bottom:14px">
-        <div class="sec-title" style="font-size:1rem;margin-bottom:0"><i class="fa-solid fa-fire"></i> Daily Habit Tracker</div>
-        <button class="btn btn-primary btn-sm" onclick="addHabit()"><i class="fa-solid fa-plus"></i> Add Habit</button>
+  <!-- Tracker -->
+  <div id="tracker-tool" class="hidden">
+    <div class="card">
+      <div style="font-weight: 700; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+        <span>Study Tracker</span>
+        <button class="btn btn-primary btn-sm" onclick="addTrackerItem()">
+          <i class="fas fa-plus"></i> Add Goal
+        </button>
       </div>
-      <div id="habits-list"></div>
-      <p id="no-habits-msg" class="text-dim text-sm text-center" style="padding:20px 0">No habits yet. Add one to start building your study streak!</p>
+      <div id="tracker-list"></div>
     </div>
   </div>
-
 </section>
 
 </main>
 
-<!-- ══════════  ADD EXAM MODAL  ══════════ -->
-<div class="modal-overlay" id="exam-modal">
-  <div class="modal">
-    <div class="modal-title"><i class="fa-solid fa-plus" style="color:var(--indigo2);margin-right:8px"></i>Add New Exam</div>
-
-    <div style="display:grid;gap:14px">
-      <div>
-        <label class="lbl">Exam Name *</label>
-        <input id="modal-exam-name" class="field" type="text" placeholder="e.g. IGCSE Biology Paper 2" />
-      </div>
-      <div>
-        <label class="lbl">Exam Date *</label>
-        <input id="modal-exam-date" class="field" type="date" />
-      </div>
-      <div>
-        <label class="lbl">Subject / Board</label>
-        <input id="modal-exam-board" class="field" type="text" placeholder="e.g. Cambridge IGCSE" />
-      </div>
-      <div>
-        <label class="lbl">Color Tag</label>
-        <div class="flex gap-2" id="color-picker">
-          <div class="color-opt" data-color="indigo" onclick="selectColor('indigo')" style="width:28px;height:28px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid transparent;transition:all 0.2s"></div>
-          <div class="color-opt" onclick="selectColor('cyan')" style="width:28px;height:28px;border-radius:50%;background:var(--cyan);cursor:pointer;border:2px solid transparent;transition:all 0.2s"></div>
-          <div class="color-opt" onclick="selectColor('emerald')" style="width:28px;height:28px;border-radius:50%;background:var(--emerald);cursor:pointer;border:2px solid transparent;transition:all 0.2s"></div>
-          <div class="color-opt" onclick="selectColor('amber')" style="width:28px;height:28px;border-radius:50%;background:var(--amber);cursor:pointer;border:2px solid transparent;transition:all 0.2s"></div>
-          <div class="color-opt" onclick="selectColor('rose')" style="width:28px;height:28px;border-radius:50%;background:var(--rose);cursor:pointer;border:2px solid transparent;transition:all 0.2s"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveExam()"><i class="fa-solid fa-floppy-disk"></i> Save Exam</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════  TOAST  ══════════ -->
-<div id="toast"><i class="fa-solid fa-circle-check"></i> <span id="toast-msg">Saved!</span></div>
-
+<!-- ═══════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════════ -->
 <footer>
-  StudyOS · <span>All data stored locally in your browser</span> · Built by <span>zohair naqvi</span> for exam warriors 🎓
+  StudyOS Pro · <span>Powered by Google Gemini AI</span> · Made for exam warriors 🚀
 </footer>
 
-</div><!-- end #app -->
+<!-- ═══════════════════════════════════════════════════════
+     TOAST NOTIFICATION
+══════════════════════════════════════════════════════════ -->
+<div id="toast">
+  <i class="fas fa-check-circle"></i>
+  <span id="toast-msg">Done!</span>
+</div>
 
-<!-- ══════════  JAVASCRIPT  ══════════ -->
+</div><!-- End #app -->
+
 <script>
-/* ═══════════════════════════════════════
-   HELPERS
-═══════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════
+// CONFIGURATION & HELPERS
+// ═══════════════════════════════════════════════════════
+
+const GEMINI_API_KEY = 'YOUR_GOOGLE_GEMINI_API_KEY'; // User must replace this
 const $ = id => document.getElementById(id);
-const LS = { get: k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }, set: (k,v) => localStorage.setItem(k, JSON.stringify(v)) };
-
-function toast(msg, icon = 'fa-circle-check') {
-  $('toast-msg').textContent = msg;
-  $('toast').querySelector('i').className = `fa-solid ${icon}`;
-  $('toast').classList.add('show');
-  setTimeout(() => $('toast').classList.remove('show'), 2500);
-}
-
-function getDays(dateStr) {
-  if (!dateStr) return null;
-  const d = new Date(dateStr); d.setHours(0,0,0,0);
-  const t = new Date(); t.setHours(0,0,0,0);
-  return Math.round((d - t) / 86400000);
-}
-
-const sections = ['exams','syllabus','resources','summarizer','tools'];
-
-function showSection(id) {
-  sections.forEach(s => $('section-' + s).classList.toggle('hidden', s !== id));
-  document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', sections[i] === id));
-  if (id === 'syllabus') populateSyllabusExamSelect();
-}
-
-/* ═══════════════════════════════════════
-   EXAMS
-═══════════════════════════════════════ */
-let exams = LS.get('exams') || [];
-let selectedColor = 'indigo';
-
-const colorMap = {
-  indigo: { css: 'var(--indigo)', hex: '#6366f1' },
-  cyan:   { css: 'var(--cyan)',   hex: '#06b6d4' },
-  emerald:{ css: 'var(--emerald)',hex: '#10b981' },
-  amber:  { css: 'var(--amber)',  hex: '#f59e0b' },
-  rose:   { css: 'var(--rose)',   hex: '#f43f5e' },
+const LS = {
+  get: k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set: (k, v) => localStorage.setItem(k, JSON.stringify(v))
 };
 
-function selectColor(c) {
-  selectedColor = c;
-  document.querySelectorAll('.color-opt').forEach(el => {
-    el.style.border = '2px solid transparent';
-    el.style.transform = 'scale(1)';
-  });
-  event.currentTarget.style.border = '2px solid white';
-  event.currentTarget.style.transform = 'scale(1.2)';
+// Subject Data
+const SUBJECTS = {
+  'o-level': [
+    {
+      name: 'Biology',
+      code: '5090',
+      board: 'Cambridge',
+      icon: '🦠',
+      syllabus: [
+        {
+          title: 'Cell Structure and Organization',
+          topics: [
+            'Structure and function of the cell membrane',
+            'Eukaryotic and prokaryotic cells',
+            'Organelles and their functions',
+            'Mitochondria and aerobic respiration',
+            'Chloroplasts and photosynthesis'
+          ]
+        },
+        {
+          title: 'Cell Division',
+          topics: [
+            'Mitosis and meiosis',
+            'Chromosomes and DNA',
+            'Genetic variation',
+            'Asexual and sexual reproduction'
+          ]
+        },
+        {
+          title: 'Transport in Cells',
+          topics: [
+            'Diffusion and osmosis',
+            'Active transport',
+            'Xylem and phloem transport',
+            'Water and mineral transport in plants'
+          ]
+        }
+      ],
+      pastPapers: [
+        { name: 'PapaCambridge', url: 'https://papacambridge.com/?s=5090' },
+        { name: 'Save My Exams', url: 'https://www.savemyexams.com/igcse/biology' },
+        { name: 'Mark Schemes', url: 'https://papacambridge.com/?s=5090+mark+scheme' }
+      ],
+      youtubeTopics: [
+        'Cell Structure Cambridge IGCSE',
+        'Photosynthesis IGCSE Biology',
+        'Mitosis and Meiosis explained',
+        'IGCSE Biology Respiration'
+      ]
+    },
+    {
+      name: 'Chemistry',
+      code: '5070',
+      board: 'Cambridge',
+      icon: '⚗️',
+      syllabus: [
+        {
+          title: 'Atomic Structure',
+          topics: [
+            'Protons, neutrons, and electrons',
+            'Atomic number and mass number',
+            'Isotopes',
+            'Electronic configuration'
+          ]
+        },
+        {
+          title: 'Bonding',
+          topics: [
+            'Ionic bonding',
+            'Covalent bonding',
+            'Metallic bonding',
+            'Properties of ionic, covalent, and metallic compounds'
+          ]
+        }
+      ],
+      pastPapers: [
+        { name: 'PapaCambridge', url: 'https://papacambridge.com/?s=5070' },
+        { name: 'Save My Exams', url: 'https://www.savemyexams.com/igcse/chemistry' }
+      ],
+      youtubeTopics: [
+        'Atomic Structure IGCSE Chemistry',
+        'Ionic Bonding explained',
+        'Balancing Chemical Equations'
+      ]
+    },
+    {
+      name: 'Physics',
+      code: '5054',
+      board: 'Cambridge',
+      icon: '⚛️',
+      syllabus: [
+        {
+          title: 'Measurements',
+          topics: [
+            'SI units',
+            'Scalars and vectors',
+            'Density and pressure'
+          ]
+        },
+        {
+          title: 'Motion',
+          topics: [
+            'Speed, velocity, and acceleration',
+            'Newtons laws of motion',
+            'Force and momentum'
+          ]
+        }
+      ],
+      pastPapers: [
+        { name: 'PapaCambridge', url: 'https://papacambridge.com/?s=5054' },
+        { name: 'Save My Exams', url: 'https://www.savemyexams.com/igcse/physics' }
+      ],
+      youtubeTopics: [
+        'IGCSE Physics Motion and Forces',
+        'Newtons Laws explained',
+        'Energy and Power concepts'
+      ]
+    },
+    {
+      name: 'Mathematics',
+      code: '0580',
+      board: 'Cambridge',
+      icon: '📐',
+      syllabus: [
+        {
+          title: 'Numbers and Operations',
+          topics: [
+            'Integers and real numbers',
+            'Fractions and decimals',
+            'Percentages and ratios',
+            'Indices and surds'
+          ]
+        },
+        {
+          title: 'Algebra',
+          topics: [
+            'Algebraic expressions',
+            'Equations and inequalities',
+            'Simultaneous equations',
+            'Sequences'
+          ]
+        }
+      ],
+      pastPapers: [
+        { name: 'PapaCambridge', url: 'https://papacambridge.com/?s=0580' },
+        { name: 'Save My Exams', url: 'https://www.savemyexams.com/igcse/maths' }
+      ],
+      youtubeTopics: [
+        'IGCSE Maths Algebra',
+        'Geometry and Trigonometry',
+        'Calculus basics'
+      ]
+    },
+    {
+      name: 'English Language',
+      code: '0500',
+      board: 'Cambridge',
+      icon: '📝',
+      syllabus: [
+        {
+          title: 'Reading',
+          topics: [
+            'Comprehension skills',
+            'Inference and deduction',
+            'Summary and paraphrase'
+          ]
+        },
+        {
+          title: 'Writing',
+          topics: [
+            'Persuasive writing',
+            'Narrative writing',
+            'Formal correspondence'
+          ]
+        }
+      ],
+      pastPapers: [
+        { name: 'PapaCambridge', url: 'https://papacambridge.com/?s=0500' },
+        { name: 'Save My Exams', url: 'https://www.savemyexams.com/igcse/english' }
+      ],
+      youtubeTopics: [
+        'IGCSE English Comprehension',
+        'Essay Writing techniques',
+        'Grammar and syntax'
+      ]
+    }
+  ],
+  'a-level': [
+    {
+      name: 'Biology',
+      code: 'H567',
+      board: 'OCR',
+      icon: '🧬',
+      syllabus: [
+        {
+          title: 'Biological Molecules',
+          topics: [
+            'Carbohydrates and lipids',
+            'Proteins and enzymes',
+            'Nucleic acids and DNA replication',
+            'Energy and ATP'
+          ]
+        },
+        {
+          title: 'Cell Biology',
+          topics: [
+            'Eukaryotic cells and organelles',
+            'Cell membranes and transport',
+            'Mitochondria and respiration',
+            'Photosynthesis'
+          ]
+        }
+      ],
+      pastPapers: [
+        { name: 'OCR Past Papers', url: 'https://www.ocr.org.uk/qualifications/a-level/h567-biology/' },
+        { name: 'Save My Exams', url: 'https://www.savemyexams.com/a-level/biology' }
+      ],
+      youtubeTopics: [
+        'A Level Biology Enzymes',
+        'Photosynthesis and Respiration',
+        'Genetic Engineering A Level'
+      ]
+    },
+    {
+      name: 'Chemistry',
+      code: 'H432',
+      board: 'OCR',
+      icon: '🧪',
+      syllabus: [
+        {
+          title: 'Atomic Structure',
+          topics: [
+            'Electron configuration',
+            'Ionization energy',
+            'Periodicity'
+          ]
+        },
+        {
+          title: 'Bonding',
+          topics: [
+            'Covalent bonding',
+            'Ionic compounds',
+            'Metallic bonding',
+            'Intermolecular forces'
+          ]
+        }
+      ],
+      pastPapers: [
+        { name: 'OCR Past Papers', url: 'https://www.ocr.org.uk/qualifications/a-level/h432-chemistry/' },
+        { name: 'Save My Exams', url: 'https://www.savemyexams.com/a-level/chemistry' }
+      ],
+      youtubeTopics: [
+        'A Level Chemistry Bonding',
+        'Equilibrium and Kinetics',
+        'Redox Reactions'
+      ]
+    },
+    {
+      name: 'Physics',
+      code: 'H556',
+      board: 'OCR',
+      icon: '🔬',
+      syllabus: [
+        {
+          title: 'Mechanics',
+          topics: [
+            'Kinematics',
+            'Forces and Newton\'s laws',
+            'Work, energy, and power',
+            'Momentum and collision'
+          ]
+        },
+        {
+          title: 'Waves and Particles',
+          topics: [
+            'Oscillations',
+            'Waves',
+            'Optics',
+            'Quantum phenomena'
+          ]
+        }
+      ],
+      pastPapers: [
+        { name: 'OCR Past Papers', url: 'https://www.ocr.org.uk/qualifications/a-level/h556-physics/' },
+        { name: 'Save My Exams', url: 'https://www.savemyexams.com/a-level/physics' }
+      ],
+      youtubeTopics: [
+        'A Level Physics Mechanics',
+        'Simple Harmonic Motion',
+        'Electromagnetic Induction'
+      ]
+    },
+    {
+      name: 'Mathematics',
+      code: 'H560',
+      board: 'OCR',
+      icon: '∑',
+      syllabus: [
+        {
+          title: 'Pure Mathematics',
+          topics: [
+            'Algebra and functions',
+            'Trigonometry',
+            'Exponentials and logarithms',
+            'Calculus'
+          ]
+        },
+        {
+          title: 'Mechanics',
+          topics: [
+            'Kinematics',
+            'Forces and motion',
+            'Energy and power'
+          ]
+        }
+      ],
+      pastPapers: [
+        { name: 'OCR Past Papers', url: 'https://www.ocr.org.uk/qualifications/a-level/h560-mathematics/' },
+        { name: 'Save My Exams', url: 'https://www.savemyexams.com/a-level/maths' }
+      ],
+      youtubeTopics: [
+        'A Level Maths Calculus',
+        'Trigonometry Advanced',
+        'Complex Numbers'
+      ]
+    },
+    {
+      name: 'Computer Science',
+      code: 'H046',
+      board: 'OCR',
+      icon: '💻',
+      syllabus: [
+        {
+          title: 'Programming',
+          topics: [
+            'Programming concepts',
+            'Data types and structures',
+            'Algorithms and programming paradigms'
+          ]
+        },
+        {
+          title: 'Computer Architecture',
+          topics: [
+            'Hardware and systems software',
+            'Networks and security',
+            'Cybersecurity'
+          ]
+        }
+      ],
+      pastPapers: [
+        { name: 'OCR Past Papers', url: 'https://www.ocr.org.uk/qualifications/a-level/h046-computer-science/' },
+        { name: 'Save My Exams', url: 'https://www.savemyexams.com/a-level/computer-science' }
+      ],
+      youtubeTopics: [
+        'A Level Computer Science Programming',
+        'Data Structures explained',
+        'Network Security'
+      ]
+    }
+  ]
+};
+
+// ═══════════════════════════════════════════════════════
+// UI FUNCTIONS
+// ═══════════════════════════════════════════════════════
+
+function showSection(section) {
+  document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+  $('section-' + section).classList.remove('hidden');
+  
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.closest('.tab-btn').classList.add('active');
 }
+
+function selectLevel(level) {
+  document.querySelectorAll('.subject-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  renderSubjects(level);
+}
+
+function renderSubjects(level) {
+  const grid = $('subjects-grid');
+  grid.innerHTML = '';
+  
+  SUBJECTS[level].forEach(subject => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.cursor = 'pointer';
+    card.innerHTML = `
+      <div style="font-size: 2.5rem; margin-bottom: 12px;">${subject.icon}</div>
+      <div style="font-weight: 700; font-size: 1.15rem; margin-bottom: 4px;">${subject.name}</div>
+      <div style="color: var(--text-tertiary); font-size: 0.85rem; margin-bottom: 14px;">${subject.board} ${subject.code}</div>
+      <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+        <span class="chip">${subject.syllabus.length} Topics</span>
+        <span class="chip">${subject.pastPapers.length} Resources</span>
+      </div>
+    `;
+    card.onclick = () => openSubjectModal(subject);
+    grid.appendChild(card);
+  });
+}
+
+function openSubjectModal(subject) {
+  $('subject-modal-title').textContent = subject.name;
+  renderSyllabus(subject);
+  renderResources(subject);
+  renderYoutubeVideos(subject);
+  $('subject-modal').classList.add('open');
+}
+
+function closeSubjectModal() {
+  $('subject-modal').classList.remove('open');
+}
+
+function renderSyllabus(subject) {
+  let html = '';
+  subject.syllabus.forEach(section => {
+    html += `
+      <div class="syllabus-section">
+        <div class="syllabus-section-title">${section.title}</div>
+        <ul class="topic-list">
+          ${section.topics.map(t => `<li class="topic-item">${t}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+  });
+  $('syllabus-panel').innerHTML = html;
+}
+
+function renderResources(subject) {
+  let html = '';
+  subject.pastPapers.forEach(paper => {
+    html += `
+      <a href="${paper.url}" target="_blank" class="resource-link">
+        <div class="resource-icon">📄</div>
+        <span>${paper.name}</span>
+        <i class="fas fa-external-link-alt" style="margin-left: auto; font-size: 0.7rem;"></i>
+      </a>
+    `;
+  });
+  $('resources-panel').innerHTML = `<div style="display: flex; flex-direction: column; gap: 12px;">${html}</div>`;
+}
+
+function renderYoutubeVideos(subject) {
+  let html = '<div class="video-grid">';
+  subject.youtubeTopics.forEach(topic => {
+    const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(topic)}`;
+    html += `
+      <div class="video-card">
+        <div class="video-thumbnail">▶️</div>
+        <div class="video-info">
+          <div class="video-title">${topic}</div>
+          <div class="video-channel">YouTube Search</div>
+          <a href="${url}" target="_blank" class="btn btn-secondary btn-sm mt-2 w-full" style="justify-content: center;">
+            Watch Now
+          </a>
+        </div>
+      </div>
+    `;
+  });
+  html += '</div>';
+  $('videos-panel').innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════
+// EXAM FUNCTIONS
+// ═══════════════════════════════════════════════════════
+
+let exams = LS.get('exams') || [];
 
 function openAddExamModal() {
   $('modal-exam-name').value = '';
   $('modal-exam-date').value = '';
-  $('modal-exam-board').value = '';
-  selectedColor = 'indigo';
-  document.querySelectorAll('.color-opt').forEach((el,i) => {
-    el.style.border = '2px solid transparent'; el.style.transform='scale(1)';
-  });
-  document.querySelectorAll('.color-opt')[0].style.border = '2px solid white';
+  $('modal-exam-subject').value = '';
   $('exam-modal').classList.add('open');
 }
 
-function closeModal() { $('exam-modal').classList.remove('open'); }
+function closeExamModal() {
+  $('exam-modal').classList.remove('open');
+}
 
 function saveExam() {
   const name = $('modal-exam-name').value.trim();
   const date = $('modal-exam-date').value;
-  if (!name || !date) { toast('Please fill in exam name and date.', 'fa-triangle-exclamation'); return; }
-  const board = $('modal-exam-board').value.trim();
-  exams.push({ id: Date.now(), name, date, board, color: selectedColor });
+  const subject = $('modal-exam-subject').value.trim();
+  
+  if (!name || !date) {
+    toast('Please fill in all fields', 'fa-exclamation');
+    return;
+  }
+  
+  exams.push({
+    id: Date.now(),
+    name,
+    date,
+    subject
+  });
+  
   LS.set('exams', exams);
-  closeModal();
+  closeExamModal();
   renderExams();
-  toast(`"${name}" added!`);
-}
-
-function deleteExam(id) {
-  if (!confirm('Delete this exam?')) return;
-  exams = exams.filter(e => e.id !== id);
-  LS.set('exams', exams);
-  renderExams();
-  toast('Exam removed.', 'fa-trash');
+  toast(`${name} added!`);
 }
 
 function renderExams() {
   const grid = $('exam-cards-grid');
   grid.innerHTML = '';
-
-  const active = exams.filter(e => getDays(e.date) >= 0);
-  const done   = exams.filter(e => getDays(e.date) < 0);
-  const all    = [...active.sort((a,b) => new Date(a.date)-new Date(b.date)), ...done];
-
-  if (all.length === 0) {
+  
+  if (exams.length === 0) {
     $('no-exams-msg').classList.remove('hidden');
-    $('exam-stats-row').classList.add('hidden');
     return;
   }
+  
   $('no-exams-msg').classList.add('hidden');
-  $('exam-stats-row').classList.remove('hidden');
-
-  all.forEach(exam => {
-    const days = getDays(exam.date);
-    const isDone = days < 0;
-    const urgencyClass = isDone ? '' : days <= 7 ? 'urgency-critical' : days <= 21 ? 'urgency-high' : days <= 45 ? 'urgency-medium' : 'urgency-plenty';
-    const urgencyLabel = isDone ? 'Done' : days <= 7 ? '🔴 Critical' : days <= 21 ? '🟠 High' : days <= 45 ? '🟡 Medium' : '🟢 Steady';
-    const color = colorMap[exam.color || 'indigo'];
-    const dateStr = new Date(exam.date).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
-    const totalDays = 100; // reference
-    const pct = isDone ? 100 : Math.min(100, Math.round(((totalDays - days) / totalDays) * 100));
-
+  
+  exams.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(exam => {
+    const daysLeft = Math.ceil((new Date(exam.date) - new Date()) / (1000 * 60 * 60 * 24));
     const card = document.createElement('div');
-    card.className = `exam-card ${urgencyClass}`;
+    card.className = 'exam-card';
     card.innerHTML = `
       <div class="exam-card-top">
         <div>
           <div class="exam-card-name">${exam.name}</div>
-          <div class="exam-card-date">${exam.board ? exam.board + ' · ' : ''}${dateStr}</div>
-        </div>
-        <div style="text-align:right">
-          <div class="exam-card-days" style="color:${color.css}">${isDone ? '✓' : days}</div>
-          <div class="exam-card-days-label">${isDone ? 'Complete' : 'days left'}</div>
+          <div class="exam-card-date">${exam.subject}</div>
         </div>
       </div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${color.hex}"></div></div>
-      <div class="exam-card-footer">
-        <span class="chip">${urgencyLabel}</span>
-        <div class="exam-card-actions">
-          <button class="btn btn-ghost btn-sm" onclick="deleteExam(${exam.id})"><i class="fa-solid fa-trash"></i></button>
-        </div>
+      <div class="exam-card-days" style="color: ${daysLeft <= 7 ? 'var(--neon-pink)' : 'var(--neon-purple)'}">
+        ${daysLeft > 0 ? daysLeft : '✓'}
       </div>
+      <div class="exam-card-days-label">${daysLeft > 0 ? 'days left' : 'Done'}</div>
+      <button class="btn btn-danger btn-sm mt-3 w-full" onclick="deleteExam(${exam.id})">
+        <i class="fas fa-trash"></i> Delete
+      </button>
     `;
     grid.appendChild(card);
   });
-
-  // Stats
-  const criticalCount = active.filter(e => getDays(e.date) <= 7).length;
-  const nearest = active[0];
-  const totalPrepHours = active.reduce((s, e) => s + (getDays(e.date) * 4), 0);
+  
   $('stat-total-exams').textContent = exams.length;
-  $('stat-critical').textContent = criticalCount;
-  $('stat-nearest-name').textContent = nearest ? nearest.name.split(' ').slice(0,2).join(' ') : '—';
-  $('stat-nearest-name').style.fontSize = nearest && nearest.name.length > 12 ? '1rem' : '2rem';
-  $('stat-total-prep-hours').textContent = totalPrepHours;
 }
 
-/* ═══════════════════════════════════════
-   SYLLABUS
-═══════════════════════════════════════ */
-function populateSyllabusExamSelect() {
-  const sel = $('syllabus-exam-select');
-  const current = sel.value;
-  sel.innerHTML = '<option value="">— choose an exam —</option>';
-  (exams || []).filter(e => getDays(e.date) >= 0).sort((a,b) => new Date(a.date)-new Date(b.date)).forEach(e => {
-    const opt = document.createElement('option');
-    opt.value = e.id;
-    opt.textContent = `${e.name} (${getDays(e.date)}d)`;
-    sel.appendChild(opt);
-  });
-  if (current) sel.value = current;
+function deleteExam(id) {
+  exams = exams.filter(e => e.id !== id);
+  LS.set('exams', exams);
+  renderExams();
+  toast('Exam removed');
 }
 
-function generatePlan() {
-  const examId = $('syllabus-exam-select').value;
-  const exam = exams.find(e => e.id == examId);
-  if (!exam) { $('plan-warning').classList.remove('hidden'); return; }
-  $('plan-warning').classList.add('hidden');
+// ═══════════════════════════════════════════════════════
+// AI TOOLS FUNCTIONS
+// ═══════════════════════════════════════════════════════
 
-  const days = getDays(exam.date);
-  if (days <= 0) { toast('Exam already passed!', 'fa-triangle-exclamation'); return; }
-
-  const raw = $('syllabus-input').value.trim();
-  if (!raw) { toast('Paste your syllabus topics first.', 'fa-triangle-exclamation'); return; }
-
-  const topics = raw.split('\n').map(l => l.trim()).filter(Boolean);
-  LS.set('syllabusText', raw);
-
-  const customTPD = parseInt($('topics-per-day').value);
-  const studyDays = days - Math.min(3, Math.floor(days * 0.1));
-  const tpd = customTPD || Math.max(1, Math.ceil(topics.length / Math.max(studyDays, 1)));
-
-  const schedule = [];
-  let ti = 0;
-  for (let d = 1; d <= days; d++) {
-    const isMock   = d === days || d === days - 1;
-    const isReview = !isMock && d > 1 && d % 5 === 0;
-    if (isMock) {
-      schedule.push({ day: d, type:'mock', content: d === days - 1 ? 'Mock Exam 1 — Full Paper Attempt' : 'Mock Exam 2 — Review & Error Analysis' });
-    } else if (isReview) {
-      schedule.push({ day: d, type:'review', content:'Review Day — Revisit weak areas from the past 4 days' });
-    } else {
-      const batch = topics.slice(ti, ti + tpd); ti += tpd;
-      schedule.push({ day: d, type:'study', content: batch.length ? batch.join(' · ') : 'Catch-up / Extra Practice' });
-    }
-  }
-
-  LS.set('schedule', schedule);
-  renderSchedule(schedule);
-  toast('Study plan generated!');
+function showAITool(tool) {
+  document.querySelectorAll('[id$="-tool"]').forEach(el => el.classList.add('hidden'));
+  $( tool + '-tool').classList.remove('hidden');
+  
+  document.querySelectorAll('.subject-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
 }
 
-function renderSchedule(schedule) {
-  const grid = $('schedule-grid');
-  grid.innerHTML = '';
-  const today = new Date(); today.setHours(0,0,0,0);
-  schedule.forEach(item => {
-    const d = new Date(today); d.setDate(today.getDate() + item.day - 1);
-    const dateStr = d.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' });
-    const typeClass = { study:'day-study', review:'day-review', mock:'day-mock' }[item.type];
-    const icon = { study:'📖', review:'🔁', mock:'🎯' }[item.type];
-    const badgeStyle = { study:'background:rgba(99,102,241,0.15);color:var(--indigo2)', review:'background:rgba(16,185,129,0.12);color:var(--emerald)', mock:'background:rgba(245,158,11,0.12);color:var(--amber)' }[item.type];
-    const badgeTxt  = { study:'Study', review:'Review', mock:'Mock' }[item.type];
-    const el = document.createElement('div');
-    el.className = `day-card ${typeClass}`;
-    el.innerHTML = `<div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:6px"><span style="font-weight:700;font-size:0.78rem;color:var(--text2)">Day ${item.day} · ${dateStr}</span><span class="badge" style="${badgeStyle}">${badgeTxt}</span></div><p style="color:var(--text);font-size:0.8rem">${icon} ${item.content}</p>`;
-    grid.appendChild(el);
-  });
-  $('schedule-container').classList.remove('hidden');
-}
-
-function clearSchedule() {
-  LS.set('schedule', null); LS.set('syllabusText', null);
-  $('syllabus-input').value = '';
-  $('schedule-container').classList.add('hidden');
-  toast('Schedule cleared.', 'fa-trash');
-}
-
-/* ═══════════════════════════════════════
-   RESOURCES
-═══════════════════════════════════════ */
-function generateResources() {
-  const raw = $('subject-code').value.trim();
-  if (!raw) { toast('Enter a subject code first.', 'fa-triangle-exclamation'); return; }
-  const code = encodeURIComponent(raw);
-  const links = [
-    { label:'Past Papers — PapaCambridge', icon:'fa-file-pdf', color:'#ef4444', url:`https://papacambridge.com/?s=${code}` },
-    { label:'Past Papers — Save My Exams', icon:'fa-book-open', color:'#6366f1', url:`https://www.savemyexams.com/search/?q=${code}` },
-    { label:'Mark Schemes — PapaCambridge', icon:'fa-check-double', color:'#10b981', url:`https://papacambridge.com/?s=${code}+mark+scheme` },
-    { label:'Revision Notes — Save My Exams', icon:'fa-pen-to-square', color:'#818cf8', url:`https://www.savemyexams.com/search/?q=${code}+revision+notes` },
-    { label:`Google: past papers`, icon:'fa-magnifying-glass', color:'#f59e0b', url:`https://www.google.com/search?q=${code}+past+papers` },
-    { label:`Google: mark scheme`, icon:'fa-magnifying-glass', color:'#f59e0b', url:`https://www.google.com/search?q=${code}+mark+scheme` },
-    { label:`YouTube: revision`, icon:'fa-brands fa-youtube', color:'#ff4444', url:`https://www.youtube.com/results?search_query=${code}+revision` },
-    { label:`Quizlet: flashcard sets`, icon:'fa-layer-group', color:'#06b6d4', url:`https://quizlet.com/search?query=${code}&type=sets` },
-    { label:'Physics & Maths Tutor', icon:'fa-square-root-variable', color:'#7c3aed', url:`https://www.physicsandmathstutor.com/?s=${code}` },
-    { label:'Revision World notes', icon:'fa-globe', color:'#10b981', url:`https://revisionworld.com/search/node/${code}` },
-    { label:'Khan Academy search', icon:'fa-graduation-cap', color:'#14b8a6', url:`https://www.khanacademy.org/search?page_search_query=${code}` },
-    { label:'Znotes revision', icon:'fa-file-lines', color:'#a855f7', url:`https://znotes.org/search?q=${code}` },
-  ];
-  const container = $('resource-links');
-  container.innerHTML = '';
-  links.forEach(l => {
-    const a = document.createElement('a');
-    a.className = 'resource-link'; a.href = l.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
-    a.innerHTML = `<div class="r-icon" style="background:rgba(${hexToRgb(l.color||'#6366f1')},0.15);color:${l.color}"><i class="fa-solid ${l.icon}"></i></div> ${l.label} <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left:auto;font-size:0.7rem;opacity:0.4"></i>`;
-    container.appendChild(a);
-  });
-  container.style.display = 'grid';
-  container.classList.remove('hidden');
-  $('resource-hint').classList.add('hidden');
-}
-
-function hexToRgb(hex) {
-  const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return r ? `${parseInt(r[1],16)},${parseInt(r[2],16)},${parseInt(r[3],16)}` : '99,102,241';
-}
-
-/* ═══════════════════════════════════════
-   AI VIDEO SUMMARIZER
-═══════════════════════════════════════ */
-let currentSummaryText = '';
-let currentVideoTitle  = '';
-
-function extractVideoId(url) {
-  const patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
-    /youtube\.com\/shorts\/([^&\n?#]+)/
-  ];
-  for (const p of patterns) { const m = url.match(p); if (m) return m[1]; }
-  return null;
-}
-
-function previewVideo() {
-  const url = $('yt-url-input').value.trim();
-  const vid = extractVideoId(url);
-  const box = $('video-preview-box');
-  if (!vid) { toast('Invalid YouTube URL.', 'fa-triangle-exclamation'); return; }
-  box.innerHTML = `<iframe src="https://www.youtube.com/embed/${vid}" allow="autoplay;encrypted-media" allowfullscreen></iframe>`;
-}
-
-async function summarizeVideo() {
-  const url = $('yt-url-input').value.trim();
-  const vid = extractVideoId(url);
-  const subject = $('yt-subject').value.trim();
-  const focus   = $('yt-focus').value;
-
-  if (!url) { toast('Paste a YouTube URL first.', 'fa-triangle-exclamation'); return; }
-
-  // Show preview if not already shown
-  if (!$('video-preview-box').querySelector('iframe')) previewVideo();
-
-  const focusLabels = {
-    'key-points': 'key learning points and main concepts',
-    'definitions': 'important definitions and terminology',
-    'exam-tips': 'exam tips, techniques, and common mistakes',
-    'formulas': 'formulas, equations, and mathematical relationships',
-    'summary': 'a comprehensive summary of all topics covered'
-  };
-
-  $('ai-summary-placeholder').classList.add('hidden');
-  $('ai-summary-output').classList.add('hidden');
-  $('ai-loading').classList.remove('hidden');
-  $('summarize-btn').disabled = true;
-  $('copy-summary-btn').classList.add('hidden');
-  $('save-summary-btn').classList.add('hidden');
-
-  const loadingMsgs = ['Analyzing video content…', 'Extracting key concepts…', 'Generating study notes…', 'Almost done…'];
-  let lmi = 0;
-  const lmInterval = setInterval(() => { $('loading-msg').textContent = loadingMsgs[++lmi % loadingMsgs.length]; }, 1400);
-
-  const prompt = `You are an expert study assistant and educational content analyst. A student wants to study from a YouTube video.
-
-Video URL: ${url}
-${subject ? `Subject/Context: ${subject}` : ''}
-Focus: Extract ${focusLabels[focus]}.
-
-Based on the YouTube video URL and the subject context provided, generate a detailed, high-quality study summary as if you have watched the video. Use your knowledge of the topic to create genuinely useful study material.
-
-Respond ONLY in this exact JSON format (no markdown, no backticks, no extra text):
-{
-  "title": "Video Topic Title",
-  "subject": "${subject || 'General Study'}",
-  "keyPoints": [
-    "Detailed point 1 with explanation",
-    "Detailed point 2 with explanation",
-    "Detailed point 3 with explanation",
-    "Detailed point 4 with explanation",
-    "Detailed point 5 with explanation"
-  ],
-  "examTip": "One specific exam tip or memory trick for this topic",
-  "difficulty": "Beginner / Intermediate / Advanced",
-  "studyTime": "Estimated study time to master this topic"
-}`;
-
+async function callGeminiAPI(prompt) {
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + GEMINI_API_KEY, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
+        contents: [{
+          parts: [{ text: prompt }]
+        }]
       })
     });
-    const data = await res.json();
-    clearInterval(lmInterval);
-    $('ai-loading').classList.add('hidden');
-    $('summarize-btn').disabled = false;
-
-    if (data.error) { throw new Error(data.error.message); }
-
-    const raw = data.content.map(c => c.text || '').join('');
-    let parsed;
-    try {
-      const cleaned = raw.replace(/```json|```/g,'').trim();
-      parsed = JSON.parse(cleaned);
-    } catch {
-      throw new Error('Could not parse AI response.');
-    }
-
-    currentVideoTitle  = parsed.title;
-    currentSummaryText = `# ${parsed.title}\n\nSubject: ${parsed.subject}\n\n## Key Points\n${parsed.keyPoints.map((p,i)=>`${i+1}. ${p}`).join('\n')}\n\n## Exam Tip\n${parsed.examTip}`;
-
-    const html = `
-      <div style="margin-bottom:14px">
-        <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px">${parsed.title}</div>
-        <div class="flex gap-2 flex-wrap">
-          <span class="chip">${parsed.subject}</span>
-          <span class="chip" style="background:rgba(16,185,129,0.1);color:var(--emerald)">${parsed.difficulty}</span>
-          <span class="chip" style="background:rgba(245,158,11,0.1);color:var(--amber)">⏱ ${parsed.studyTime}</span>
-        </div>
-      </div>
-      <h4>Key Points</h4>
-      ${parsed.keyPoints.map((pt,i) => `<div class="ai-key-point"><div class="ai-key-point-num">${i+1}</div><div>${pt}</div></div>`).join('')}
-      <div style="margin-top:14px;padding:12px;border-radius:10px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2)">
-        <div style="font-size:0.72rem;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">💡 Exam Tip</div>
-        <div style="font-size:0.85rem;color:var(--text2);line-height:1.6">${parsed.examTip}</div>
-      </div>
-    `;
-    $('ai-summary-output').innerHTML = `<div class="ai-summary-output">${html}</div>`;
-    $('ai-summary-output').classList.remove('hidden');
-    $('copy-summary-btn').classList.remove('hidden');
-    $('save-summary-btn').classList.remove('hidden');
-
-  } catch(err) {
-    clearInterval(lmInterval);
-    $('ai-loading').classList.add('hidden');
-    $('summarize-btn').disabled = false;
-    $('ai-summary-output').innerHTML = `<div class="ai-summary-output"><p class="text-danger"><i class="fa-solid fa-triangle-exclamation"></i> ${err.message || 'Something went wrong. Please try again.'}</p></div>`;
-    $('ai-summary-output').classList.remove('hidden');
+    
+    if (!response.ok) throw new Error('API Error: ' + response.status);
+    
+    const data = await response.json();
+    return data.candidates[0].content.parts[0].text;
+  } catch (error) {
+    toast('API Error: ' + error.message, 'fa-exclamation');
+    return null;
   }
+}
+
+async function summarizeVideo() {
+  const url = $('yt-url').value.trim();
+  const subject = $('yt-subject').value.trim();
+  
+  if (!url) {
+    toast('Enter a YouTube URL', 'fa-exclamation');
+    return;
+  }
+  
+  if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_GOOGLE_GEMINI_API_KEY') {
+    toast('Please set your Gemini API key in the code', 'fa-exclamation');
+    return;
+  }
+  
+  $('summarize-btn').disabled = true;
+  $('video-summary-output').innerHTML = '<div class="flex items-center gap-2"><div class="loading-dots"><span></span><span></span><span></span></div></div>';
+  
+  const prompt = `You are an expert study assistant. Analyze this YouTube video and provide a concise summary:
+URL: ${url}
+${subject ? `Subject: ${subject}` : ''}
+
+Provide:
+1. Main topics covered
+2. Key concepts to remember
+3. Important definitions
+4. Exam tips
+
+Format as clear, bullet-pointed study notes.`;
+  
+  const result = await callGeminiAPI(prompt);
+  if (result) {
+    $('video-summary-output').innerHTML = result.replace(/\n/g, '<br>');
+    $('copy-summary-btn').style.display = 'flex';
+  }
+  
+  $('summarize-btn').disabled = false;
 }
 
 function copySummary() {
-  navigator.clipboard.writeText(currentSummaryText).then(() => toast('Summary copied to clipboard!'));
+  const text = $('video-summary-output').innerText;
+  navigator.clipboard.writeText(text).then(() => toast('Copied!'));
 }
 
-function saveSummary() {
-  if (!currentSummaryText) return;
-  const saved = LS.get('savedSummaries') || [];
-  saved.unshift({ id: Date.now(), title: currentVideoTitle, text: currentSummaryText, date: new Date().toLocaleDateString('en-GB') });
-  if (saved.length > 10) saved.pop();
-  LS.set('savedSummaries', saved);
-  renderSavedSummaries();
-  toast('Summary saved!');
-}
-
-function renderSavedSummaries() {
-  const list = $('saved-summaries-list');
-  const saved = LS.get('savedSummaries') || [];
-  $('no-saved-msg') && $('no-saved-msg').remove();
-  list.innerHTML = '';
-  if (saved.length === 0) {
-    list.innerHTML = '<p class="text-dim text-xs" id="no-saved-msg" style="padding:8px 0">No saved summaries yet.</p>';
+async function generateNotes() {
+  const topic = $('note-topic').value.trim();
+  if (!topic) {
+    toast('Enter a topic', 'fa-exclamation');
     return;
   }
-  saved.forEach(s => {
-    const el = document.createElement('div');
-    el.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border2);margin-bottom:6px';
-    el.innerHTML = `<div><div style="font-size:0.82rem;font-weight:600;color:var(--text)">${s.title || 'Untitled'}</div><div style="font-size:0.7rem;color:var(--text3)">${s.date}</div></div><div style="display:flex;gap:6px"><button class="btn btn-ghost btn-sm" onclick="loadSavedSummary(${s.id})"><i class="fa-solid fa-eye"></i></button><button class="btn btn-danger btn-sm" onclick="deleteSavedSummary(${s.id})"><i class="fa-solid fa-trash"></i></button></div>`;
-    list.appendChild(el);
-  });
+  
+  $('notes-output').innerHTML = '<div class="flex items-center gap-2"><span>Generating...</span></div>';
+  
+  const prompt = `Create comprehensive study notes for: ${topic}
+
+Include:
+- Definition and context
+- Key points (5-7)
+- Examples
+- Common misconceptions
+- Tips for remembering
+
+Format as clear, organized notes suitable for exam preparation.`;
+  
+  const result = await callGeminiAPI(prompt);
+  if (result) {
+    $('notes-output').innerHTML = result.replace(/\n/g, '<br>');
+    $('copy-notes-btn').style.display = 'flex';
+  }
 }
 
-function loadSavedSummary(id) {
-  const saved = LS.get('savedSummaries') || [];
-  const s = saved.find(x => x.id === id);
-  if (!s) return;
-  currentSummaryText = s.text;
-  $('ai-summary-placeholder').classList.add('hidden');
-  $('ai-loading').classList.add('hidden');
-  $('ai-summary-output').innerHTML = `<div class="ai-summary-output"><pre style="white-space:pre-wrap;font-family:Space Grotesk;font-size:0.85rem;line-height:1.7;color:var(--text2)">${s.text}</pre></div>`;
-  $('ai-summary-output').classList.remove('hidden');
-  $('copy-summary-btn').classList.remove('hidden');
+function copyNotes() {
+  const text = $('notes-output').innerText;
+  navigator.clipboard.writeText(text).then(() => toast('Copied!'));
 }
 
-function deleteSavedSummary(id) {
-  let saved = LS.get('savedSummaries') || [];
-  saved = saved.filter(s => s.id !== id);
-  LS.set('savedSummaries', saved);
-  renderSavedSummaries();
+async function generateQuiz() {
+  const topic = $('quiz-topic').value.trim();
+  const count = parseInt($('quiz-count').value) || 5;
+  
+  if (!topic) {
+    toast('Enter a topic', 'fa-exclamation');
+    return;
+  }
+  
+  $('quiz-output').innerHTML = '<span>Generating...</span>';
+  
+  const prompt = `Create ${count} exam-style multiple choice questions for: ${topic}
+
+For each question:
+- Provide 4 options (A, B, C, D)
+- Mark the correct answer
+- Provide a brief explanation
+
+Format clearly and make them suitable for exam preparation.`;
+  
+  const result = await callGeminiAPI(prompt);
+  if (result) {
+    $('quiz-output').innerHTML = result.replace(/\n/g, '<br>');
+    $('copy-quiz-btn').style.display = 'flex';
+  }
 }
 
-/* ═══════════════════════════════════════
-   POMODORO
-═══════════════════════════════════════ */
+function copyQuiz() {
+  const text = $('quiz-output').innerText;
+  navigator.clipboard.writeText(text).then(() => toast('Copied!'));
+}
+
+// ═══════════════════════════════════════════════════════
+// STUDY TOOLS
+// ═══════════════════════════════════════════════════════
+
+function showStudyTool(tool) {
+  document.querySelectorAll('[id$="-tool"]').forEach(el => el.classList.add('hidden'));
+  $(tool + '-tool').classList.remove('hidden');
+  
+  document.querySelectorAll('.subject-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+// Pomodoro
 const POMO = { focus: 25*60, short: 5*60, long: 15*60 };
-let pomoMode = 'focus', pomoSecs = POMO.focus, pomoTotal = POMO.focus, pomoRunning = false, pomoIv = null;
-let pomoToday = 0;
-
-(function initPomo() {
-  const today = new Date().toDateString();
-  if (LS.get('pomoDate') !== today) { LS.set('pomoDate', today); LS.set('pomoSessions', 0); }
-  pomoToday = LS.get('pomoSessions') || 0;
-})();
+let pomoMode = 'focus', pomoSecs = POMO.focus, pomoRunning = false, pomoSessions = 0;
 
 function setPomoMode(mode) {
   if (pomoRunning) return;
-  pomoMode = mode; pomoSecs = POMO[mode]; pomoTotal = POMO[mode];
+  pomoMode = mode;
+  pomoSecs = POMO[mode];
+  updatePomoDisplay();
+  
   document.querySelectorAll('.pomo-mode-btn').forEach(b => b.classList.remove('active'));
-  $(`mode-${mode}`).classList.add('active');
-  updatePomoUI();
+  event.target.classList.add('active');
 }
 
-function updatePomoUI() {
-  const m = String(Math.floor(pomoSecs/60)).padStart(2,'0');
-  const s = String(pomoSecs%60).padStart(2,'0');
+function updatePomoDisplay() {
+  const m = String(Math.floor(pomoSecs / 60)).padStart(2, '0');
+  const s = String(pomoSecs % 60).padStart(2, '0');
   $('pomo-display').textContent = `${m}:${s}`;
-  const offset = 490 * (1 - pomoSecs / pomoTotal);
-  $('pomo-ring-fill').style.strokeDashoffset = offset;
-  $('stat-sessions-today').textContent = pomoToday;
-  $('stat-focus-mins').textContent = pomoToday * 25;
+  $('stat-sessions').textContent = pomoSessions;
+  $('stat-focus-mins').textContent = pomoSessions * 25;
 }
 
 function togglePomo() {
   if (pomoRunning) {
-    clearInterval(pomoIv); pomoRunning = false;
-    $('pomo-start-btn').innerHTML = '<i class="fa-solid fa-play"></i> Resume';
-    $('pomo-status').textContent = 'Paused';
-  } else {
-    pomoRunning = true;
-    $('pomo-start-btn').innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
-    $('pomo-status').textContent = pomoMode === 'focus' ? 'Focusing…' : 'Resting…';
-    pomoIv = setInterval(() => {
-      pomoSecs--;
-      updatePomoUI();
-      if (pomoSecs <= 0) {
-        clearInterval(pomoIv); pomoRunning = false;
-        if (pomoMode === 'focus') {
-          pomoToday++; LS.set('pomoSessions', pomoToday); LS.set('pomoDate', new Date().toDateString());
-        }
-        $('pomo-status').textContent = '✅ Done!';
-        $('pomo-start-btn').innerHTML = '<i class="fa-solid fa-play"></i> Start';
-        renderPomoSessions();
-        if (Notification.permission === 'granted') new Notification('StudyOS', { body: pomoMode === 'focus' ? '🎉 Focus session done! Take a break.' : '💪 Break over — time to focus!' });
-      }
-    }, 1000);
+    pomoRunning = false;
+    return;
   }
+  
+  pomoRunning = true;
+  const interval = setInterval(() => {
+    pomoSecs--;
+    updatePomoDisplay();
+    
+    if (pomoSecs <= 0) {
+      clearInterval(interval);
+      pomoRunning = false;
+      if (pomoMode === 'focus') {
+        pomoSessions++;
+        updatePomoDisplay();
+      }
+      toast(`${pomoMode === 'focus' ? 'Focus' : 'Break'} session done!`);
+    }
+  }, 1000);
 }
 
 function resetPomo() {
-  clearInterval(pomoIv); pomoRunning = false;
-  pomoSecs = POMO[pomoMode]; pomoTotal = POMO[pomoMode];
-  $('pomo-start-btn').innerHTML = '<i class="fa-solid fa-play"></i> Start';
-  $('pomo-status').textContent = 'Ready';
-  updatePomoUI();
+  pomoSecs = POMO[pomoMode];
+  updatePomoDisplay();
 }
 
-function renderPomoSessions() {
-  const c = $('pomo-sessions'); c.innerHTML = '';
-  for (let i = 0; i < Math.min(pomoToday, 10); i++) {
-    const d = document.createElement('div');
-    d.style.cssText = 'width:10px;height:10px;border-radius:50%;background:var(--indigo)';
-    c.appendChild(d);
-  }
-  if (pomoToday > 10) { const s = document.createElement('span'); s.style.cssText='font-size:0.75rem;color:var(--indigo2);font-weight:700'; s.textContent = `+${pomoToday-10}`; c.appendChild(s); }
-}
-
-function playAmbient(type) {
-  const urls = {
-    rain:   'https://www.youtube.com/results?search_query=rain+sounds+for+studying',
-    forest: 'https://www.youtube.com/results?search_query=forest+sounds+for+studying',
-    cafe:   'https://www.youtube.com/results?search_query=cafe+ambient+sounds+for+studying',
-  };
-  if (type === 'off') { toast('Ambient off.', 'fa-volume-xmark'); return; }
-  window.open(urls[type], '_blank');
-}
-
-if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
-
-/* ═══════════════════════════════════════
-   FLASHCARDS
-═══════════════════════════════════════ */
+// Flashcards
 let cards = LS.get('flashcards') || [];
 let cardIndex = 0;
-let cardFlipped = false;
 
 function addFlashcard() {
-  const q = $('fc-q').value.trim();
-  const a = $('fc-a').value.trim();
-  if (!q || !a) { toast('Enter both question and answer.', 'fa-triangle-exclamation'); return; }
+  const q = $('fc-question').value.trim();
+  const a = $('fc-answer').value.trim();
+  
+  if (!q || !a) {
+    toast('Enter both question and answer', 'fa-exclamation');
+    return;
+  }
+  
   cards.push({ id: Date.now(), q, a });
   LS.set('flashcards', cards);
-  $('fc-q').value = ''; $('fc-a').value = '';
-  cardIndex = cards.length - 1;
-  updateCardUI();
-  toast('Flashcard added!');
+  $('fc-question').value = '';
+  $('fc-answer').value = '';
+  updateCardDisplay();
+  toast('Card added!');
 }
 
-function updateCardUI() {
-  cardFlipped = false;
-  $('flashcard-el').classList.remove('flipped');
-  const total = cards.length;
-  $('fc-total').textContent = total;
-  $('fc-current').textContent = total === 0 ? 0 : cardIndex + 1;
-  if (total === 0) { $('fc-front').textContent = 'Add a card to get started'; $('fc-back').textContent = 'Answer appears here'; return; }
+function updateCardDisplay() {
+  $('fc-total').textContent = cards.length;
+  $('fc-current').textContent = cards.length > 0 ? cardIndex + 1 : 0;
+  
+  if (cards.length === 0) {
+    $('fc-front').textContent = 'No cards yet';
+    $('fc-back').textContent = 'Add a card to start';
+    return;
+  }
+  
   $('fc-front').textContent = cards[cardIndex].q;
-  $('fc-back').textContent  = cards[cardIndex].a;
+  $('fc-back').textContent = cards[cardIndex].a;
+  $('flashcard').classList.remove('flipped');
 }
 
 function flipCard() {
   if (cards.length === 0) return;
-  cardFlipped = !cardFlipped;
-  $('flashcard-el').classList.toggle('flipped', cardFlipped);
+  $('flashcard').classList.toggle('flipped');
 }
 
 function nextCard() {
   if (cards.length === 0) return;
   cardIndex = (cardIndex + 1) % cards.length;
-  updateCardUI();
+  updateCardDisplay();
 }
 
 function prevCard() {
   if (cards.length === 0) return;
   cardIndex = (cardIndex - 1 + cards.length) % cards.length;
-  updateCardUI();
+  updateCardDisplay();
 }
 
-function deleteCurrentCard() {
-  if (cards.length === 0) return;
-  if (!confirm('Delete this card?')) return;
-  cards.splice(cardIndex, 1);
-  LS.set('flashcards', cards);
-  if (cardIndex >= cards.length) cardIndex = Math.max(0, cards.length - 1);
-  updateCardUI();
-  toast('Card deleted.', 'fa-trash');
+// Notes
+function saveStudyNotes() {
+  const notes = $('study-notes').value;
+  LS.set('studyNotes', notes);
+  toast('Notes saved!');
+  $('notes-status').textContent = '✓ Saved to browser';
 }
 
-/* ═══════════════════════════════════════
-   NOTES
-═══════════════════════════════════════ */
-const notesEl = $('quick-notes');
+// Tracker
+let trackerItems = LS.get('trackerItems') || [];
 
-function loadNotes() {
-  notesEl.value = LS.get('quickNotes') || '';
-  updateNoteChars();
+function addTrackerItem() {
+  const name = prompt('Goal name:');
+  if (!name) return;
+  
+  trackerItems.push({ id: Date.now(), name, completed: false });
+  LS.set('trackerItems', trackerItems);
+  renderTracker();
+  toast('Goal added!');
 }
 
-function saveNotes() {
-  LS.set('quickNotes', notesEl.value);
-  $('notes-saved-msg').classList.remove('hidden');
-  setTimeout(() => $('notes-saved-msg').classList.add('hidden'), 2000);
-}
-
-function clearNotes() {
-  if (!confirm('Clear all notes?')) return;
-  notesEl.value = ''; LS.set('quickNotes', ''); updateNoteChars();
-}
-
-function updateNoteChars() { $('notes-chars').textContent = `${notesEl.value.length} chars`; }
-
-notesEl.addEventListener('input', () => {
-  updateNoteChars();
-  clearTimeout(notesEl._t);
-  notesEl._t = setTimeout(() => LS.set('quickNotes', notesEl.value), 800);
-});
-
-/* ═══════════════════════════════════════
-   HABIT TRACKER
-═══════════════════════════════════════ */
-let habits = LS.get('habits') || [];
-
-const DAYS_SHORT = ['M','T','W','T','F','S','S'];
-
-function addHabit() {
-  const name = prompt('Enter habit name (e.g. "Read notes", "Practice papers"):');
-  if (!name || !name.trim()) return;
-  habits.push({ id: Date.now(), name: name.trim(), done: [false,false,false,false,false,false,false] });
-  LS.set('habits', habits);
-  renderHabits();
-  toast(`"${name.trim()}" added!`);
-}
-
-function toggleHabitDay(habitId, dayIdx) {
-  const h = habits.find(x => x.id === habitId);
-  if (h) { h.done[dayIdx] = !h.done[dayIdx]; LS.set('habits', habits); renderHabits(); }
-}
-
-function deleteHabit(id) {
-  habits = habits.filter(h => h.id !== id);
-  LS.set('habits', habits); renderHabits();
-  toast('Habit removed.', 'fa-trash');
-}
-
-function renderHabits() {
-  const list = $('habits-list');
+function renderTracker() {
+  const list = $('tracker-list');
   list.innerHTML = '';
-  if (habits.length === 0) { $('no-habits-msg').classList.remove('hidden'); return; }
-  $('no-habits-msg').classList.add('hidden');
-  habits.forEach(h => {
-    const doneCount = h.done.filter(Boolean).length;
+  
+  trackerItems.forEach(item => {
     const el = document.createElement('div');
-    el.className = 'habit-item';
+    el.className = 'flex items-center gap-3 mb-2';
     el.innerHTML = `
-      <div style="flex:1;min-width:0">
-        <div class="habit-item-name">${h.name}</div>
-        <div style="font-size:0.7rem;color:var(--text3);margin-top:2px">${doneCount}/7 days this week</div>
-      </div>
-      <div class="habit-days" style="margin-left:12px">
-        ${DAYS_SHORT.map((d,i) => `<div class="habit-day ${h.done[i]?'done':''}" onclick="toggleHabitDay(${h.id},${i})" title="${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][i]}">${d}</div>`).join('')}
-      </div>
-      <button class="btn btn-danger btn-sm" style="margin-left:8px" onclick="deleteHabit(${h.id})"><i class="fa-solid fa-times"></i></button>
+      <input type="checkbox" ${item.completed ? 'checked' : ''} onchange="toggleTracker(${item.id})" style="width: 20px; height: 20px; cursor: pointer;">
+      <span style="flex: 1; ${item.completed ? 'text-decoration: line-through; color: var(--text-tertiary);' : ''}">${item.name}</span>
+      <button class="btn btn-danger btn-sm" onclick="deleteTracker(${item.id})"><i class="fas fa-trash"></i></button>
     `;
     list.appendChild(el);
   });
 }
 
-/* ═══════════════════════════════════════
-   TOOLS SUB-TABS
-═══════════════════════════════════════ */
-function showTool(id) {
-  ['pomo','flash','notes','habit'].forEach(t => {
-    $('tool-'+t).classList.toggle('hidden', t !== id);
-    const btn = $('tool-tab-'+t);
-    if (btn) {
-      btn.classList.toggle('btn-primary', t === id);
-      btn.classList.toggle('btn-ghost', t !== id);
-    }
-  });
+function toggleTracker(id) {
+  const item = trackerItems.find(i => i.id === id);
+  if (item) item.completed = !item.completed;
+  LS.set('trackerItems', trackerItems);
+  renderTracker();
 }
 
-/* ═══════════════════════════════════════
-   INIT
-═══════════════════════════════════════ */
+function deleteTracker(id) {
+  trackerItems = trackerItems.filter(i => i.id !== id);
+  LS.set('trackerItems', trackerItems);
+  renderTracker();
+}
+
+// ═══════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════
+
+function toast(msg, icon = 'fa-check-circle') {
+  const el = $('toast');
+  $('toast-msg').textContent = msg;
+  el.querySelector('i').className = `fas ${icon}`;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ═══════════════════════════════════════════════════════
+// INITIALIZATION
+// ═══════════════════════════════════════════════════════
+
 function init() {
   renderExams();
-  loadNotes();
-  updatePomoUI();
-  renderPomoSessions();
-  updateCardUI();
-  renderHabits();
-  renderSavedSummaries();
-  const sched = LS.get('schedule');
-  if (sched) renderSchedule(sched);
-  const sylText = LS.get('syllabusText');
-  if (sylText) $('syllabus-input').value = sylText;
+  renderSubjects('o-level');
+  updatePomoDisplay();
+  updateCardDisplay();
+  renderTracker();
+  
+  const savedNotes = LS.get('studyNotes');
+  if (savedNotes) $('study-notes').value = savedNotes;
+  
+  // Update stats
+  $('stat-study-hours').textContent = Math.floor(pomoSessions * 0.4);
+  $('stat-subjects').textContent = SUBJECTS['o-level'].length + SUBJECTS['a-level'].length;
 }
 
 init();
 </script>
+
 </body>
 </html>
