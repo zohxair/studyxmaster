@@ -3,767 +3,1582 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>StudyOS — Your Personal Exam Command Center</title>
+  <title>StudyOS — Exam Command Center</title>
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
-  <!-- Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            display: ['Syne', 'sans-serif'],
-            body: ['DM Sans', 'sans-serif'],
-          },
-          colors: {
-            ink: '#0f1117',
-            surface: '#f5f6fa',
-            glass: 'rgba(255,255,255,0.65)',
-            'glass-border': 'rgba(255,255,255,0.4)',
-            indigo: {
-              50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe',
-              400: '#818cf8', 500: '#6366f1', 600: '#4f46e5',
-              700: '#4338ca', 800: '#3730a3', 900: '#312e81',
-            },
-          },
-        }
-      }
-    };
-  </script>
 
   <style>
-    /* ── Base ── */
+    :root {
+      --bg: #080b12;
+      --bg2: #0d111c;
+      --bg3: #111827;
+      --card: rgba(17,24,39,0.85);
+      --border: rgba(99,102,241,0.18);
+      --border2: rgba(255,255,255,0.07);
+      --indigo: #6366f1;
+      --indigo2: #818cf8;
+      --violet: #7c3aed;
+      --cyan: #06b6d4;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --text: #f1f5f9;
+      --text2: #94a3b8;
+      --text3: #475569;
+      --glow: 0 0 40px rgba(99,102,241,0.15);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html { scroll-behavior: smooth; }
+
     body {
-      font-family: 'DM Sans', sans-serif;
-      background: #f0f2fb;
-      background-image:
-        radial-gradient(ellipse 80% 60% at 20% -10%, rgba(99,102,241,.18) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 85% 100%, rgba(129,140,248,.14) 0%, transparent 55%);
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
-      color: #0f1117;
+      overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Glassmorphism card ── */
-    .glass {
-      background: rgba(255,255,255,0.62);
-      backdrop-filter: blur(18px) saturate(160%);
-      -webkit-backdrop-filter: blur(18px) saturate(160%);
-      border: 1px solid rgba(255,255,255,0.55);
-      border-radius: 20px;
-      box-shadow: 0 4px 32px rgba(79,70,229,0.07), 0 1px 2px rgba(0,0,0,0.04);
+    /* ── NOISE TEXTURE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      opacity: 0.4;
     }
 
-    .glass-dark {
-      background: rgba(15,17,23,0.80);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 20px;
+    /* ── AMBIENT GRADIENT ORBS ── */
+    .orb {
+      position: fixed; border-radius: 50%;
+      filter: blur(80px); pointer-events: none; z-index: 0;
     }
+    .orb-1 { width: 500px; height: 500px; background: rgba(99,102,241,0.12); top: -150px; left: -100px; }
+    .orb-2 { width: 400px; height: 400px; background: rgba(124,58,237,0.08); bottom: -100px; right: -100px; }
+    .orb-3 { width: 300px; height: 300px; background: rgba(6,182,212,0.06); top: 50%; left: 50%; transform: translate(-50%,-50%); }
 
-    /* ── Nav ── */
+    /* ── LAYOUT ── */
+    #app { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* ── NAV ── */
     nav {
-      position: sticky; top: 0; z-index: 50;
-      background: rgba(245,246,250,0.80);
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(8,11,18,0.85);
       backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(99,102,241,0.10);
+      border-bottom: 1px solid var(--border2);
+      padding: 0 24px;
     }
+    .nav-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem; letter-spacing: 2px;
+      background: linear-gradient(135deg, var(--indigo2), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .logo-icon { font-size: 1.2rem; -webkit-text-fill-color: var(--indigo2); }
 
-    /* ── Countdown ring ── */
-    .countdown-ring { position: relative; display: inline-flex; align-items: center; justify-content: center; }
-    .countdown-ring svg { transform: rotate(-90deg); }
-    .ring-bg { fill: none; stroke: rgba(99,102,241,.14); stroke-width: 8; }
-    .ring-fill {
-      fill: none; stroke: #6366f1; stroke-width: 8;
-      stroke-linecap: round;
-      transition: stroke-dashoffset 1s cubic-bezier(.4,0,.2,1);
+    .nav-tabs {
+      display: flex; gap: 2px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border2);
+      border-radius: 12px; padding: 4px;
+      overflow-x: auto;
     }
-    .ring-label {
-      position: absolute; text-align: center;
-      font-family: 'Syne', sans-serif;
-    }
+    .nav-tabs::-webkit-scrollbar { display: none; }
 
-    /* ── Accent button ── */
-    .btn-primary {
-      background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
-      color: #fff; border: none; cursor: pointer;
-      font-family: 'Syne', sans-serif; font-weight: 600;
-      border-radius: 12px; padding: .6rem 1.3rem;
-      transition: transform .15s, box-shadow .15s, opacity .15s;
-      box-shadow: 0 4px 14px rgba(99,102,241,0.30);
-    }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99,102,241,0.40); }
-    .btn-primary:active { transform: translateY(0); }
-    .btn-primary:disabled { opacity:.5; cursor:not-allowed; transform:none; }
-
-    .btn-ghost {
-      background: rgba(99,102,241,0.09); color: #4338ca;
-      border: 1px solid rgba(99,102,241,0.18); cursor:pointer;
-      font-family:'Syne',sans-serif; font-weight:600;
-      border-radius:12px; padding:.55rem 1.2rem;
-      transition: background .15s, transform .15s;
-    }
-    .btn-ghost:hover { background:rgba(99,102,241,0.16); transform:translateY(-1px); }
-
-    /* ── Input / Textarea ── */
-    .field {
-      width:100%; border:1px solid rgba(99,102,241,0.20);
-      border-radius:12px; padding:.65rem 1rem;
-      background:rgba(255,255,255,0.85); font-family:'DM Sans',sans-serif;
-      font-size:.95rem; color:#0f1117; outline:none;
-      transition: border-color .2s, box-shadow .2s;
-    }
-    .field:focus { border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,.13); }
-    textarea.field { resize:vertical; min-height:130px; }
-
-    /* ── Schedule grid ── */
-    .day-card {
-      border-radius:14px; padding:.85rem 1rem;
-      font-size:.82rem; line-height:1.5;
-      border:1px solid transparent;
-      transition: transform .15s, box-shadow .15s;
-    }
-    .day-card:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.07); }
-    .day-study { background:#eef2ff; border-color:#c7d2fe; }
-    .day-review { background:#f0fdf4; border-color:#bbf7d0; }
-    .day-mock   { background:#fff7ed; border-color:#fed7aa; }
-    .day-rest   { background:#fdf4ff; border-color:#e9d5ff; }
-
-    /* ── Pomodoro ── */
-    #pomo-display {
-      font-family:'Syne',sans-serif; font-size:3.8rem;
-      font-weight:800; letter-spacing:-2px; color:#4338ca;
-      line-height:1;
-    }
-    .pomo-mode-btn {
-      padding:.35rem .9rem; border-radius:99px; font-size:.8rem;
-      font-weight:600; cursor:pointer; border:none;
-      transition: background .2s, color .2s;
-      font-family:'Syne',sans-serif;
-    }
-    .pomo-mode-btn.active { background:#6366f1; color:#fff; }
-    .pomo-mode-btn:not(.active) { background:rgba(99,102,241,.10); color:#4338ca; }
-
-    /* ── Quick notes ── */
-    #quick-notes {
-      min-height:160px; font-family:'DM Sans',sans-serif;
-      font-size:.9rem; color:#0f1117; line-height:1.7;
-    }
-
-    /* ── Resource links ── */
-    .resource-link {
-      display:flex; align-items:center; gap:.6rem;
-      padding:.7rem 1rem; border-radius:12px;
-      background:rgba(255,255,255,0.70); border:1px solid rgba(99,102,241,0.14);
-      color:#4338ca; text-decoration:none; font-weight:500;
-      font-size:.88rem; transition: background .2s, transform .15s, box-shadow .15s;
-    }
-    .resource-link:hover { background:#fff; transform:translateX(4px); box-shadow:0 4px 16px rgba(99,102,241,0.12); }
-    .resource-link i { width:18px; text-align:center; color:#6366f1; }
-
-    /* ── Tab navigation ── */
     .tab-btn {
-      padding:.5rem 1rem; border-radius:10px; border:none; cursor:pointer;
-      font-family:'Syne',sans-serif; font-weight:600; font-size:.85rem;
-      color:#64748b; background:transparent; transition:all .2s;
+      padding: 7px 14px; border-radius: 8px; border: none;
+      background: transparent; color: var(--text2);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.8rem; font-weight: 600; cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      display: flex; align-items: center; gap: 6px;
     }
-    .tab-btn.active { background:#6366f1; color:#fff; box-shadow:0 2px 10px rgba(99,102,241,0.30); }
+    .tab-btn i { font-size: 0.75rem; }
+    .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+    .tab-btn.active {
+      background: var(--indigo); color: #fff;
+      box-shadow: 0 0 20px rgba(99,102,241,0.3);
+    }
 
-    /* ── Misc ── */
-    .section-label {
-      font-family:'Syne',sans-serif; font-weight:700;
-      font-size:1.25rem; color:#0f1117; letter-spacing:-.3px;
+    /* ── MAIN CONTENT ── */
+    main { max-width: 1280px; margin: 0 auto; width: 100%; padding: 28px 24px 60px; flex: 1; }
+
+    /* ── SECTION ── */
+    section { animation: fadeSlideUp 0.4s ease both; }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: none; }
     }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      backdrop-filter: blur(20px);
+      box-shadow: var(--glow);
+    }
+    .card-p { padding: 24px; }
+
+    /* ── GRID HELPERS ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    @media(max-width: 900px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+    /* ── SECTION HEADER ── */
+    .sec-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem; letter-spacing: 1.5px;
+      color: var(--text); display: flex; align-items: center; gap: 10px;
+      margin-bottom: 6px;
+    }
+    .sec-title i { color: var(--indigo2); font-size: 1.1rem; }
+    .sec-sub { color: var(--text2); font-size: 0.85rem; margin-bottom: 20px; line-height: 1.5; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 18px; border-radius: var(--radius-sm);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; border: none;
+      transition: all 0.18s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--indigo) 0%, var(--violet) 100%);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(99,102,241,0.3);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(99,102,241,0.45); }
+    .btn-primary:active { transform: none; }
+    .btn-ghost {
+      background: rgba(99,102,241,0.1);
+      color: var(--indigo2);
+      border: 1px solid rgba(99,102,241,0.2);
+    }
+    .btn-ghost:hover { background: rgba(99,102,241,0.2); transform: translateY(-1px); }
+    .btn-danger { background: rgba(244,63,94,0.12); color: var(--rose); border: 1px solid rgba(244,63,94,0.2); }
+    .btn-danger:hover { background: rgba(244,63,94,0.22); }
+    .btn-sm { padding: 6px 12px; font-size: 0.78rem; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
+
+    /* ── INPUTS ── */
+    .field {
+      width: 100%; background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 10px 14px;
+      color: var(--text); font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.9rem; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .field:focus { border-color: var(--indigo); box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
+    .field::placeholder { color: var(--text3); }
+    textarea.field { resize: vertical; min-height: 120px; line-height: 1.6; }
+
+    label.lbl {
+      display: block; font-size: 0.75rem; font-weight: 600;
+      color: var(--text2); text-transform: uppercase; letter-spacing: 0.8px;
+      margin-bottom: 6px;
+    }
+
+    /* ── BADGE ── */
     .badge {
-      display:inline-block; padding:.2rem .65rem; border-radius:99px;
-      font-size:.72rem; font-weight:700; font-family:'Syne',sans-serif;
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 99px;
+      font-size: 0.7rem; font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
     }
-    .scrollbar-hide::-webkit-scrollbar { display:none; }
-    .scrollbar-hide { -ms-overflow-style:none; scrollbar-width:none; }
 
-    /* fade-in animation */
-    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
-    .fade-up { animation: fadeUp .5s ease both; }
-
-    /* pomo progress arc */
-    #pomo-ring-fill { transition: stroke-dashoffset .95s linear; }
-
-    /* mobile fixes */
-    @media(max-width:640px){
-      #pomo-display { font-size:2.8rem; }
+    /* ── TAG / CHIP ── */
+    .chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: 6px;
+      font-size: 0.75rem; font-weight: 600;
+      background: rgba(99,102,241,0.12);
+      color: var(--indigo2);
+      border: 1px solid rgba(99,102,241,0.2);
     }
+
+    /* ── DIVIDER ── */
+    .divider { border: none; border-top: 1px solid var(--border2); margin: 20px 0; }
+
+    /* ══════════════════════════════════
+       SECTION: EXAMS (Multi-exam)
+    ══════════════════════════════════ */
+    #section-exams .exams-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+    }
+    .exam-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px; margin-bottom: 24px;
+    }
+    .exam-card {
+      border-radius: var(--radius);
+      border: 1px solid var(--border2);
+      background: rgba(17,24,39,0.7);
+      padding: 18px 20px;
+      position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: default;
+    }
+    .exam-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    .exam-card.urgency-critical::before { background: var(--rose); }
+    .exam-card.urgency-high::before { background: var(--amber); }
+    .exam-card.urgency-medium::before { background: var(--indigo); }
+    .exam-card.urgency-plenty::before { background: var(--emerald); }
+    .exam-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+
+    .exam-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .exam-card-name { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .exam-card-date { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text2); margin-top: 3px; }
+    .exam-card-days {
+      font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem;
+      line-height: 1; letter-spacing: 1px;
+    }
+    .exam-card-days-label { font-size: 0.65rem; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; }
+    .exam-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+    .exam-card-actions { display: flex; gap: 6px; }
+    .progress-bar { height: 4px; background: rgba(255,255,255,0.08); border-radius: 99px; margin-top: 10px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 99px; transition: width 0.6s ease; }
+
+    /* Add exam modal */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 28px; width: 100%; max-width: 480px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+      animation: modalIn 0.25s ease;
+    }
+    @keyframes modalIn { from { opacity:0; transform: scale(0.94) translateY(12px); } to { opacity:1; transform: none; } }
+    .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 1px; margin-bottom: 20px; color: var(--text); }
+    .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+    /* ══════════════════════════════════
+       SECTION: SYLLABUS
+    ══════════════════════════════════ */
+    .day-card {
+      border-radius: 10px; padding: 12px 14px;
+      font-size: 0.8rem; line-height: 1.5;
+      border: 1px solid transparent;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .day-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+    .day-study  { background: rgba(99,102,241,0.08); border-color: rgba(99,102,241,0.2); }
+    .day-review { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.2); }
+    .day-mock   { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.2); }
+
+    /* ══════════════════════════════════
+       SECTION: RESOURCES
+    ══════════════════════════════════ */
+    .resource-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px; border-radius: 10px;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border2);
+      color: var(--indigo2); text-decoration: none; font-weight: 500;
+      font-size: 0.85rem; transition: all 0.2s;
+    }
+    .resource-link:hover { background: rgba(99,102,241,0.12); transform: translateX(4px); border-color: var(--border); }
+    .resource-link .r-icon { width: 32px; height: 32px; border-radius: 8px; background: rgba(99,102,241,0.15); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; }
+
+    /* ══════════════════════════════════
+       SECTION: TOOLS
+    ══════════════════════════════════ */
+
+    /* Pomodoro */
+    .pomo-ring-wrap {
+      position: relative; display: inline-flex;
+      align-items: center; justify-content: center;
+    }
+    .pomo-ring-wrap svg { transform: rotate(-90deg); }
+    #pomo-display {
+      font-family: 'Bebas Neue', sans-serif; font-size: 4rem;
+      letter-spacing: 3px; color: var(--text); line-height: 1;
+    }
+    .pomo-label-wrap { position: absolute; text-align: center; }
+    .pomo-mode-btn {
+      padding: 6px 14px; border-radius: 99px; font-size: 0.78rem;
+      font-weight: 600; cursor: pointer; border: none;
+      font-family: 'Space Grotesk', sans-serif;
+      transition: all 0.2s;
+    }
+    .pomo-mode-btn.active { background: var(--indigo); color: #fff; }
+    .pomo-mode-btn:not(.active) { background: rgba(99,102,241,0.1); color: var(--indigo2); }
+
+    /* Flashcards */
+    .flashcard-scene { perspective: 1000px; width: 100%; max-width: 460px; height: 200px; margin: 0 auto 20px; cursor: pointer; }
+    .flashcard { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(.4,0,.2,1); border-radius: 16px; }
+    .flashcard.flipped { transform: rotateY(180deg); }
+    .flashcard-face {
+      position: absolute; inset: 0; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px; text-align: center;
+      backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    }
+    .flashcard-front { background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(124,58,237,0.15)); border: 1px solid rgba(99,102,241,0.3); color: var(--text); font-size: 1.05rem; font-weight: 600; }
+    .flashcard-back  { background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(16,185,129,0.1)); border: 1px solid rgba(6,182,212,0.25); color: var(--text); font-size: 0.92rem; line-height: 1.6; transform: rotateY(180deg); }
+    .flashcard-hint { font-size: 0.7rem; color: var(--text3); margin-top: 8px; text-align: center; }
+
+    /* Habit Tracker */
+    .habit-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; border-radius: 10px;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border2);
+      margin-bottom: 8px;
+    }
+    .habit-item-name { font-size: 0.88rem; font-weight: 500; }
+    .habit-days { display: flex; gap: 4px; }
+    .habit-day {
+      width: 22px; height: 22px; border-radius: 4px;
+      font-size: 0.6rem; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border2); color: var(--text3);
+      background: rgba(255,255,255,0.03);
+      transition: all 0.15s;
+    }
+    .habit-day.done { background: var(--emerald); border-color: var(--emerald); color: #fff; }
+
+    /* ══════════════════════════════════
+       SECTION: AI VIDEO SUMMARIZER
+    ══════════════════════════════════ */
+    .video-preview {
+      border-radius: 12px; overflow: hidden;
+      background: rgba(0,0,0,0.4); border: 1px solid var(--border2);
+      aspect-ratio: 16/9; display: flex; align-items: center;
+      justify-content: center; position: relative;
+    }
+    .video-preview iframe { width: 100%; height: 100%; border: none; }
+    .video-preview-placeholder {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      color: var(--text3); text-align: center; padding: 20px;
+    }
+    .video-preview-placeholder i { font-size: 2.5rem; color: var(--border); }
+
+    .ai-summary-output {
+      background: rgba(99,102,241,0.05); border: 1px solid rgba(99,102,241,0.15);
+      border-radius: 12px; padding: 20px;
+      font-size: 0.88rem; line-height: 1.7; color: var(--text2);
+    }
+    .ai-summary-output h4 { font-size: 0.75rem; font-weight: 700; color: var(--indigo2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .ai-key-point {
+      display: flex; gap: 10px; padding: 8px 0;
+      border-bottom: 1px solid var(--border2);
+    }
+    .ai-key-point:last-child { border-bottom: none; }
+    .ai-key-point-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(99,102,241,0.2); color: var(--indigo2);
+      font-size: 0.7rem; font-weight: 700; display: flex;
+      align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+    }
+    .loading-dots span {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--indigo2); margin: 0 3px;
+      animation: dotPulse 1.2s infinite ease-in-out;
+    }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotPulse { 0%,80%,100%{transform:scale(0.7);opacity:0.5} 40%{transform:scale(1);opacity:1} }
+
+    /* ══════════════════════════════════
+       STATS WIDGET
+    ══════════════════════════════════ */
+    .stat-box {
+      padding: 14px 18px; border-radius: 12px;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border2);
+      text-align: center;
+    }
+    .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 1px; }
+    .stat-lbl { font-size: 0.7rem; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+
+    /* ══════════════════════════════════
+       NOTES
+    ══════════════════════════════════ */
+    #quick-notes { min-height: 180px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.8; }
+
+    /* ══════════════════════════════════
+       MISC
+    ══════════════════════════════════ */
+    .flex { display: flex; }
+    .flex-col { display: flex; flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 12px; }
+    .gap-4 { gap: 16px; }
+    .flex-wrap { flex-wrap: wrap; }
+    .mt-2 { margin-top: 8px; }
+    .mt-3 { margin-top: 12px; }
+    .mt-4 { margin-top: 16px; }
+    .mb-2 { margin-bottom: 8px; }
+    .mb-3 { margin-bottom: 12px; }
+    .w-full { width: 100%; }
+    .text-center { text-align: center; }
+    .hidden { display: none !important; }
+
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .text-indigo { color: var(--indigo2); }
+    .text-dim { color: var(--text2); }
+    .text-xs { font-size: 0.75rem; }
+    .text-sm { font-size: 0.85rem; }
+    .text-danger { color: var(--rose); }
+    .text-success { color: var(--emerald); }
+    .text-warn { color: var(--amber); }
+
+    footer {
+      text-align: center; font-size: 0.75rem; color: var(--text3);
+      padding: 20px; border-top: 1px solid var(--border2);
+      position: relative; z-index: 1;
+    }
+    footer span { color: var(--indigo2); }
+
+    @media(max-width: 640px) {
+      main { padding: 16px 14px 50px; }
+      nav { padding: 0 12px; }
+      #pomo-display { font-size: 3rem; }
+      .exam-cards-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 999;
+      background: rgba(17,24,39,0.95); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px 20px;
+      font-size: 0.85rem; color: var(--text);
+      display: flex; align-items: center; gap: 10px;
+      transform: translateY(80px); opacity: 0;
+      transition: all 0.3s cubic-bezier(.4,0,.2,1);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    #toast.show { transform: none; opacity: 1; }
+    #toast i { color: var(--emerald); }
   </style>
 </head>
 <body>
 
-<!-- ══════════════════════  NAV  ══════════════════════ -->
-<nav class="px-4 py-3">
-  <div class="max-w-6xl mx-auto flex items-center justify-between">
-    <span class="font-display font-800 text-lg tracking-tight text-indigo-700 flex items-center gap-2">
-      <i class="fa-solid fa-graduation-cap"></i> StudyOS
-    </span>
-    <!-- Tab buttons -->
-    <div class="flex gap-1 bg-white/60 p-1 rounded-xl border border-white/80 overflow-x-auto scrollbar-hide">
-      <button class="tab-btn active" onclick="showSection('hero')"><i class="fa-regular fa-calendar-days mr-1"></i>Countdown</button>
-      <button class="tab-btn" onclick="showSection('syllabus')"><i class="fa-solid fa-list-check mr-1"></i>Syllabus</button>
-      <button class="tab-btn" onclick="showSection('resources')"><i class="fa-solid fa-link mr-1"></i>Resources</button>
-      <button class="tab-btn" onclick="showSection('tools')"><i class="fa-solid fa-stopwatch mr-1"></i>Tools</button>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div id="app">
+
+<!-- ══════════════  NAV  ══════════════ -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo">
+      <i class="fa-solid fa-graduation-cap logo-icon"></i> StudyOS
+    </div>
+    <div class="nav-tabs" id="nav-tabs">
+      <button class="tab-btn active" onclick="showSection('exams')"><i class="fa-solid fa-calendar-days"></i>Exams</button>
+      <button class="tab-btn" onclick="showSection('syllabus')"><i class="fa-solid fa-list-check"></i>Syllabus</button>
+      <button class="tab-btn" onclick="showSection('resources')"><i class="fa-solid fa-link"></i>Resources</button>
+      <button class="tab-btn" onclick="showSection('summarizer')"><i class="fa-brands fa-youtube"></i>AI Tutor</button>
+      <button class="tab-btn" onclick="showSection('tools')"><i class="fa-solid fa-toolbox"></i>Tools</button>
     </div>
   </div>
 </nav>
 
-<main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+<main>
 
-  <!-- ══════════════════════  COUNTDOWN HERO  ══════════════════════ -->
-  <section id="hero" class="glass p-6 md:p-10 fade-up">
-    <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+<!-- ══════════════  SECTION: EXAMS  ══════════════ -->
+<section id="section-exams">
+  <div class="exams-header">
+    <div>
+      <div class="sec-title"><i class="fa-solid fa-calendar-days"></i> My Exams</div>
+      <p class="sec-sub" style="margin-bottom:0">Track all your upcoming exams in one place.</p>
+    </div>
+    <button class="btn btn-primary" onclick="openAddExamModal()">
+      <i class="fa-solid fa-plus"></i> Add Exam
+    </button>
+  </div>
 
-      <!-- Ring -->
-      <div class="countdown-ring shrink-0">
-        <svg width="180" height="180" viewBox="0 0 180 180">
-          <circle class="ring-bg" cx="90" cy="90" r="80"/>
-          <circle class="ring-fill" id="ring-fill" cx="90" cy="90" r="80"
-            stroke-dasharray="502.65" stroke-dashoffset="502.65"/>
-        </svg>
-        <div class="ring-label">
-          <div id="days-number" class="font-display text-5xl font-800 text-indigo-600">—</div>
-          <div class="text-xs font-medium text-slate-500 mt-1 uppercase tracking-widest">Days Left</div>
-        </div>
+  <div class="exam-cards-grid" id="exam-cards-grid">
+    <!-- populated by JS -->
+  </div>
+
+  <div id="no-exams-msg" class="card card-p text-center hidden">
+    <i class="fa-solid fa-calendar-plus" style="font-size:2.5rem;color:var(--border);display:block;margin-bottom:12px;"></i>
+    <p class="text-dim text-sm">No exams yet. Click <strong style="color:var(--indigo2)">+ Add Exam</strong> to get started.</p>
+  </div>
+
+  <!-- Summary stats -->
+  <div id="exam-stats-row" class="hidden" style="margin-top:8px;">
+    <div class="flex gap-3 flex-wrap">
+      <div class="stat-box flex-1" style="min-width:120px">
+        <div class="stat-val text-indigo" id="stat-total-exams">0</div>
+        <div class="stat-lbl">Total Exams</div>
       </div>
+      <div class="stat-box flex-1" style="min-width:120px">
+        <div class="stat-val" style="color:var(--rose)" id="stat-critical">0</div>
+        <div class="stat-lbl">Critical (≤7d)</div>
+      </div>
+      <div class="stat-box flex-1" style="min-width:120px">
+        <div class="stat-val" style="color:var(--amber)" id="stat-nearest-name">—</div>
+        <div class="stat-lbl">Nearest Exam</div>
+      </div>
+      <div class="stat-box flex-1" style="min-width:120px">
+        <div class="stat-val" style="color:var(--emerald)" id="stat-total-prep-hours">0</div>
+        <div class="stat-lbl">Total Prep Hours</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-      <!-- Info + date picker -->
-      <div class="flex-1 w-full">
-        <p class="text-sm font-semibold text-indigo-400 uppercase tracking-widest mb-1">Exam Countdown</p>
-        <h1 id="exam-title-display" class="font-display text-3xl md:text-4xl font-800 leading-tight mb-4 text-ink">
-          Set your exam date to begin.
-        </h1>
+<!-- ══════════════  SECTION: SYLLABUS  ══════════════ -->
+<section id="section-syllabus" class="hidden">
+  <div class="sec-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Syllabus Architect</div>
+  <p class="sec-sub">Pick an exam, paste your syllabus topics, and get a personalised daily plan generated instantly.</p>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-          <div>
-            <label class="text-xs font-semibold text-slate-500 block mb-1">Exam Name</label>
-            <input id="exam-name" class="field" type="text" placeholder="e.g. IGCSE Biology Paper 2" />
-          </div>
-          <div>
-            <label class="text-xs font-semibold text-slate-500 block mb-1">Exam Date</label>
-            <input id="exam-date" class="field" type="date" />
-          </div>
+  <div class="card card-p mb-3" style="margin-bottom:16px">
+    <div class="grid-2" style="margin-bottom:14px">
+      <div>
+        <label class="lbl">Select Exam</label>
+        <select id="syllabus-exam-select" class="field">
+          <option value="">— choose an exam —</option>
+        </select>
+      </div>
+      <div>
+        <label class="lbl">Topics per day (auto if blank)</label>
+        <input id="topics-per-day" class="field" type="number" min="1" max="10" placeholder="Auto" />
+      </div>
+    </div>
+    <label class="lbl">Syllabus Topics (one per line)</label>
+    <textarea id="syllabus-input" class="field" style="margin-bottom:14px"
+      placeholder="1.1 Cell structure&#10;1.2 Biological molecules&#10;1.3 Enzymes&#10;2.1 Cell membranes&#10;..."></textarea>
+    <div class="flex gap-2 flex-wrap">
+      <button class="btn btn-primary" onclick="generatePlan()"><i class="fa-solid fa-bolt"></i> Generate Plan</button>
+      <button class="btn btn-ghost" onclick="clearSchedule()"><i class="fa-solid fa-trash"></i> Clear</button>
+    </div>
+    <p id="plan-warning" class="text-warn text-xs mt-2 hidden"><i class="fa-solid fa-triangle-exclamation"></i> Please add an exam first and select it above.</p>
+  </div>
+
+  <div id="schedule-container" class="card card-p hidden">
+    <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
+      <div class="sec-title" style="margin-bottom:0;font-size:1.2rem;">📅 Your Study Schedule</div>
+      <div class="flex gap-2">
+        <span class="badge" style="background:rgba(99,102,241,0.15);color:var(--indigo2)">📖 Study</span>
+        <span class="badge" style="background:rgba(16,185,129,0.12);color:var(--emerald)">🔁 Review</span>
+        <span class="badge" style="background:rgba(245,158,11,0.12);color:var(--amber)">🎯 Mock</span>
+      </div>
+    </div>
+    <div id="schedule-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;"></div>
+  </div>
+</section>
+
+<!-- ══════════════  SECTION: RESOURCES  ══════════════ -->
+<section id="section-resources" class="hidden">
+  <div class="sec-title"><i class="fa-solid fa-database"></i> Resource Hub</div>
+  <p class="sec-sub">Enter your subject code to instantly get curated links for past papers, mark schemes, notes, and more.</p>
+
+  <div class="card card-p" style="margin-bottom:16px">
+    <div class="flex gap-2 flex-wrap" style="margin-bottom:0">
+      <input id="subject-code" class="field" style="max-width:280px" type="text" placeholder="e.g. IGCSE 0610 or A-Level Chemistry" />
+      <button class="btn btn-primary" onclick="generateResources()"><i class="fa-solid fa-magnifying-glass"></i> Find Resources</button>
+    </div>
+  </div>
+
+  <p id="resource-hint" class="text-dim text-sm" style="padding:8px 0">Resources will appear here once you enter a subject code.</p>
+  <div id="resource-links" class="hidden" style="display:none;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;"></div>
+</section>
+
+<!-- ══════════════  SECTION: AI VIDEO SUMMARIZER  ══════════════ -->
+<section id="section-summarizer" class="hidden">
+  <div class="sec-title"><i class="fa-brands fa-youtube" style="color:#ff4444"></i> AI Video Tutor</div>
+  <p class="sec-sub">Paste any YouTube study video link — the AI will extract the key learning points so you can study smarter.</p>
+
+  <div class="grid-2" style="gap:20px;align-items:start">
+    <div class="flex-col gap-3" style="display:flex;flex-direction:column;gap:16px">
+      <div class="card card-p">
+        <label class="lbl">YouTube Video URL</label>
+        <div class="flex gap-2" style="margin-bottom:12px">
+          <input id="yt-url-input" class="field" type="url" placeholder="https://youtube.com/watch?v=..." />
+          <button class="btn btn-ghost btn-sm" onclick="previewVideo()" style="white-space:nowrap"><i class="fa-solid fa-eye"></i> Preview</button>
         </div>
-        <button class="btn-primary" onclick="saveExamInfo()">
-          <i class="fa-solid fa-floppy-disk mr-2"></i>Save &amp; Start Countdown
+
+        <label class="lbl">Your Subject / Context (optional)</label>
+        <input id="yt-subject" class="field" style="margin-bottom:12px" type="text" placeholder="e.g. A-Level Physics — Waves" />
+
+        <label class="lbl">What should AI focus on?</label>
+        <select id="yt-focus" class="field" style="margin-bottom:14px">
+          <option value="key-points">Key Learning Points</option>
+          <option value="definitions">Definitions & Terminology</option>
+          <option value="exam-tips">Exam Tips & Techniques</option>
+          <option value="formulas">Formulas & Equations</option>
+          <option value="summary">Full Comprehensive Summary</option>
+        </select>
+
+        <button class="btn btn-primary w-full" id="summarize-btn" onclick="summarizeVideo()">
+          <i class="fa-solid fa-robot"></i> Summarize with AI
         </button>
+        <p class="text-xs text-dim mt-2" style="margin-top:8px">
+          <i class="fa-solid fa-circle-info"></i> AI summarizes based on the video title & topic — works best with clear, educational videos.
+        </p>
+      </div>
 
-        <!-- Stats row -->
-        <div class="flex gap-4 mt-5 flex-wrap">
-          <div class="glass rounded-xl px-4 py-2 text-center">
-            <div id="stat-weeks" class="font-display font-700 text-xl text-indigo-600">—</div>
-            <div class="text-xs text-slate-400">Weeks</div>
-          </div>
-          <div class="glass rounded-xl px-4 py-2 text-center">
-            <div id="stat-hours" class="font-display font-700 text-xl text-indigo-600">—</div>
-            <div class="text-xs text-slate-400">Study Hours (4/day)</div>
-          </div>
-          <div class="glass rounded-xl px-4 py-2 text-center">
-            <div id="stat-urgency" class="font-display font-700 text-xl text-indigo-600">—</div>
-            <div class="text-xs text-slate-400">Urgency</div>
+      <div class="card card-p">
+        <div class="video-preview" id="video-preview-box">
+          <div class="video-preview-placeholder" id="video-placeholder">
+            <i class="fa-brands fa-youtube"></i>
+            <p class="text-sm">Enter a YouTube URL and click Preview</p>
           </div>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- ══════════════════════  SYLLABUS ARCHITECT  ══════════════════════ -->
-  <section id="syllabus" class="hidden space-y-5 fade-up">
-    <div class="glass p-6">
-      <div class="section-label mb-1 flex items-center gap-2">
-        <i class="fa-solid fa-wand-magic-sparkles text-indigo-500"></i> Syllabus Architect
+    <div>
+      <div class="card card-p" id="ai-output-card">
+        <div class="flex items-center justify-between mb-3" style="margin-bottom:14px">
+          <div class="sec-title" style="font-size:1.1rem;margin-bottom:0"><i class="fa-solid fa-brain"></i> AI Summary</div>
+          <button class="btn btn-ghost btn-sm hidden" id="copy-summary-btn" onclick="copySummary()"><i class="fa-solid fa-copy"></i> Copy</button>
+        </div>
+        <div id="ai-summary-placeholder" class="text-center" style="padding:40px 0;color:var(--text3)">
+          <i class="fa-solid fa-wand-sparkles" style="font-size:2rem;display:block;margin-bottom:10px;opacity:0.3"></i>
+          <p class="text-sm">Your AI-generated study summary will appear here</p>
+        </div>
+        <div id="ai-loading" class="hidden text-center" style="padding:40px 0">
+          <div class="loading-dots" style="margin-bottom:12px"><span></span><span></span><span></span></div>
+          <p class="text-dim text-sm" id="loading-msg">Analyzing video content…</p>
+        </div>
+        <div id="ai-summary-output" class="hidden"></div>
       </div>
-      <p class="text-sm text-slate-500 mb-4">Paste your syllabus (one topic per line) and let StudyOS build your daily plan.</p>
 
-      <textarea id="syllabus-input" class="field mb-3"
-        placeholder="1.1 Cell structure&#10;1.2 Biological molecules&#10;1.3 Enzymes&#10;2.1 Cell membranes&#10;2.2 Transport in cells&#10;..."></textarea>
-
-      <div class="flex gap-2 flex-wrap">
-        <button class="btn-primary" onclick="generatePlan()">
-          <i class="fa-solid fa-bolt mr-2"></i>Generate Plan
-        </button>
-        <button class="btn-ghost" onclick="clearSchedule()">
-          <i class="fa-solid fa-trash mr-2"></i>Clear
-        </button>
-      </div>
-      <p id="plan-warning" class="text-xs text-amber-500 mt-2 hidden">
-        <i class="fa-solid fa-triangle-exclamation mr-1"></i>Please set an exam date first in the Countdown tab.
-      </p>
-    </div>
-
-    <!-- Schedule output -->
-    <div id="schedule-container" class="glass p-6 hidden">
-      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <div class="section-label">📅 Your Study Schedule</div>
-        <div class="flex gap-2 text-xs flex-wrap">
-          <span class="badge bg-indigo-100 text-indigo-700">Study</span>
-          <span class="badge bg-green-100 text-green-700">Review</span>
-          <span class="badge bg-orange-100 text-orange-700">Mock Exam</span>
+      <!-- Saved Summaries -->
+      <div class="card card-p" style="margin-top:16px" id="saved-summaries-card">
+        <div class="flex items-center justify-between mb-3" style="margin-bottom:12px">
+          <div style="font-weight:700;font-size:0.9rem"><i class="fa-solid fa-bookmark" style="color:var(--indigo2);margin-right:6px"></i>Saved Summaries</div>
+          <button class="btn btn-ghost btn-sm hidden" id="save-summary-btn" onclick="saveSummary()"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+        </div>
+        <div id="saved-summaries-list">
+          <p class="text-dim text-xs" id="no-saved-msg">No saved summaries yet.</p>
         </div>
       </div>
-      <div id="schedule-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ══════════════════════  RESOURCE HUB  ══════════════════════ -->
-  <section id="resources" class="hidden glass p-6 fade-up">
-    <div class="section-label mb-1 flex items-center gap-2">
-      <i class="fa-solid fa-database text-indigo-500"></i> Resource Hub
-    </div>
-    <p class="text-sm text-slate-500 mb-4">Enter your subject code to instantly generate links for past papers, mark schemes, and notes.</p>
+<!-- ══════════════  SECTION: TOOLS  ══════════════ -->
+<section id="section-tools" class="hidden">
+  <div class="sec-title"><i class="fa-solid fa-toolbox"></i> Study Tools</div>
+  <p class="sec-sub">Pomodoro timer, flashcards, notes, and habit tracker — everything in one place.</p>
 
-    <div class="flex gap-2 mb-5 flex-wrap">
-      <input id="subject-code" class="field max-w-xs" type="text" placeholder="e.g. IGCSE 0610" />
-      <button class="btn-primary" onclick="generateResources()">
-        <i class="fa-solid fa-magnifying-glass mr-2"></i>Find Resources
-      </button>
-    </div>
+  <!-- Tools tabs -->
+  <div class="flex gap-2 flex-wrap" style="margin-bottom:16px">
+    <button class="btn btn-primary btn-sm" id="tool-tab-pomo" onclick="showTool('pomo')">⏱ Pomodoro</button>
+    <button class="btn btn-ghost btn-sm" id="tool-tab-flash" onclick="showTool('flash')">🃏 Flashcards</button>
+    <button class="btn btn-ghost btn-sm" id="tool-tab-notes" onclick="showTool('notes')">📝 Notes</button>
+    <button class="btn btn-ghost btn-sm" id="tool-tab-habit" onclick="showTool('habit')">✅ Habit Tracker</button>
+  </div>
 
-    <div id="resource-links" class="grid grid-cols-1 sm:grid-cols-2 gap-2 hidden"></div>
-    <p id="resource-hint" class="text-sm text-slate-400 italic">Resources will appear here once you enter a subject code.</p>
-  </section>
-
-  <!-- ══════════════════════  TOOLS (Pomodoro + Notes)  ══════════════════════ -->
-  <section id="tools" class="hidden grid grid-cols-1 md:grid-cols-2 gap-5 fade-up">
-
-    <!-- Pomodoro -->
-    <div class="glass p-6 flex flex-col items-center">
-      <div class="section-label mb-3 flex items-center gap-2 self-start">
-        <i class="fa-solid fa-stopwatch text-indigo-500"></i> Pomodoro Timer
-      </div>
-
-      <!-- Mode selector -->
-      <div class="flex gap-2 mb-5">
+  <!-- ── Pomodoro ── -->
+  <div id="tool-pomo" class="grid-2">
+    <div class="card card-p flex-col items-center" style="display:flex;flex-direction:column;align-items:center">
+      <div class="sec-title" style="font-size:1rem;margin-bottom:14px;align-self:flex-start"><i class="fa-solid fa-stopwatch"></i> Pomodoro Timer</div>
+      <div class="flex gap-2 mb-3" style="margin-bottom:16px">
         <button class="pomo-mode-btn active" id="mode-focus" onclick="setPomoMode('focus')">Focus 25m</button>
-        <button class="pomo-mode-btn" id="mode-short" onclick="setPomoMode('short')">Short 5m</button>
+        <button class="pomo-mode-btn" id="mode-short" onclick="setPomoMode('short')">Break 5m</button>
         <button class="pomo-mode-btn" id="mode-long" onclick="setPomoMode('long')">Long 15m</button>
       </div>
-
-      <!-- Arc ring -->
-      <div class="countdown-ring mb-4">
-        <svg width="160" height="160" viewBox="0 0 160 160">
-          <circle class="ring-bg" cx="80" cy="80" r="68" stroke-width="9"/>
-          <circle id="pomo-ring-fill" cx="80" cy="80" r="68"
-            fill="none" stroke="#6366f1" stroke-width="9"
-            stroke-linecap="round" stroke-dasharray="427.26" stroke-dashoffset="0"
-            style="transform:rotate(-90deg);transform-origin:center"/>
+      <div class="pomo-ring-wrap" style="margin-bottom:16px">
+        <svg width="180" height="180" viewBox="0 0 180 180">
+          <circle fill="none" stroke="rgba(99,102,241,0.12)" stroke-width="10" cx="90" cy="90" r="78"/>
+          <circle id="pomo-ring-fill" fill="none" stroke="url(#pomoGrad)" stroke-width="10"
+            stroke-linecap="round" cx="90" cy="90" r="78"
+            stroke-dasharray="490" stroke-dashoffset="0"
+            style="transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset 0.95s linear"/>
+          <defs>
+            <linearGradient id="pomoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#6366f1"/>
+              <stop offset="100%" stop-color="#06b6d4"/>
+            </linearGradient>
+          </defs>
         </svg>
-        <div class="ring-label">
+        <div class="pomo-label-wrap">
           <div id="pomo-display">25:00</div>
-          <div id="pomo-status" class="text-xs text-slate-400 mt-1 uppercase tracking-widest">Ready</div>
+          <div id="pomo-status" style="font-size:0.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:4px">Ready</div>
         </div>
       </div>
-
-      <div class="flex gap-2 mb-4">
-        <button class="btn-primary px-6" id="pomo-start-btn" onclick="togglePomo()">
-          <i class="fa-solid fa-play mr-2"></i>Start
-        </button>
-        <button class="btn-ghost" onclick="resetPomo()">
-          <i class="fa-solid fa-rotate-left mr-2"></i>Reset
-        </button>
+      <div class="flex gap-2" style="margin-bottom:14px">
+        <button class="btn btn-primary" id="pomo-start-btn" onclick="togglePomo()"><i class="fa-solid fa-play"></i> Start</button>
+        <button class="btn btn-ghost" onclick="resetPomo()"><i class="fa-solid fa-rotate-left"></i> Reset</button>
       </div>
-
-      <!-- Session counter -->
-      <div class="flex gap-2" id="pomo-sessions"></div>
-      <p class="text-xs text-slate-400 mt-1">Sessions completed today</p>
+      <div class="flex gap-2 flex-wrap" id="pomo-sessions" style="margin-bottom:6px;justify-content:center"></div>
+      <p class="text-xs text-dim">Sessions completed today</p>
     </div>
 
-    <!-- Quick Notes -->
-    <div class="glass p-6 flex flex-col">
-      <div class="section-label mb-3 flex items-center gap-2">
-        <i class="fa-solid fa-note-sticky text-indigo-500"></i> Quick Notes
+    <div class="card card-p">
+      <div class="sec-title" style="font-size:1rem;margin-bottom:14px"><i class="fa-solid fa-chart-simple"></i> Focus Stats</div>
+      <div class="grid-2" style="margin-bottom:16px">
+        <div class="stat-box">
+          <div class="stat-val text-indigo" id="stat-sessions-today">0</div>
+          <div class="stat-lbl">Sessions Today</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" style="color:var(--cyan)" id="stat-focus-mins">0</div>
+          <div class="stat-lbl">Focus Mins</div>
+        </div>
       </div>
-      <textarea id="quick-notes" class="field flex-1 mb-3"
-        placeholder="Jot down formulas, key terms, reminders…"></textarea>
-      <div class="flex justify-between items-center">
-        <span id="notes-chars" class="text-xs text-slate-400">0 characters</span>
+      <hr class="divider">
+      <div class="sec-title" style="font-size:0.9rem;margin-bottom:10px"><i class="fa-solid fa-music"></i> Ambient Sound</div>
+      <div class="flex gap-2 flex-wrap">
+        <button class="btn btn-ghost btn-sm" onclick="playAmbient('rain')">🌧 Rain</button>
+        <button class="btn btn-ghost btn-sm" onclick="playAmbient('forest')">🌿 Forest</button>
+        <button class="btn btn-ghost btn-sm" onclick="playAmbient('cafe')">☕ Café</button>
+        <button class="btn btn-ghost btn-sm" onclick="playAmbient('off')">⏹ Off</button>
+      </div>
+      <p class="text-xs text-dim mt-2" style="margin-top:8px"><i class="fa-solid fa-circle-info"></i> Opens ambient sound on YouTube in a new tab.</p>
+    </div>
+  </div>
+
+  <!-- ── Flashcards ── -->
+  <div id="tool-flash" class="hidden">
+    <div class="grid-2">
+      <div class="card card-p">
+        <div class="sec-title" style="font-size:1rem;margin-bottom:4px"><i class="fa-solid fa-layer-group"></i> Create Flashcards</div>
+        <p class="text-dim text-xs" style="margin-bottom:14px">Add a question and answer, then click the deck to flip.</p>
+        <label class="lbl">Question (Front)</label>
+        <input id="fc-q" class="field" style="margin-bottom:10px" placeholder="e.g. What is osmosis?" />
+        <label class="lbl">Answer (Back)</label>
+        <textarea id="fc-a" class="field" style="min-height:80px;margin-bottom:12px" placeholder="Movement of water molecules from high to low concentration across a partially permeable membrane."></textarea>
+        <button class="btn btn-primary w-full" onclick="addFlashcard()"><i class="fa-solid fa-plus"></i> Add Card</button>
+      </div>
+
+      <div class="card card-p flex-col items-center" style="display:flex;flex-direction:column;align-items:center">
+        <div class="flex items-center justify-between w-full mb-3" style="margin-bottom:12px;width:100%">
+          <div style="font-weight:700;font-size:0.9rem">Card <span id="fc-current">0</span> / <span id="fc-total">0</span></div>
+          <button class="btn btn-danger btn-sm" onclick="deleteCurrentCard()"><i class="fa-solid fa-trash"></i></button>
+        </div>
+        <div class="flashcard-scene" id="flashcard-scene" onclick="flipCard()">
+          <div class="flashcard" id="flashcard-el">
+            <div class="flashcard-face flashcard-front" id="fc-front">Add a card to get started</div>
+            <div class="flashcard-face flashcard-back" id="fc-back">Answer appears here</div>
+          </div>
+        </div>
+        <p class="flashcard-hint">Click card to flip · Tap arrows to navigate</p>
+        <div class="flex gap-2 mt-2" style="margin-top:10px">
+          <button class="btn btn-ghost btn-sm" onclick="prevCard()"><i class="fa-solid fa-chevron-left"></i> Prev</button>
+          <button class="btn btn-ghost btn-sm" onclick="nextCard()">Next <i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Notes ── -->
+  <div id="tool-notes" class="hidden">
+    <div class="card card-p">
+      <div class="flex items-center justify-between mb-3" style="margin-bottom:14px">
+        <div class="sec-title" style="font-size:1rem;margin-bottom:0"><i class="fa-solid fa-note-sticky"></i> Quick Notes</div>
         <div class="flex gap-2">
-          <button class="btn-ghost text-sm" onclick="clearNotes()"><i class="fa-solid fa-trash mr-1"></i>Clear</button>
-          <button class="btn-primary text-sm" onclick="saveNotes()"><i class="fa-solid fa-floppy-disk mr-1"></i>Save</button>
+          <span id="notes-chars" class="text-xs text-dim" style="display:flex;align-items:center">0 chars</span>
+          <button class="btn btn-danger btn-sm" onclick="clearNotes()"><i class="fa-solid fa-trash"></i></button>
+          <button class="btn btn-primary btn-sm" onclick="saveNotes()"><i class="fa-solid fa-floppy-disk"></i> Save</button>
         </div>
       </div>
-      <p id="notes-saved-msg" class="text-xs text-green-500 mt-1 hidden"><i class="fa-solid fa-circle-check mr-1"></i>Saved!</p>
+      <textarea id="quick-notes" class="field" placeholder="Jot down key formulas, definitions, reminders, or anything you need to remember…"></textarea>
+      <p id="notes-saved-msg" class="text-success text-xs mt-2 hidden" style="margin-top:8px"><i class="fa-solid fa-circle-check"></i> Saved to browser!</p>
     </div>
+  </div>
 
-  </section>
+  <!-- ── Habit Tracker ── -->
+  <div id="tool-habit" class="hidden">
+    <div class="card card-p">
+      <div class="flex items-center justify-between mb-3" style="margin-bottom:14px">
+        <div class="sec-title" style="font-size:1rem;margin-bottom:0"><i class="fa-solid fa-fire"></i> Daily Habit Tracker</div>
+        <button class="btn btn-primary btn-sm" onclick="addHabit()"><i class="fa-solid fa-plus"></i> Add Habit</button>
+      </div>
+      <div id="habits-list"></div>
+      <p id="no-habits-msg" class="text-dim text-sm text-center" style="padding:20px 0">No habits yet. Add one to start building your study streak!</p>
+    </div>
+  </div>
+
+</section>
 
 </main>
 
-<!-- ══════════════════════  FOOTER  ══════════════════════ -->
-<footer class="text-center text-xs text-slate-400 py-8">
-  StudyOS · All data stored locally in your browser · Built by zohair naqvi for exam warriors
+<!-- ══════════  ADD EXAM MODAL  ══════════ -->
+<div class="modal-overlay" id="exam-modal">
+  <div class="modal">
+    <div class="modal-title"><i class="fa-solid fa-plus" style="color:var(--indigo2);margin-right:8px"></i>Add New Exam</div>
+
+    <div style="display:grid;gap:14px">
+      <div>
+        <label class="lbl">Exam Name *</label>
+        <input id="modal-exam-name" class="field" type="text" placeholder="e.g. IGCSE Biology Paper 2" />
+      </div>
+      <div>
+        <label class="lbl">Exam Date *</label>
+        <input id="modal-exam-date" class="field" type="date" />
+      </div>
+      <div>
+        <label class="lbl">Subject / Board</label>
+        <input id="modal-exam-board" class="field" type="text" placeholder="e.g. Cambridge IGCSE" />
+      </div>
+      <div>
+        <label class="lbl">Color Tag</label>
+        <div class="flex gap-2" id="color-picker">
+          <div class="color-opt" data-color="indigo" onclick="selectColor('indigo')" style="width:28px;height:28px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid transparent;transition:all 0.2s"></div>
+          <div class="color-opt" onclick="selectColor('cyan')" style="width:28px;height:28px;border-radius:50%;background:var(--cyan);cursor:pointer;border:2px solid transparent;transition:all 0.2s"></div>
+          <div class="color-opt" onclick="selectColor('emerald')" style="width:28px;height:28px;border-radius:50%;background:var(--emerald);cursor:pointer;border:2px solid transparent;transition:all 0.2s"></div>
+          <div class="color-opt" onclick="selectColor('amber')" style="width:28px;height:28px;border-radius:50%;background:var(--amber);cursor:pointer;border:2px solid transparent;transition:all 0.2s"></div>
+          <div class="color-opt" onclick="selectColor('rose')" style="width:28px;height:28px;border-radius:50%;background:var(--rose);cursor:pointer;border:2px solid transparent;transition:all 0.2s"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveExam()"><i class="fa-solid fa-floppy-disk"></i> Save Exam</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════  TOAST  ══════════ -->
+<div id="toast"><i class="fa-solid fa-circle-check"></i> <span id="toast-msg">Saved!</span></div>
+
+<footer>
+  StudyOS · <span>All data stored locally in your browser</span> · Built by <span>zohair naqvi</span> for exam warriors 🎓
 </footer>
 
-<!-- ══════════════════════  JAVASCRIPT  ══════════════════════ -->
+</div><!-- end #app -->
+
+<!-- ══════════  JAVASCRIPT  ══════════ -->
 <script>
-  /* ════════════════════════════════════════
-     1. SECTION ROUTING
-  ════════════════════════════════════════ */
-  const sections = ['hero','syllabus','resources','tools'];
+/* ═══════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+const LS = { get: k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }, set: (k,v) => localStorage.setItem(k, JSON.stringify(v)) };
 
-  function showSection(id) {
-    sections.forEach(s => {
-      const el = document.getElementById(s);
-      el.classList.toggle('hidden', s !== id);
-    });
-    // update tab buttons
-    document.querySelectorAll('.tab-btn').forEach((btn, i) => {
-      btn.classList.toggle('active', sections[i] === id);
-    });
+function toast(msg, icon = 'fa-circle-check') {
+  $('toast-msg').textContent = msg;
+  $('toast').querySelector('i').className = `fa-solid ${icon}`;
+  $('toast').classList.add('show');
+  setTimeout(() => $('toast').classList.remove('show'), 2500);
+}
+
+function getDays(dateStr) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr); d.setHours(0,0,0,0);
+  const t = new Date(); t.setHours(0,0,0,0);
+  return Math.round((d - t) / 86400000);
+}
+
+const sections = ['exams','syllabus','resources','summarizer','tools'];
+
+function showSection(id) {
+  sections.forEach(s => $('section-' + s).classList.toggle('hidden', s !== id));
+  document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', sections[i] === id));
+  if (id === 'syllabus') populateSyllabusExamSelect();
+}
+
+/* ═══════════════════════════════════════
+   EXAMS
+═══════════════════════════════════════ */
+let exams = LS.get('exams') || [];
+let selectedColor = 'indigo';
+
+const colorMap = {
+  indigo: { css: 'var(--indigo)', hex: '#6366f1' },
+  cyan:   { css: 'var(--cyan)',   hex: '#06b6d4' },
+  emerald:{ css: 'var(--emerald)',hex: '#10b981' },
+  amber:  { css: 'var(--amber)',  hex: '#f59e0b' },
+  rose:   { css: 'var(--rose)',   hex: '#f43f5e' },
+};
+
+function selectColor(c) {
+  selectedColor = c;
+  document.querySelectorAll('.color-opt').forEach(el => {
+    el.style.border = '2px solid transparent';
+    el.style.transform = 'scale(1)';
+  });
+  event.currentTarget.style.border = '2px solid white';
+  event.currentTarget.style.transform = 'scale(1.2)';
+}
+
+function openAddExamModal() {
+  $('modal-exam-name').value = '';
+  $('modal-exam-date').value = '';
+  $('modal-exam-board').value = '';
+  selectedColor = 'indigo';
+  document.querySelectorAll('.color-opt').forEach((el,i) => {
+    el.style.border = '2px solid transparent'; el.style.transform='scale(1)';
+  });
+  document.querySelectorAll('.color-opt')[0].style.border = '2px solid white';
+  $('exam-modal').classList.add('open');
+}
+
+function closeModal() { $('exam-modal').classList.remove('open'); }
+
+function saveExam() {
+  const name = $('modal-exam-name').value.trim();
+  const date = $('modal-exam-date').value;
+  if (!name || !date) { toast('Please fill in exam name and date.', 'fa-triangle-exclamation'); return; }
+  const board = $('modal-exam-board').value.trim();
+  exams.push({ id: Date.now(), name, date, board, color: selectedColor });
+  LS.set('exams', exams);
+  closeModal();
+  renderExams();
+  toast(`"${name}" added!`);
+}
+
+function deleteExam(id) {
+  if (!confirm('Delete this exam?')) return;
+  exams = exams.filter(e => e.id !== id);
+  LS.set('exams', exams);
+  renderExams();
+  toast('Exam removed.', 'fa-trash');
+}
+
+function renderExams() {
+  const grid = $('exam-cards-grid');
+  grid.innerHTML = '';
+
+  const active = exams.filter(e => getDays(e.date) >= 0);
+  const done   = exams.filter(e => getDays(e.date) < 0);
+  const all    = [...active.sort((a,b) => new Date(a.date)-new Date(b.date)), ...done];
+
+  if (all.length === 0) {
+    $('no-exams-msg').classList.remove('hidden');
+    $('exam-stats-row').classList.add('hidden');
+    return;
   }
+  $('no-exams-msg').classList.add('hidden');
+  $('exam-stats-row').classList.remove('hidden');
 
-  /* ════════════════════════════════════════
-     2. COUNTDOWN
-  ════════════════════════════════════════ */
-  function getDaysRemaining(dateStr) {
-    if (!dateStr) return null;
-    const exam = new Date(dateStr);
-    exam.setHours(0,0,0,0);
-    const today = new Date();
-    today.setHours(0,0,0,0);
-    const diff = Math.round((exam - today) / 86400000);
-    return diff;
-  }
+  all.forEach(exam => {
+    const days = getDays(exam.date);
+    const isDone = days < 0;
+    const urgencyClass = isDone ? '' : days <= 7 ? 'urgency-critical' : days <= 21 ? 'urgency-high' : days <= 45 ? 'urgency-medium' : 'urgency-plenty';
+    const urgencyLabel = isDone ? 'Done' : days <= 7 ? '🔴 Critical' : days <= 21 ? '🟠 High' : days <= 45 ? '🟡 Medium' : '🟢 Steady';
+    const color = colorMap[exam.color || 'indigo'];
+    const dateStr = new Date(exam.date).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+    const totalDays = 100; // reference
+    const pct = isDone ? 100 : Math.min(100, Math.round(((totalDays - days) / totalDays) * 100));
 
-  function updateCountdownUI() {
-    const name = localStorage.getItem('examName') || '';
-    const date = localStorage.getItem('examDate') || '';
-    const days = getDaysRemaining(date);
-
-    if (name) {
-      document.getElementById('exam-name').value = name;
-      document.getElementById('exam-title-display').textContent = `Exam: ${name}`;
-    }
-    if (date) document.getElementById('exam-date').value = date;
-
-    if (days === null || days < 0) {
-      document.getElementById('days-number').textContent = days < 0 ? 'Done!' : '—';
-      return;
-    }
-
-    document.getElementById('days-number').textContent = days;
-
-    // Ring: base = 100 days for full circle
-    const total = Math.max(days, 1);
-    const base = Math.max(total, 100);
-    const circ = 502.65;
-    const offset = circ - (circ * Math.min(days / base, 1));
-    document.getElementById('ring-fill').style.strokeDashoffset = offset;
-
-    // Stats
-    document.getElementById('stat-weeks').textContent = (days / 7).toFixed(1);
-    document.getElementById('stat-hours').textContent = days * 4;
-    const urgency = days <= 7 ? '🔴 Critical' : days <= 21 ? '🟠 High' : days <= 45 ? '🟡 Medium' : '🟢 Plenty';
-    document.getElementById('stat-urgency').textContent = urgency;
-  }
-
-  function saveExamInfo() {
-    const name = document.getElementById('exam-name').value.trim();
-    const date = document.getElementById('exam-date').value;
-    if (!name || !date) { alert('Please fill in both exam name and date.'); return; }
-    localStorage.setItem('examName', name);
-    localStorage.setItem('examDate', date);
-    updateCountdownUI();
-    // flash feedback
-    const btn = event.currentTarget;
-    btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Saved!';
-    setTimeout(() => btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i>Save & Start Countdown', 1500);
-  }
-
-  /* ════════════════════════════════════════
-     3. SYLLABUS ARCHITECT
-  ════════════════════════════════════════ */
-  function generatePlan() {
-    const examDate = localStorage.getItem('examDate');
-    const days = getDaysRemaining(examDate);
-
-    if (days === null || days <= 0) {
-      document.getElementById('plan-warning').classList.remove('hidden');
-      return;
-    }
-    document.getElementById('plan-warning').classList.add('hidden');
-
-    const raw = document.getElementById('syllabus-input').value.trim();
-    if (!raw) { alert('Please paste your syllabus first.'); return; }
-
-    const topics = raw.split('\n').map(l => l.trim()).filter(Boolean);
-    localStorage.setItem('syllabusText', raw);
-
-    // Build schedule array
-    const schedule = [];
-    let topicIdx = 0;
-    let topicPerDay = Math.max(1, Math.floor(topics.length / Math.max(days - 3, 1)));
-
-    for (let d = 1; d <= days; d++) {
-      const isMock = d >= days - 1;
-      const isReview = !isMock && d % 4 === 0;
-
-      if (isMock) {
-        schedule.push({ day: d, type: 'mock', content: d === days - 1 ? 'Mock Exam Day 1 — Full Paper Attempt' : 'Mock Exam Day 2 — Review & Corrections' });
-      } else if (isReview) {
-        schedule.push({ day: d, type: 'review', content: 'Review Day — Revisit topics from the past 3 days' });
-      } else {
-        const batch = topics.slice(topicIdx, topicIdx + topicPerDay);
-        topicIdx += topicPerDay;
-        schedule.push({ day: d, type: 'study', content: batch.length ? batch.join(' · ') : 'Catch-up / Extra Practice' });
-      }
-    }
-
-    localStorage.setItem('schedule', JSON.stringify(schedule));
-    renderSchedule(schedule);
-  }
-
-  function renderSchedule(schedule) {
-    const grid = document.getElementById('schedule-grid');
-    grid.innerHTML = '';
-
-    const examDate = new Date(localStorage.getItem('examDate'));
-    const today = new Date(); today.setHours(0,0,0,0);
-
-    schedule.forEach(item => {
-      const cardDate = new Date(today);
-      cardDate.setDate(today.getDate() + (item.day - 1));
-      const dateStr = cardDate.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' });
-
-      const typeClass = { study:'day-study', review:'day-review', mock:'day-mock' }[item.type];
-      const icon = { study:'📖', review:'🔁', mock:'🎯' }[item.type];
-      const badge = { study:'Study', review:'Review Day', mock:'Mock Exam' }[item.type];
-      const badgeColor = { study:'bg-indigo-100 text-indigo-700', review:'bg-green-100 text-green-700', mock:'bg-orange-100 text-orange-700' }[item.type];
-
-      const div = document.createElement('div');
-      div.className = `day-card ${typeClass}`;
-      div.innerHTML = `
-        <div class="flex items-start justify-between mb-1">
-          <span class="font-display font-700 text-sm text-slate-700">Day ${item.day} · ${dateStr}</span>
-          <span class="badge ${badgeColor} ml-2 shrink-0">${badge}</span>
+    const card = document.createElement('div');
+    card.className = `exam-card ${urgencyClass}`;
+    card.innerHTML = `
+      <div class="exam-card-top">
+        <div>
+          <div class="exam-card-name">${exam.name}</div>
+          <div class="exam-card-date">${exam.board ? exam.board + ' · ' : ''}${dateStr}</div>
         </div>
-        <p class="text-slate-600">${icon} ${item.content}</p>
-      `;
-      grid.appendChild(div);
-    });
-
-    document.getElementById('schedule-container').classList.remove('hidden');
-  }
-
-  function clearSchedule() {
-    localStorage.removeItem('schedule');
-    localStorage.removeItem('syllabusText');
-    document.getElementById('syllabus-input').value = '';
-    document.getElementById('schedule-container').classList.add('hidden');
-  }
-
-  /* ════════════════════════════════════════
-     4. RESOURCE HUB
-  ════════════════════════════════════════ */
-  function generateResources() {
-    const raw = document.getElementById('subject-code').value.trim();
-    if (!raw) { alert('Enter a subject code first.'); return; }
-
-    const code = encodeURIComponent(raw);
-    const plain = raw;
-
-    const links = [
-      { label: 'Past Papers — PapaCambridge', icon: 'fa-file-pdf', url: `https://papacambridge.com/?s=${code}` },
-      { label: 'Past Papers — Save My Exams', icon: 'fa-book-open', url: `https://www.savemyexams.com/search/?q=${code}` },
-      { label: 'Mark Schemes — PapaCambridge', icon: 'fa-check-double', url: `https://papacambridge.com/?s=${code}+mark+scheme` },
-      { label: 'Revision Notes — Save My Exams', icon: 'fa-pen-to-square', url: `https://www.savemyexams.com/search/?q=${code}+revision+notes` },
-      { label: `Google: "${plain}" past papers`, icon: 'fa-magnifying-glass', url: `https://www.google.com/search?q=${code}+past+papers` },
-      { label: `Google: "${plain}" mark scheme`, icon: 'fa-magnifying-glass', url: `https://www.google.com/search?q=${code}+mark+scheme` },
-      { label: `YouTube: "${plain}" revision`, icon: 'fa-brands fa-youtube', url: `https://www.youtube.com/results?search_query=${code}+revision` },
-      { label: `Quizlet: "${plain}" flashcards`, icon: 'fa-layer-group', url: `https://quizlet.com/search?query=${code}&type=sets` },
-      { label: 'Physics & Maths Tutor resources', icon: 'fa-square-root-variable', url: `https://www.physicsandmathstutor.com/?s=${code}` },
-      { label: 'Revision World notes', icon: 'fa-globe', url: `https://revisionworld.com/search/node/${code}` },
-    ];
-
-    const container = document.getElementById('resource-links');
-    container.innerHTML = '';
-    links.forEach(link => {
-      const a = document.createElement('a');
-      a.className = 'resource-link';
-      a.href = link.url;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.innerHTML = `<i class="fa-solid ${link.icon}"></i> ${link.label} <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-xs opacity-50"></i>`;
-      container.appendChild(a);
-    });
-
-    container.classList.remove('hidden');
-    document.getElementById('resource-hint').classList.add('hidden');
-  }
-
-  /* ════════════════════════════════════════
-     5. POMODORO TIMER
-  ════════════════════════════════════════ */
-  const POMO_MODES = { focus: 25*60, short: 5*60, long: 15*60 };
-  let pomoMode = 'focus';
-  let pomoSeconds = POMO_MODES.focus;
-  let pomoTotal = POMO_MODES.focus;
-  let pomoRunning = false;
-  let pomoInterval = null;
-  let pomoSessionsToday = parseInt(localStorage.getItem('pomoSessions') || '0');
-
-  const lastDate = localStorage.getItem('pomoDate');
-  const todayStr = new Date().toDateString();
-  if (lastDate !== todayStr) {
-    pomoSessionsToday = 0;
-    localStorage.setItem('pomoDate', todayStr);
-    localStorage.setItem('pomoSessions', '0');
-  }
-
-  function setPomoMode(mode) {
-    if (pomoRunning) return;
-    pomoMode = mode;
-    pomoSeconds = POMO_MODES[mode];
-    pomoTotal = POMO_MODES[mode];
-    updatePomoUI();
-    document.querySelectorAll('.pomo-mode-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(`mode-${mode}`).classList.add('active');
-  }
-
-  function updatePomoUI() {
-    const m = String(Math.floor(pomoSeconds / 60)).padStart(2, '0');
-    const s = String(pomoSeconds % 60).padStart(2, '0');
-    document.getElementById('pomo-display').textContent = `${m}:${s}`;
-
-    // Arc
-    const circ = 427.26;
-    const offset = circ * (1 - pomoSeconds / pomoTotal);
-    document.getElementById('pomo-ring-fill').style.strokeDashoffset = offset;
-  }
-
-  function togglePomo() {
-    if (pomoRunning) {
-      clearInterval(pomoInterval);
-      pomoRunning = false;
-      document.getElementById('pomo-start-btn').innerHTML = '<i class="fa-solid fa-play mr-2"></i>Resume';
-      document.getElementById('pomo-status').textContent = 'Paused';
-    } else {
-      pomoRunning = true;
-      document.getElementById('pomo-start-btn').innerHTML = '<i class="fa-solid fa-pause mr-2"></i>Pause';
-      document.getElementById('pomo-status').textContent = pomoMode === 'focus' ? 'Focusing…' : 'Resting…';
-      pomoInterval = setInterval(() => {
-        pomoSeconds--;
-        updatePomoUI();
-        if (pomoSeconds <= 0) {
-          clearInterval(pomoInterval);
-          pomoRunning = false;
-          if (pomoMode === 'focus') {
-            pomoSessionsToday++;
-            localStorage.setItem('pomoSessions', pomoSessionsToday);
-            localStorage.setItem('pomoDate', todayStr);
-            renderPomoSessions();
-          }
-          document.getElementById('pomo-status').textContent = '✅ Done!';
-          document.getElementById('pomo-start-btn').innerHTML = '<i class="fa-solid fa-play mr-2"></i>Start';
-          // browser notification
-          if (Notification.permission === 'granted') {
-            new Notification('StudyOS', { body: pomoMode === 'focus' ? '🎉 Focus session complete! Take a break.' : '💪 Break over. Back to work!' });
-          }
-        }
-      }, 1000);
-    }
-  }
-
-  function resetPomo() {
-    clearInterval(pomoInterval);
-    pomoRunning = false;
-    pomoSeconds = POMO_MODES[pomoMode];
-    pomoTotal = POMO_MODES[pomoMode];
-    document.getElementById('pomo-start-btn').innerHTML = '<i class="fa-solid fa-play mr-2"></i>Start';
-    document.getElementById('pomo-status').textContent = 'Ready';
-    updatePomoUI();
-  }
-
-  function renderPomoSessions() {
-    const container = document.getElementById('pomo-sessions');
-    container.innerHTML = '';
-    for (let i = 0; i < Math.min(pomoSessionsToday, 8); i++) {
-      const dot = document.createElement('div');
-      dot.className = 'w-3 h-3 rounded-full bg-indigo-500';
-      container.appendChild(dot);
-    }
-    if (pomoSessionsToday > 8) {
-      const more = document.createElement('span');
-      more.className = 'text-xs text-indigo-500 font-semibold';
-      more.textContent = `+${pomoSessionsToday - 8}`;
-      container.appendChild(more);
-    }
-  }
-
-  // Ask notification permission on load
-  if ('Notification' in window && Notification.permission === 'default') {
-    Notification.requestPermission();
-  }
-
-  /* ════════════════════════════════════════
-     6. QUICK NOTES
-  ════════════════════════════════════════ */
-  const notesEl = document.getElementById('quick-notes');
-
-  function loadNotes() {
-    const saved = localStorage.getItem('quickNotes') || '';
-    notesEl.value = saved;
-    updateNoteChars();
-  }
-
-  function saveNotes() {
-    localStorage.setItem('quickNotes', notesEl.value);
-    const msg = document.getElementById('notes-saved-msg');
-    msg.classList.remove('hidden');
-    setTimeout(() => msg.classList.add('hidden'), 1800);
-  }
-
-  function clearNotes() {
-    if (!confirm('Clear all notes?')) return;
-    notesEl.value = '';
-    localStorage.removeItem('quickNotes');
-    updateNoteChars();
-  }
-
-  function updateNoteChars() {
-    document.getElementById('notes-chars').textContent = `${notesEl.value.length} characters`;
-  }
-
-  notesEl.addEventListener('input', () => {
-    updateNoteChars();
-    // auto-save debounce
-    clearTimeout(notesEl._timer);
-    notesEl._timer = setTimeout(() => localStorage.setItem('quickNotes', notesEl.value), 800);
+        <div style="text-align:right">
+          <div class="exam-card-days" style="color:${color.css}">${isDone ? '✓' : days}</div>
+          <div class="exam-card-days-label">${isDone ? 'Complete' : 'days left'}</div>
+        </div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${color.hex}"></div></div>
+      <div class="exam-card-footer">
+        <span class="chip">${urgencyLabel}</span>
+        <div class="exam-card-actions">
+          <button class="btn btn-ghost btn-sm" onclick="deleteExam(${exam.id})"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
   });
 
-  /* ════════════════════════════════════════
-     7. INIT — restore persisted state
-  ════════════════════════════════════════ */
-  function init() {
-    updateCountdownUI();
-    loadNotes();
-    updatePomoUI();
-    renderPomoSessions();
+  // Stats
+  const criticalCount = active.filter(e => getDays(e.date) <= 7).length;
+  const nearest = active[0];
+  const totalPrepHours = active.reduce((s, e) => s + (getDays(e.date) * 4), 0);
+  $('stat-total-exams').textContent = exams.length;
+  $('stat-critical').textContent = criticalCount;
+  $('stat-nearest-name').textContent = nearest ? nearest.name.split(' ').slice(0,2).join(' ') : '—';
+  $('stat-nearest-name').style.fontSize = nearest && nearest.name.length > 12 ? '1rem' : '2rem';
+  $('stat-total-prep-hours').textContent = totalPrepHours;
+}
 
-    // restore syllabus text
-    const saved = localStorage.getItem('syllabusText');
-    if (saved) document.getElementById('syllabus-input').value = saved;
+/* ═══════════════════════════════════════
+   SYLLABUS
+═══════════════════════════════════════ */
+function populateSyllabusExamSelect() {
+  const sel = $('syllabus-exam-select');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">— choose an exam —</option>';
+  (exams || []).filter(e => getDays(e.date) >= 0).sort((a,b) => new Date(a.date)-new Date(b.date)).forEach(e => {
+    const opt = document.createElement('option');
+    opt.value = e.id;
+    opt.textContent = `${e.name} (${getDays(e.date)}d)`;
+    sel.appendChild(opt);
+  });
+  if (current) sel.value = current;
+}
 
-    // restore schedule
-    const sched = localStorage.getItem('schedule');
-    if (sched) renderSchedule(JSON.parse(sched));
+function generatePlan() {
+  const examId = $('syllabus-exam-select').value;
+  const exam = exams.find(e => e.id == examId);
+  if (!exam) { $('plan-warning').classList.remove('hidden'); return; }
+  $('plan-warning').classList.add('hidden');
+
+  const days = getDays(exam.date);
+  if (days <= 0) { toast('Exam already passed!', 'fa-triangle-exclamation'); return; }
+
+  const raw = $('syllabus-input').value.trim();
+  if (!raw) { toast('Paste your syllabus topics first.', 'fa-triangle-exclamation'); return; }
+
+  const topics = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  LS.set('syllabusText', raw);
+
+  const customTPD = parseInt($('topics-per-day').value);
+  const studyDays = days - Math.min(3, Math.floor(days * 0.1));
+  const tpd = customTPD || Math.max(1, Math.ceil(topics.length / Math.max(studyDays, 1)));
+
+  const schedule = [];
+  let ti = 0;
+  for (let d = 1; d <= days; d++) {
+    const isMock   = d === days || d === days - 1;
+    const isReview = !isMock && d > 1 && d % 5 === 0;
+    if (isMock) {
+      schedule.push({ day: d, type:'mock', content: d === days - 1 ? 'Mock Exam 1 — Full Paper Attempt' : 'Mock Exam 2 — Review & Error Analysis' });
+    } else if (isReview) {
+      schedule.push({ day: d, type:'review', content:'Review Day — Revisit weak areas from the past 4 days' });
+    } else {
+      const batch = topics.slice(ti, ti + tpd); ti += tpd;
+      schedule.push({ day: d, type:'study', content: batch.length ? batch.join(' · ') : 'Catch-up / Extra Practice' });
+    }
   }
 
-  init();
+  LS.set('schedule', schedule);
+  renderSchedule(schedule);
+  toast('Study plan generated!');
+}
+
+function renderSchedule(schedule) {
+  const grid = $('schedule-grid');
+  grid.innerHTML = '';
+  const today = new Date(); today.setHours(0,0,0,0);
+  schedule.forEach(item => {
+    const d = new Date(today); d.setDate(today.getDate() + item.day - 1);
+    const dateStr = d.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' });
+    const typeClass = { study:'day-study', review:'day-review', mock:'day-mock' }[item.type];
+    const icon = { study:'📖', review:'🔁', mock:'🎯' }[item.type];
+    const badgeStyle = { study:'background:rgba(99,102,241,0.15);color:var(--indigo2)', review:'background:rgba(16,185,129,0.12);color:var(--emerald)', mock:'background:rgba(245,158,11,0.12);color:var(--amber)' }[item.type];
+    const badgeTxt  = { study:'Study', review:'Review', mock:'Mock' }[item.type];
+    const el = document.createElement('div');
+    el.className = `day-card ${typeClass}`;
+    el.innerHTML = `<div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:6px"><span style="font-weight:700;font-size:0.78rem;color:var(--text2)">Day ${item.day} · ${dateStr}</span><span class="badge" style="${badgeStyle}">${badgeTxt}</span></div><p style="color:var(--text);font-size:0.8rem">${icon} ${item.content}</p>`;
+    grid.appendChild(el);
+  });
+  $('schedule-container').classList.remove('hidden');
+}
+
+function clearSchedule() {
+  LS.set('schedule', null); LS.set('syllabusText', null);
+  $('syllabus-input').value = '';
+  $('schedule-container').classList.add('hidden');
+  toast('Schedule cleared.', 'fa-trash');
+}
+
+/* ═══════════════════════════════════════
+   RESOURCES
+═══════════════════════════════════════ */
+function generateResources() {
+  const raw = $('subject-code').value.trim();
+  if (!raw) { toast('Enter a subject code first.', 'fa-triangle-exclamation'); return; }
+  const code = encodeURIComponent(raw);
+  const links = [
+    { label:'Past Papers — PapaCambridge', icon:'fa-file-pdf', color:'#ef4444', url:`https://papacambridge.com/?s=${code}` },
+    { label:'Past Papers — Save My Exams', icon:'fa-book-open', color:'#6366f1', url:`https://www.savemyexams.com/search/?q=${code}` },
+    { label:'Mark Schemes — PapaCambridge', icon:'fa-check-double', color:'#10b981', url:`https://papacambridge.com/?s=${code}+mark+scheme` },
+    { label:'Revision Notes — Save My Exams', icon:'fa-pen-to-square', color:'#818cf8', url:`https://www.savemyexams.com/search/?q=${code}+revision+notes` },
+    { label:`Google: past papers`, icon:'fa-magnifying-glass', color:'#f59e0b', url:`https://www.google.com/search?q=${code}+past+papers` },
+    { label:`Google: mark scheme`, icon:'fa-magnifying-glass', color:'#f59e0b', url:`https://www.google.com/search?q=${code}+mark+scheme` },
+    { label:`YouTube: revision`, icon:'fa-brands fa-youtube', color:'#ff4444', url:`https://www.youtube.com/results?search_query=${code}+revision` },
+    { label:`Quizlet: flashcard sets`, icon:'fa-layer-group', color:'#06b6d4', url:`https://quizlet.com/search?query=${code}&type=sets` },
+    { label:'Physics & Maths Tutor', icon:'fa-square-root-variable', color:'#7c3aed', url:`https://www.physicsandmathstutor.com/?s=${code}` },
+    { label:'Revision World notes', icon:'fa-globe', color:'#10b981', url:`https://revisionworld.com/search/node/${code}` },
+    { label:'Khan Academy search', icon:'fa-graduation-cap', color:'#14b8a6', url:`https://www.khanacademy.org/search?page_search_query=${code}` },
+    { label:'Znotes revision', icon:'fa-file-lines', color:'#a855f7', url:`https://znotes.org/search?q=${code}` },
+  ];
+  const container = $('resource-links');
+  container.innerHTML = '';
+  links.forEach(l => {
+    const a = document.createElement('a');
+    a.className = 'resource-link'; a.href = l.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    a.innerHTML = `<div class="r-icon" style="background:rgba(${hexToRgb(l.color||'#6366f1')},0.15);color:${l.color}"><i class="fa-solid ${l.icon}"></i></div> ${l.label} <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left:auto;font-size:0.7rem;opacity:0.4"></i>`;
+    container.appendChild(a);
+  });
+  container.style.display = 'grid';
+  container.classList.remove('hidden');
+  $('resource-hint').classList.add('hidden');
+}
+
+function hexToRgb(hex) {
+  const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return r ? `${parseInt(r[1],16)},${parseInt(r[2],16)},${parseInt(r[3],16)}` : '99,102,241';
+}
+
+/* ═══════════════════════════════════════
+   AI VIDEO SUMMARIZER
+═══════════════════════════════════════ */
+let currentSummaryText = '';
+let currentVideoTitle  = '';
+
+function extractVideoId(url) {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+    /youtube\.com\/shorts\/([^&\n?#]+)/
+  ];
+  for (const p of patterns) { const m = url.match(p); if (m) return m[1]; }
+  return null;
+}
+
+function previewVideo() {
+  const url = $('yt-url-input').value.trim();
+  const vid = extractVideoId(url);
+  const box = $('video-preview-box');
+  if (!vid) { toast('Invalid YouTube URL.', 'fa-triangle-exclamation'); return; }
+  box.innerHTML = `<iframe src="https://www.youtube.com/embed/${vid}" allow="autoplay;encrypted-media" allowfullscreen></iframe>`;
+}
+
+async function summarizeVideo() {
+  const url = $('yt-url-input').value.trim();
+  const vid = extractVideoId(url);
+  const subject = $('yt-subject').value.trim();
+  const focus   = $('yt-focus').value;
+
+  if (!url) { toast('Paste a YouTube URL first.', 'fa-triangle-exclamation'); return; }
+
+  // Show preview if not already shown
+  if (!$('video-preview-box').querySelector('iframe')) previewVideo();
+
+  const focusLabels = {
+    'key-points': 'key learning points and main concepts',
+    'definitions': 'important definitions and terminology',
+    'exam-tips': 'exam tips, techniques, and common mistakes',
+    'formulas': 'formulas, equations, and mathematical relationships',
+    'summary': 'a comprehensive summary of all topics covered'
+  };
+
+  $('ai-summary-placeholder').classList.add('hidden');
+  $('ai-summary-output').classList.add('hidden');
+  $('ai-loading').classList.remove('hidden');
+  $('summarize-btn').disabled = true;
+  $('copy-summary-btn').classList.add('hidden');
+  $('save-summary-btn').classList.add('hidden');
+
+  const loadingMsgs = ['Analyzing video content…', 'Extracting key concepts…', 'Generating study notes…', 'Almost done…'];
+  let lmi = 0;
+  const lmInterval = setInterval(() => { $('loading-msg').textContent = loadingMsgs[++lmi % loadingMsgs.length]; }, 1400);
+
+  const prompt = `You are an expert study assistant and educational content analyst. A student wants to study from a YouTube video.
+
+Video URL: ${url}
+${subject ? `Subject/Context: ${subject}` : ''}
+Focus: Extract ${focusLabels[focus]}.
+
+Based on the YouTube video URL and the subject context provided, generate a detailed, high-quality study summary as if you have watched the video. Use your knowledge of the topic to create genuinely useful study material.
+
+Respond ONLY in this exact JSON format (no markdown, no backticks, no extra text):
+{
+  "title": "Video Topic Title",
+  "subject": "${subject || 'General Study'}",
+  "keyPoints": [
+    "Detailed point 1 with explanation",
+    "Detailed point 2 with explanation",
+    "Detailed point 3 with explanation",
+    "Detailed point 4 with explanation",
+    "Detailed point 5 with explanation"
+  ],
+  "examTip": "One specific exam tip or memory trick for this topic",
+  "difficulty": "Beginner / Intermediate / Advanced",
+  "studyTime": "Estimated study time to master this topic"
+}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    clearInterval(lmInterval);
+    $('ai-loading').classList.add('hidden');
+    $('summarize-btn').disabled = false;
+
+    if (data.error) { throw new Error(data.error.message); }
+
+    const raw = data.content.map(c => c.text || '').join('');
+    let parsed;
+    try {
+      const cleaned = raw.replace(/```json|```/g,'').trim();
+      parsed = JSON.parse(cleaned);
+    } catch {
+      throw new Error('Could not parse AI response.');
+    }
+
+    currentVideoTitle  = parsed.title;
+    currentSummaryText = `# ${parsed.title}\n\nSubject: ${parsed.subject}\n\n## Key Points\n${parsed.keyPoints.map((p,i)=>`${i+1}. ${p}`).join('\n')}\n\n## Exam Tip\n${parsed.examTip}`;
+
+    const html = `
+      <div style="margin-bottom:14px">
+        <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px">${parsed.title}</div>
+        <div class="flex gap-2 flex-wrap">
+          <span class="chip">${parsed.subject}</span>
+          <span class="chip" style="background:rgba(16,185,129,0.1);color:var(--emerald)">${parsed.difficulty}</span>
+          <span class="chip" style="background:rgba(245,158,11,0.1);color:var(--amber)">⏱ ${parsed.studyTime}</span>
+        </div>
+      </div>
+      <h4>Key Points</h4>
+      ${parsed.keyPoints.map((pt,i) => `<div class="ai-key-point"><div class="ai-key-point-num">${i+1}</div><div>${pt}</div></div>`).join('')}
+      <div style="margin-top:14px;padding:12px;border-radius:10px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2)">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">💡 Exam Tip</div>
+        <div style="font-size:0.85rem;color:var(--text2);line-height:1.6">${parsed.examTip}</div>
+      </div>
+    `;
+    $('ai-summary-output').innerHTML = `<div class="ai-summary-output">${html}</div>`;
+    $('ai-summary-output').classList.remove('hidden');
+    $('copy-summary-btn').classList.remove('hidden');
+    $('save-summary-btn').classList.remove('hidden');
+
+  } catch(err) {
+    clearInterval(lmInterval);
+    $('ai-loading').classList.add('hidden');
+    $('summarize-btn').disabled = false;
+    $('ai-summary-output').innerHTML = `<div class="ai-summary-output"><p class="text-danger"><i class="fa-solid fa-triangle-exclamation"></i> ${err.message || 'Something went wrong. Please try again.'}</p></div>`;
+    $('ai-summary-output').classList.remove('hidden');
+  }
+}
+
+function copySummary() {
+  navigator.clipboard.writeText(currentSummaryText).then(() => toast('Summary copied to clipboard!'));
+}
+
+function saveSummary() {
+  if (!currentSummaryText) return;
+  const saved = LS.get('savedSummaries') || [];
+  saved.unshift({ id: Date.now(), title: currentVideoTitle, text: currentSummaryText, date: new Date().toLocaleDateString('en-GB') });
+  if (saved.length > 10) saved.pop();
+  LS.set('savedSummaries', saved);
+  renderSavedSummaries();
+  toast('Summary saved!');
+}
+
+function renderSavedSummaries() {
+  const list = $('saved-summaries-list');
+  const saved = LS.get('savedSummaries') || [];
+  $('no-saved-msg') && $('no-saved-msg').remove();
+  list.innerHTML = '';
+  if (saved.length === 0) {
+    list.innerHTML = '<p class="text-dim text-xs" id="no-saved-msg" style="padding:8px 0">No saved summaries yet.</p>';
+    return;
+  }
+  saved.forEach(s => {
+    const el = document.createElement('div');
+    el.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border2);margin-bottom:6px';
+    el.innerHTML = `<div><div style="font-size:0.82rem;font-weight:600;color:var(--text)">${s.title || 'Untitled'}</div><div style="font-size:0.7rem;color:var(--text3)">${s.date}</div></div><div style="display:flex;gap:6px"><button class="btn btn-ghost btn-sm" onclick="loadSavedSummary(${s.id})"><i class="fa-solid fa-eye"></i></button><button class="btn btn-danger btn-sm" onclick="deleteSavedSummary(${s.id})"><i class="fa-solid fa-trash"></i></button></div>`;
+    list.appendChild(el);
+  });
+}
+
+function loadSavedSummary(id) {
+  const saved = LS.get('savedSummaries') || [];
+  const s = saved.find(x => x.id === id);
+  if (!s) return;
+  currentSummaryText = s.text;
+  $('ai-summary-placeholder').classList.add('hidden');
+  $('ai-loading').classList.add('hidden');
+  $('ai-summary-output').innerHTML = `<div class="ai-summary-output"><pre style="white-space:pre-wrap;font-family:Space Grotesk;font-size:0.85rem;line-height:1.7;color:var(--text2)">${s.text}</pre></div>`;
+  $('ai-summary-output').classList.remove('hidden');
+  $('copy-summary-btn').classList.remove('hidden');
+}
+
+function deleteSavedSummary(id) {
+  let saved = LS.get('savedSummaries') || [];
+  saved = saved.filter(s => s.id !== id);
+  LS.set('savedSummaries', saved);
+  renderSavedSummaries();
+}
+
+/* ═══════════════════════════════════════
+   POMODORO
+═══════════════════════════════════════ */
+const POMO = { focus: 25*60, short: 5*60, long: 15*60 };
+let pomoMode = 'focus', pomoSecs = POMO.focus, pomoTotal = POMO.focus, pomoRunning = false, pomoIv = null;
+let pomoToday = 0;
+
+(function initPomo() {
+  const today = new Date().toDateString();
+  if (LS.get('pomoDate') !== today) { LS.set('pomoDate', today); LS.set('pomoSessions', 0); }
+  pomoToday = LS.get('pomoSessions') || 0;
+})();
+
+function setPomoMode(mode) {
+  if (pomoRunning) return;
+  pomoMode = mode; pomoSecs = POMO[mode]; pomoTotal = POMO[mode];
+  document.querySelectorAll('.pomo-mode-btn').forEach(b => b.classList.remove('active'));
+  $(`mode-${mode}`).classList.add('active');
+  updatePomoUI();
+}
+
+function updatePomoUI() {
+  const m = String(Math.floor(pomoSecs/60)).padStart(2,'0');
+  const s = String(pomoSecs%60).padStart(2,'0');
+  $('pomo-display').textContent = `${m}:${s}`;
+  const offset = 490 * (1 - pomoSecs / pomoTotal);
+  $('pomo-ring-fill').style.strokeDashoffset = offset;
+  $('stat-sessions-today').textContent = pomoToday;
+  $('stat-focus-mins').textContent = pomoToday * 25;
+}
+
+function togglePomo() {
+  if (pomoRunning) {
+    clearInterval(pomoIv); pomoRunning = false;
+    $('pomo-start-btn').innerHTML = '<i class="fa-solid fa-play"></i> Resume';
+    $('pomo-status').textContent = 'Paused';
+  } else {
+    pomoRunning = true;
+    $('pomo-start-btn').innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
+    $('pomo-status').textContent = pomoMode === 'focus' ? 'Focusing…' : 'Resting…';
+    pomoIv = setInterval(() => {
+      pomoSecs--;
+      updatePomoUI();
+      if (pomoSecs <= 0) {
+        clearInterval(pomoIv); pomoRunning = false;
+        if (pomoMode === 'focus') {
+          pomoToday++; LS.set('pomoSessions', pomoToday); LS.set('pomoDate', new Date().toDateString());
+        }
+        $('pomo-status').textContent = '✅ Done!';
+        $('pomo-start-btn').innerHTML = '<i class="fa-solid fa-play"></i> Start';
+        renderPomoSessions();
+        if (Notification.permission === 'granted') new Notification('StudyOS', { body: pomoMode === 'focus' ? '🎉 Focus session done! Take a break.' : '💪 Break over — time to focus!' });
+      }
+    }, 1000);
+  }
+}
+
+function resetPomo() {
+  clearInterval(pomoIv); pomoRunning = false;
+  pomoSecs = POMO[pomoMode]; pomoTotal = POMO[pomoMode];
+  $('pomo-start-btn').innerHTML = '<i class="fa-solid fa-play"></i> Start';
+  $('pomo-status').textContent = 'Ready';
+  updatePomoUI();
+}
+
+function renderPomoSessions() {
+  const c = $('pomo-sessions'); c.innerHTML = '';
+  for (let i = 0; i < Math.min(pomoToday, 10); i++) {
+    const d = document.createElement('div');
+    d.style.cssText = 'width:10px;height:10px;border-radius:50%;background:var(--indigo)';
+    c.appendChild(d);
+  }
+  if (pomoToday > 10) { const s = document.createElement('span'); s.style.cssText='font-size:0.75rem;color:var(--indigo2);font-weight:700'; s.textContent = `+${pomoToday-10}`; c.appendChild(s); }
+}
+
+function playAmbient(type) {
+  const urls = {
+    rain:   'https://www.youtube.com/results?search_query=rain+sounds+for+studying',
+    forest: 'https://www.youtube.com/results?search_query=forest+sounds+for+studying',
+    cafe:   'https://www.youtube.com/results?search_query=cafe+ambient+sounds+for+studying',
+  };
+  if (type === 'off') { toast('Ambient off.', 'fa-volume-xmark'); return; }
+  window.open(urls[type], '_blank');
+}
+
+if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+
+/* ═══════════════════════════════════════
+   FLASHCARDS
+═══════════════════════════════════════ */
+let cards = LS.get('flashcards') || [];
+let cardIndex = 0;
+let cardFlipped = false;
+
+function addFlashcard() {
+  const q = $('fc-q').value.trim();
+  const a = $('fc-a').value.trim();
+  if (!q || !a) { toast('Enter both question and answer.', 'fa-triangle-exclamation'); return; }
+  cards.push({ id: Date.now(), q, a });
+  LS.set('flashcards', cards);
+  $('fc-q').value = ''; $('fc-a').value = '';
+  cardIndex = cards.length - 1;
+  updateCardUI();
+  toast('Flashcard added!');
+}
+
+function updateCardUI() {
+  cardFlipped = false;
+  $('flashcard-el').classList.remove('flipped');
+  const total = cards.length;
+  $('fc-total').textContent = total;
+  $('fc-current').textContent = total === 0 ? 0 : cardIndex + 1;
+  if (total === 0) { $('fc-front').textContent = 'Add a card to get started'; $('fc-back').textContent = 'Answer appears here'; return; }
+  $('fc-front').textContent = cards[cardIndex].q;
+  $('fc-back').textContent  = cards[cardIndex].a;
+}
+
+function flipCard() {
+  if (cards.length === 0) return;
+  cardFlipped = !cardFlipped;
+  $('flashcard-el').classList.toggle('flipped', cardFlipped);
+}
+
+function nextCard() {
+  if (cards.length === 0) return;
+  cardIndex = (cardIndex + 1) % cards.length;
+  updateCardUI();
+}
+
+function prevCard() {
+  if (cards.length === 0) return;
+  cardIndex = (cardIndex - 1 + cards.length) % cards.length;
+  updateCardUI();
+}
+
+function deleteCurrentCard() {
+  if (cards.length === 0) return;
+  if (!confirm('Delete this card?')) return;
+  cards.splice(cardIndex, 1);
+  LS.set('flashcards', cards);
+  if (cardIndex >= cards.length) cardIndex = Math.max(0, cards.length - 1);
+  updateCardUI();
+  toast('Card deleted.', 'fa-trash');
+}
+
+/* ═══════════════════════════════════════
+   NOTES
+═══════════════════════════════════════ */
+const notesEl = $('quick-notes');
+
+function loadNotes() {
+  notesEl.value = LS.get('quickNotes') || '';
+  updateNoteChars();
+}
+
+function saveNotes() {
+  LS.set('quickNotes', notesEl.value);
+  $('notes-saved-msg').classList.remove('hidden');
+  setTimeout(() => $('notes-saved-msg').classList.add('hidden'), 2000);
+}
+
+function clearNotes() {
+  if (!confirm('Clear all notes?')) return;
+  notesEl.value = ''; LS.set('quickNotes', ''); updateNoteChars();
+}
+
+function updateNoteChars() { $('notes-chars').textContent = `${notesEl.value.length} chars`; }
+
+notesEl.addEventListener('input', () => {
+  updateNoteChars();
+  clearTimeout(notesEl._t);
+  notesEl._t = setTimeout(() => LS.set('quickNotes', notesEl.value), 800);
+});
+
+/* ═══════════════════════════════════════
+   HABIT TRACKER
+═══════════════════════════════════════ */
+let habits = LS.get('habits') || [];
+
+const DAYS_SHORT = ['M','T','W','T','F','S','S'];
+
+function addHabit() {
+  const name = prompt('Enter habit name (e.g. "Read notes", "Practice papers"):');
+  if (!name || !name.trim()) return;
+  habits.push({ id: Date.now(), name: name.trim(), done: [false,false,false,false,false,false,false] });
+  LS.set('habits', habits);
+  renderHabits();
+  toast(`"${name.trim()}" added!`);
+}
+
+function toggleHabitDay(habitId, dayIdx) {
+  const h = habits.find(x => x.id === habitId);
+  if (h) { h.done[dayIdx] = !h.done[dayIdx]; LS.set('habits', habits); renderHabits(); }
+}
+
+function deleteHabit(id) {
+  habits = habits.filter(h => h.id !== id);
+  LS.set('habits', habits); renderHabits();
+  toast('Habit removed.', 'fa-trash');
+}
+
+function renderHabits() {
+  const list = $('habits-list');
+  list.innerHTML = '';
+  if (habits.length === 0) { $('no-habits-msg').classList.remove('hidden'); return; }
+  $('no-habits-msg').classList.add('hidden');
+  habits.forEach(h => {
+    const doneCount = h.done.filter(Boolean).length;
+    const el = document.createElement('div');
+    el.className = 'habit-item';
+    el.innerHTML = `
+      <div style="flex:1;min-width:0">
+        <div class="habit-item-name">${h.name}</div>
+        <div style="font-size:0.7rem;color:var(--text3);margin-top:2px">${doneCount}/7 days this week</div>
+      </div>
+      <div class="habit-days" style="margin-left:12px">
+        ${DAYS_SHORT.map((d,i) => `<div class="habit-day ${h.done[i]?'done':''}" onclick="toggleHabitDay(${h.id},${i})" title="${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][i]}">${d}</div>`).join('')}
+      </div>
+      <button class="btn btn-danger btn-sm" style="margin-left:8px" onclick="deleteHabit(${h.id})"><i class="fa-solid fa-times"></i></button>
+    `;
+    list.appendChild(el);
+  });
+}
+
+/* ═══════════════════════════════════════
+   TOOLS SUB-TABS
+═══════════════════════════════════════ */
+function showTool(id) {
+  ['pomo','flash','notes','habit'].forEach(t => {
+    $('tool-'+t).classList.toggle('hidden', t !== id);
+    const btn = $('tool-tab-'+t);
+    if (btn) {
+      btn.classList.toggle('btn-primary', t === id);
+      btn.classList.toggle('btn-ghost', t !== id);
+    }
+  });
+}
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+function init() {
+  renderExams();
+  loadNotes();
+  updatePomoUI();
+  renderPomoSessions();
+  updateCardUI();
+  renderHabits();
+  renderSavedSummaries();
+  const sched = LS.get('schedule');
+  if (sched) renderSchedule(sched);
+  const sylText = LS.get('syllabusText');
+  if (sylText) $('syllabus-input').value = sylText;
+}
+
+init();
 </script>
 </body>
 </html>
