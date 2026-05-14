@@ -1,1 +1,1723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyOS Pro — A Level Command Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;700;900&family=Poppins:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --bg-primary: #0a0e27;
+      --bg-secondary: #0f1438;
+      --bg-tertiary: #1a1f3a;
+      --bg-card: rgba(20,27,60,0.6);
+      --border: rgba(147,112,219,0.25);
+      --border-light: rgba(255,255,255,0.08);
+      --neon-purple: #a78bfa;
+      --neon-pink: #f472b6;
+      --neon-cyan: #06d6d6;
+      --neon-green: #10b981;
+      --neon-gold: #fbbf24;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-tertiary: #64748b;
+      --accent-1: #7c3aed;
+      --accent-2: #ec4899;
+      --accent-3: #06b6d4;
+      --glow-purple: 0 0 20px rgba(167,139,250,0.3);
+      --glow-gold: 0 0 30px rgba(251,191,36,0.4);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',sans-serif;background:linear-gradient(135deg,var(--bg-primary) 0%,var(--bg-secondary) 100%);color:var(--text-primary);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;position:relative}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(167,139,250,0.15) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(6,214,214,0.1) 0%,transparent 50%);pointer-events:none;z-index:0}
+    body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(0deg,rgba(167,139,250,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(167,139,250,0.03) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0;animation:gridMove 20s linear infinite}
+    @keyframes gridMove{0%{transform:translate(0,0)}100%{transform:translate(50px,50px)}}
+    #app{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh}
 
+    /* NAV */
+    nav{position:sticky;top:0;z-index:100;background:rgba(10,14,39,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border-light);padding:0 20px;box-shadow:0 8px 32px rgba(0,0,0,0.4)}
+    .nav-inner{max-width:1500px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+    .logo{font-family:'Orbitron',sans-serif;font-size:1.5rem;font-weight:900;letter-spacing:3px;background:linear-gradient(135deg,var(--neon-purple),var(--neon-pink),var(--neon-cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:flex;align-items:center;gap:10px;animation:float 3s ease-in-out infinite;flex-shrink:0}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+    .nav-tabs{display:flex;gap:4px;background:rgba(255,255,255,0.03);border:1px solid var(--border-light);border-radius:14px;padding:5px;overflow-x:auto}
+    .nav-tabs::-webkit-scrollbar{display:none}
+    .tab-btn{padding:9px 15px;border-radius:10px;border:1px solid transparent;background:transparent;color:var(--text-secondary);font-family:'Poppins',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);display:flex;align-items:center;gap:7px}
+    .tab-btn:hover{color:var(--neon-cyan);background:rgba(6,214,214,0.1)}
+    .tab-btn.active{background:linear-gradient(135deg,var(--accent-1),var(--accent-2));color:#fff;border-color:var(--neon-pink);box-shadow:0 0 20px rgba(167,139,250,0.4);transform:translateY(-2px)}
+    .tab-btn.zohair-btn{background:linear-gradient(135deg,#92400e,#78350f);color:var(--neon-gold);border:1px solid var(--neon-gold);box-shadow:var(--glow-gold);animation:goldPulse 2s ease-in-out infinite}
+    .tab-btn.zohair-btn.active{background:linear-gradient(135deg,#b45309,#92400e);color:#fff}
+    @keyframes goldPulse{0%,100%{box-shadow:0 0 15px rgba(251,191,36,0.4)}50%{box-shadow:0 0 35px rgba(251,191,36,0.8)}}
+
+    /* API KEY BANNER */
+    .api-banner{background:linear-gradient(135deg,rgba(251,191,36,0.12),rgba(217,119,6,0.08));border:1px solid rgba(251,191,36,0.3);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:12px;margin-bottom:22px}
+    .api-banner i{color:var(--neon-gold);font-size:1.1rem;flex-shrink:0}
+    .api-banner-text{flex:1;font-size:0.88rem;color:var(--text-secondary)}
+    .api-banner-text strong{color:var(--neon-gold)}
+    .api-input-row{display:flex;gap:8px;margin-top:8px;align-items:center}
+    .api-field{flex:1;background:rgba(0,0,0,0.3);border:1px solid rgba(251,191,36,0.3);border-radius:8px;padding:8px 13px;color:var(--text-primary);font-family:'JetBrains Mono',monospace;font-size:0.82rem;outline:none}
+    .api-field:focus{border-color:var(--neon-gold);box-shadow:0 0 0 2px rgba(251,191,36,0.2)}
+    .api-save-btn{padding:8px 16px;border-radius:8px;border:1px solid var(--neon-gold);background:rgba(251,191,36,0.15);color:var(--neon-gold);font-weight:700;font-size:0.82rem;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+    .api-save-btn:hover{background:rgba(251,191,36,0.25)}
+
+    /* MAIN */
+    main{max-width:1500px;margin:0 auto;width:100%;padding:36px 20px 80px;flex:1}
+    section{animation:fadeInUp 0.5s ease both}
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+    /* CARDS */
+    .card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;backdrop-filter:blur(10px);padding:22px;box-shadow:0 8px 32px rgba(0,0,0,0.3);transition:all 0.3s ease}
+    .card:hover{border-color:var(--neon-purple);box-shadow:var(--glow-purple);transform:translateY(-4px)}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    @media(max-width:1024px){.grid-3,.grid-4{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:640px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+
+    /* TYPOGRAPHY */
+    .sec-title{font-family:'Poppins',sans-serif;font-size:1.9rem;font-weight:800;color:var(--text-primary);display:flex;align-items:center;gap:12px;margin-bottom:10px}
+    .sec-title i{background:linear-gradient(135deg,var(--neon-purple),var(--neon-pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 8px rgba(167,139,250,0.4))}
+    .sec-sub{color:var(--text-secondary);font-size:0.95rem;line-height:1.6;margin-bottom:26px}
+
+    /* BUTTONS */
+    .btn{display:inline-flex;align-items:center;gap:9px;padding:11px 22px;border-radius:10px;font-family:'Poppins',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;border:none;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);text-decoration:none}
+    .btn-primary{background:linear-gradient(135deg,var(--accent-1),var(--accent-2));color:#fff;box-shadow:0 8px 24px rgba(167,139,250,0.4);border:1px solid rgba(244,114,182,0.3)}
+    .btn-primary:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(167,139,250,0.6)}
+    .btn-secondary{background:rgba(167,139,250,0.15);color:var(--neon-purple);border:1px solid var(--neon-purple)}
+    .btn-secondary:hover{background:rgba(167,139,250,0.25);transform:translateY(-2px)}
+    .btn-ghost{background:rgba(255,255,255,0.05);color:var(--text-secondary);border:1px solid var(--border-light)}
+    .btn-ghost:hover{background:rgba(255,255,255,0.1);color:var(--neon-cyan);border-color:var(--neon-cyan)}
+    .btn-danger{background:rgba(239,68,68,0.15);color:#ff6b9d;border:1px solid rgba(239,68,68,0.3)}
+    .btn-danger:hover{background:rgba(239,68,68,0.25)}
+    .btn-gold{background:linear-gradient(135deg,#b45309,#92400e);color:var(--neon-gold);border:1px solid var(--neon-gold);box-shadow:0 4px 16px rgba(251,191,36,0.3)}
+    .btn-gold:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(251,191,36,0.5)}
+    .btn-sm{padding:7px 14px;font-size:0.82rem}
+    .btn:disabled{opacity:0.5;cursor:not-allowed;transform:none!important}
+
+    /* INPUTS */
+    .field{width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border-light);border-radius:10px;padding:11px 15px;color:var(--text-primary);font-family:'Inter',sans-serif;font-size:0.92rem;outline:none;transition:all 0.3s ease}
+    .field:focus{border-color:var(--neon-purple);background:rgba(167,139,250,0.08);box-shadow:0 0 0 3px rgba(167,139,250,0.2)}
+    .field::placeholder{color:var(--text-tertiary)}
+    textarea.field{resize:vertical;min-height:110px;line-height:1.6}
+    label.lbl{display:block;font-size:0.8rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+
+    /* BADGES */
+    .chip{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:8px;font-size:0.82rem;font-weight:600;background:rgba(6,214,214,0.15);color:var(--neon-cyan);border:1px solid rgba(6,214,214,0.3);transition:all 0.2s ease}
+    .badge{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:0.78rem;font-weight:700;font-family:'JetBrains Mono',monospace;background:rgba(167,139,250,0.2);color:var(--neon-purple);border:1px solid rgba(167,139,250,0.3)}
+    .divider{border:none;border-top:1px solid var(--border-light);margin:22px 0}
+
+    /* AI BADGE */
+    .ai-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;font-family:'JetBrains Mono',monospace;background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(6,214,214,0.2));color:#34d399;border:1px solid rgba(16,185,129,0.3);margin-bottom:8px}
+
+    /* SUBJECT TABS */
+    .subject-tabs{display:flex;gap:10px;margin-bottom:26px;flex-wrap:wrap}
+    .subject-tab{padding:9px 18px;border-radius:10px;border:1px solid var(--border-light);background:rgba(255,255,255,0.03);color:var(--text-secondary);cursor:pointer;transition:all 0.3s ease;font-weight:600;font-family:'Poppins',sans-serif;font-size:0.88rem}
+    .subject-tab:hover{border-color:var(--neon-cyan);color:var(--neon-cyan);transform:translateY(-2px)}
+    .subject-tab.active{background:linear-gradient(135deg,var(--neon-purple),var(--neon-pink));border-color:var(--neon-pink);color:#fff;box-shadow:var(--glow-purple)}
+
+    /* STATS */
+    .stat-box{padding:18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid var(--border-light);text-align:center;transition:all 0.3s ease}
+    .stat-box:hover{border-color:var(--neon-purple);background:rgba(167,139,250,0.08)}
+    .stat-val{font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:900;background:linear-gradient(135deg,var(--neon-purple),var(--neon-pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px}
+    .stat-lbl{font-size:0.78rem;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:1px;margin-top:7px}
+
+    /* EXAM CARDS */
+    .exam-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;margin-bottom:26px}
+    .exam-card{position:relative;border-radius:16px;border:1px solid var(--border-light);background:linear-gradient(135deg,rgba(167,139,250,0.08),rgba(6,214,214,0.05));padding:22px;overflow:hidden;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1)}
+    .exam-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--neon-purple),var(--neon-pink))}
+    .exam-card:hover{transform:translateY(-6px);border-color:var(--neon-purple);box-shadow:0 12px 40px rgba(167,139,250,0.3)}
+    .exam-card-days{font-family:'Orbitron',sans-serif;font-size:3rem;font-weight:900;line-height:1;background:linear-gradient(135deg,var(--neon-purple),var(--neon-pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .progress-bar{height:5px;background:rgba(255,255,255,0.08);border-radius:99px;margin:14px 0;overflow:hidden}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--neon-purple),var(--neon-pink),var(--neon-cyan));border-radius:99px;transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1)}
+
+    /* SUBJECT DETAIL */
+    .topic-list{list-style:none}
+    .topic-item{padding:10px 14px;margin-bottom:6px;background:rgba(255,255,255,0.03);border-left:3px solid var(--neon-cyan);border-radius:6px;transition:all 0.2s ease;font-size:0.92rem;cursor:pointer}
+    .topic-item:hover{background:rgba(167,139,250,0.15);border-left-color:var(--neon-purple);transform:translateX(4px)}
+    .topic-item::before{content:'▸';color:var(--neon-cyan);font-size:1rem;font-weight:bold;margin-right:8px}
+    .topic-item .topic-ai-hint{font-size:0.72rem;color:var(--neon-purple);margin-left:6px;opacity:0.7}
+    .topic-item:hover .topic-ai-hint{opacity:1}
+    .chapter-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-left:12px;border-left:3px solid var(--neon-purple);cursor:pointer;transition:all 0.2s ease;border-radius:0 8px 8px 0;padding:10px 12px;background:rgba(167,139,250,0.05)}
+    .chapter-header:hover{background:rgba(167,139,250,0.12)}
+    .chapter-header-title{font-size:1.1rem;font-weight:700;color:var(--text-primary)}
+    .chapter-ai-btn{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:8px;font-size:0.78rem;font-weight:700;background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(6,214,214,0.2));color:#34d399;border:1px solid rgba(16,185,129,0.4);cursor:pointer;transition:all 0.2s ease;white-space:nowrap}
+    .chapter-ai-btn:hover{background:linear-gradient(135deg,rgba(16,185,129,0.35),rgba(6,214,214,0.35));transform:scale(1.05)}
+    .syllabus-section{margin-bottom:24px}
+    .resource-link{display:flex;align-items:center;gap:13px;padding:14px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid var(--border-light);color:var(--text-secondary);text-decoration:none;font-weight:600;font-size:0.92rem;transition:all 0.3s ease}
+    .resource-link:hover{background:rgba(167,139,250,0.15);border-color:var(--neon-purple);transform:translateX(6px);color:var(--neon-purple)}
+    .resource-icon{width:38px;height:38px;border-radius:10px;background:rgba(167,139,250,0.2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;transition:all 0.3s ease}
+    .resource-link:hover .resource-icon{background:rgba(167,139,250,0.4);transform:scale(1.1)}
+
+    /* MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--bg-secondary);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:700px;max-height:85vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.5);animation:modalSlideUp 0.3s cubic-bezier(0.34,1.56,0.64,1)}
+    @keyframes modalSlideUp{from{opacity:0;transform:translateY(30px) scale(0.95)}to{opacity:1;transform:none}}
+    .modal-title{font-family:'Poppins',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:20px;color:var(--text-primary)}
+    .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}
+    .content-tab-bar{display:flex;gap:6px;margin-bottom:22px;border-bottom:2px solid var(--border-light)}
+    .content-tab{padding:10px 18px;border-bottom:3px solid transparent;background:none;border-top:none;border-left:none;border-right:none;color:var(--text-secondary);cursor:pointer;font-weight:600;font-size:0.9rem;transition:all 0.3s ease}
+    .content-tab:hover{color:var(--neon-cyan)}
+    .content-tab.active{color:var(--neon-purple);border-bottom-color:var(--neon-purple)}
+    .content-panel{display:none}
+    .content-panel.active{display:block;animation:fadeInUp 0.3s ease}
+
+    /* POMODORO */
+    .pomo-display{font-family:'Orbitron',sans-serif;font-size:4.5rem;font-weight:900;letter-spacing:4px;background:linear-gradient(135deg,var(--neon-purple),var(--neon-cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;line-height:1;margin:18px 0}
+    .pomo-mode-btn{padding:7px 16px;border-radius:8px;border:1px solid var(--border-light);background:rgba(255,255,255,0.05);color:var(--text-secondary);cursor:pointer;font-weight:600;transition:all 0.3s ease;font-size:0.85rem}
+    .pomo-mode-btn.active{background:linear-gradient(135deg,var(--neon-purple),var(--neon-pink));color:#fff;border-color:var(--neon-pink);box-shadow:var(--glow-purple)}
+    .pomo-mode-btn:hover:not(.active){border-color:var(--neon-purple);color:var(--neon-purple)}
+
+    /* FLASHCARDS */
+    .flashcard-scene{perspective:1200px;width:100%;max-width:460px;height:240px;margin:18px auto;cursor:pointer}
+    .flashcard{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 0.6s cubic-bezier(0.34,1.56,0.64,1);border-radius:16px}
+    .flashcard.flipped{transform:rotateY(180deg)}
+    .flashcard-face{position:absolute;inset:0;border-radius:16px;display:flex;align-items:center;justify-content:center;padding:26px;text-align:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;font-size:1.05rem;font-weight:600;border:2px solid var(--border)}
+    .flashcard-front{background:linear-gradient(135deg,rgba(167,139,250,0.15),rgba(124,58,237,0.1));color:var(--neon-purple)}
+    .flashcard-back{background:linear-gradient(135deg,rgba(6,214,214,0.15),rgba(16,185,129,0.1));color:var(--neon-cyan);transform:rotateY(180deg)}
+
+    /* AI RESPONSE */
+    .ai-response{background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.2);border-radius:12px;padding:18px;line-height:1.8;font-size:0.92rem;max-height:420px;overflow-y:auto;white-space:pre-wrap;word-wrap:break-word}
+    .ai-response::-webkit-scrollbar{width:6px}
+    .ai-response::-webkit-scrollbar-track{background:transparent}
+    .ai-response::-webkit-scrollbar-thumb{background:var(--neon-purple);border-radius:99px}
+
+    /* LOADING */
+    .loading-dots{display:flex;gap:6px;justify-content:center;padding:20px}
+    .loading-dots span{width:10px;height:10px;border-radius:50%;background:var(--neon-purple);animation:bounce 1.4s ease infinite}
+    .loading-dots span:nth-child(2){animation-delay:0.2s;background:var(--neon-pink)}
+    .loading-dots span:nth-child(3){animation-delay:0.4s;background:var(--neon-cyan)}
+    @keyframes bounce{0%,80%,100%{transform:scale(0.8);opacity:0.5}40%{transform:scale(1.2);opacity:1}}
+
+    /* RESOURCE SEARCH */
+    .search-result-card{background:rgba(255,255,255,0.03);border:1px solid var(--border-light);border-radius:12px;padding:16px;margin-bottom:12px;transition:all 0.3s ease}
+    .search-result-card:hover{border-color:var(--neon-cyan);background:rgba(6,214,214,0.05)}
+    .search-result-title{font-weight:700;color:var(--text-primary);margin-bottom:6px;font-size:1rem}
+    .search-result-desc{color:var(--text-secondary);font-size:0.88rem;margin-bottom:10px;line-height:1.5}
+    .search-result-links{display:flex;gap:8px;flex-wrap:wrap}
+    .res-tag{padding:4px 12px;border-radius:6px;font-size:0.78rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+    .res-tag.pp{background:rgba(167,139,250,0.2);color:var(--neon-purple);border:1px solid rgba(167,139,250,0.3)}
+    .res-tag.yt{background:rgba(239,68,68,0.2);color:#ff6b9d;border:1px solid rgba(239,68,68,0.3)}
+    .res-tag.notes{background:rgba(6,214,214,0.2);color:var(--neon-cyan);border:1px solid rgba(6,214,214,0.3)}
+    .res-tag.sme{background:rgba(16,185,129,0.2);color:var(--neon-green);border:1px solid rgba(16,185,129,0.3)}
+    .res-tag:hover{transform:scale(1.05)}
+
+    /* ZOHAIR SECTION */
+    .zohair-section{position:relative;overflow:hidden}
+    .zohair-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(251,191,36,0.15) 0%,transparent 70%);pointer-events:none}
+    .gold-title{font-family:'Orbitron',sans-serif;font-size:2.5rem;font-weight:900;background:linear-gradient(135deg,#fbbf24,#f59e0b,#d97706,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200% auto;animation:goldShimmer 3s linear infinite;text-align:center;margin-bottom:8px}
+    @keyframes goldShimmer{0%{background-position:0% center}100%{background-position:200% center}}
+    .crown{font-size:3rem;text-align:center;margin-bottom:12px;filter:drop-shadow(0 0 20px rgba(251,191,36,0.8));animation:crownBob 2s ease-in-out infinite}
+    @keyframes crownBob{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-10px) rotate(5deg)}}
+    .zohair-card{border:2px solid var(--neon-gold);background:linear-gradient(135deg,rgba(251,191,36,0.08),rgba(217,119,6,0.05));border-radius:20px;padding:28px;position:relative;overflow:hidden;box-shadow:var(--glow-gold)}
+    .zohair-card::before{content:'✨';position:absolute;top:10px;left:10px;font-size:1.2rem;animation:spin 4s linear infinite}
+    .zohair-card::after{content:'✨';position:absolute;top:10px;right:10px;font-size:1.2rem;animation:spin 4s linear infinite reverse}
+    @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+    .praise-block{background:rgba(0,0,0,0.3);border:1px solid rgba(251,191,36,0.3);border-radius:12px;padding:18px;margin-bottom:16px;position:relative}
+    .praise-block::before{content:'"';font-size:3rem;color:var(--neon-gold);opacity:0.4;position:absolute;top:-5px;left:10px;font-family:Georgia,serif;line-height:1}
+    .praise-text{color:var(--text-secondary);line-height:1.8;font-size:0.95rem;padding-left:20px;font-style:italic}
+    .sarcasm-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:20px;font-size:0.75rem;font-weight:700;font-family:'JetBrains Mono',monospace;background:rgba(251,191,36,0.2);color:var(--neon-gold);border:1px solid rgba(251,191,36,0.4);margin-bottom:10px}
+    .achievement{display:flex;align-items:center;gap:14px;padding:14px;border-radius:12px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);margin-bottom:10px;transition:all 0.3s ease}
+    .achievement:hover{background:rgba(251,191,36,0.12);transform:translateX(6px)}
+    .achievement-icon{font-size:1.8rem;flex-shrink:0}
+    .achievement-text{flex:1}
+    .achievement-title{font-weight:700;color:var(--neon-gold);margin-bottom:4px;font-size:0.95rem}
+    .achievement-desc{color:var(--text-secondary);font-size:0.85rem}
+
+    /* VIDEO GRID */
+    .video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+    .video-card{border-radius:12px;overflow:hidden;background:var(--bg-card);border:1px solid var(--border);transition:all 0.3s ease}
+    .video-card:hover{transform:translateY(-4px);border-color:var(--neon-pink);box-shadow:0 12px 32px rgba(244,114,182,0.2)}
+    .video-thumbnail{width:100%;height:150px;background:linear-gradient(135deg,rgba(167,139,250,0.2),rgba(6,214,214,0.2));display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--neon-pink)}
+    .video-info{padding:13px}
+    .video-title{font-size:0.9rem;font-weight:700;color:var(--text-primary);margin-bottom:5px;line-height:1.4}
+    .video-channel{font-size:0.78rem;color:var(--text-tertiary)}
+
+    /* UTILITIES */
+    .flex{display:flex}.flex-col{display:flex;flex-direction:column}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-2{gap:8px}.gap-3{gap:12px}.gap-4{gap:16px}.flex-wrap{flex-wrap:wrap}.mt-2{margin-top:8px}.mt-3{margin-top:12px}.mt-4{margin-top:16px}.mb-2{margin-bottom:8px}.mb-3{margin-bottom:12px}.mb-4{margin-bottom:16px}.w-full{width:100%}.text-center{text-align:center}.text-dim{color:var(--text-secondary)}.text-xs{font-size:0.78rem}.text-sm{font-size:0.88rem}.hidden{display:none!important}
+
+    /* FOOTER */
+    footer{text-align:center;font-size:0.82rem;color:var(--text-tertiary);padding:22px;border-top:1px solid var(--border-light)}
+    footer span{background:linear-gradient(135deg,var(--neon-purple),var(--neon-pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700}
+
+    /* TOAST */
+    #toast{position:fixed;bottom:26px;right:26px;z-index:999;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:12px;padding:13px 18px;font-size:0.88rem;color:var(--text-primary);display:flex;align-items:center;gap:11px;transform:translateY(100px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);backdrop-filter:blur(20px);box-shadow:0 12px 40px rgba(0,0,0,0.4)}
+    #toast.show{transform:none;opacity:1}
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar{width:7px;height:7px}
+    ::-webkit-scrollbar-track{background:var(--bg-primary)}
+    ::-webkit-scrollbar-thumb{background:var(--neon-purple);border-radius:99px}
+    ::-webkit-scrollbar-thumb:hover{background:var(--neon-pink)}
+
+    @media(max-width:768px){main{padding:24px 14px 60px}nav{padding:0 14px}.nav-inner{height:58px}.logo{font-size:1.2rem}.sec-title{font-size:1.5rem}.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}.exam-card-days{font-size:2.4rem}.pomo-display{font-size:3rem}.modal{padding:20px}}
+  </style>
+</head>
+<body>
+<div id="app">
+
+<!-- NAVIGATION -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo"><i class="fas fa-brain" style="font-size:1.2rem;filter:drop-shadow(0 0 10px var(--neon-purple))"></i> StudyOS Pro</div>
+    <div class="nav-tabs" id="nav-tabs">
+      <button class="tab-btn active" onclick="showSection('dashboard',this)"><i class="fas fa-chart-line"></i> Dashboard</button>
+      <button class="tab-btn" onclick="showSection('subjects',this)"><i class="fas fa-book"></i> Subjects</button>
+      <button class="tab-btn" onclick="showSection('exams',this)"><i class="fas fa-calendar-alt"></i> Exams</button>
+      <button class="tab-btn" onclick="showSection('ai-tools',this)"><i class="fas fa-magic"></i> AI Tools</button>
+      <button class="tab-btn" onclick="showSection('resources',this)"><i class="fas fa-search"></i> Resources</button>
+      <button class="tab-btn" onclick="showSection('tools',this)"><i class="fas fa-tools"></i> Tools</button>
+      <button class="tab-btn zohair-btn" onclick="showSection('zohair',this)"><i class="fas fa-crown"></i> Zohair 👑</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<!-- DASHBOARD -->
+<section id="section-dashboard">
+  <!-- API KEY BANNER -->
+  <div class="api-banner" id="api-banner">
+    <i class="fas fa-key"></i>
+    <div class="api-banner-text">
+      <strong>HuggingFace API Key Required</strong> — AI Tools need your HF token to generate notes, quizzes, and explanations.
+      <div class="api-input-row">
+        <input class="api-field" type="password" id="hf-key-input" placeholder="hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"/>
+        <button class="api-save-btn" onclick="saveApiKey()"><i class="fas fa-save"></i> Save Key</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-title"><i class="fas fa-chart-line"></i> Welcome Back</div>
+  <p class="sec-sub">Your A Level study command center — Cambridge International AS & A Level.</p>
+  <div class="grid-4 mb-4">
+    <div class="stat-box"><div class="stat-val" id="stat-total-exams">0</div><div class="stat-lbl">Exams Tracked</div></div>
+    <div class="stat-box"><div class="stat-val" id="stat-focus-mins-dash">0</div><div class="stat-lbl">Focus Mins</div></div>
+    <div class="stat-box"><div class="stat-val">6</div><div class="stat-lbl">Subjects</div></div>
+    <div class="stat-box"><div class="stat-val" id="stat-cards-dash">0</div><div class="stat-lbl">Flashcards</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div style="font-weight:700;font-size:1.1rem;margin-bottom:14px;color:var(--neon-purple)"><i class="fas fa-books"></i> Your A Level Books</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border-light)"><span style="font-size:1.4rem">📐</span><div><div style="font-weight:600;font-size:0.92rem">Pure Mathematics 1</div><div style="color:var(--text-tertiary);font-size:0.8rem">Cambridge — 9 Chapters</div></div></div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border-light)"><span style="font-size:1.4rem">∑</span><div><div style="font-weight:600;font-size:0.92rem">Pure Mathematics 2 & 3</div><div style="color:var(--text-tertiary);font-size:0.8rem">Cambridge — 11 Chapters</div></div></div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border-light)"><span style="font-size:1.4rem">⚙️</span><div><div style="font-weight:600;font-size:0.92rem">Mechanics</div><div style="color:var(--text-tertiary);font-size:0.8rem">Cambridge — 9 Chapters</div></div></div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border-light)"><span style="font-size:1.4rem">📊</span><div><div style="font-weight:600;font-size:0.92rem">Probability & Statistics 1 & 2</div><div style="color:var(--text-tertiary);font-size:0.8rem">Cambridge — 14 Chapters total</div></div></div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border-light)"><span style="font-size:1.4rem">⚗️</span><div><div style="font-weight:600;font-size:0.92rem">Chemistry (3rd Edition)</div><div style="color:var(--text-tertiary);font-size:0.8rem">Cambridge — 26+ Chapters</div></div></div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border-light)"><span style="font-size:1.4rem">💻</span><div><div style="font-weight:600;font-size:0.92rem">Computer Science AS & A Level</div><div style="color:var(--text-tertiary);font-size:0.8rem">Hodder — 20 Chapters</div></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-weight:700;font-size:1.1rem;margin-bottom:14px;color:var(--neon-cyan)"><i class="fas fa-bolt"></i> Quick Actions</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button class="btn btn-primary w-full" onclick="showSection('ai-tools',document.querySelectorAll('.tab-btn')[3])"><i class="fas fa-magic"></i> Generate Study Notes with AI</button>
+        <button class="btn btn-secondary w-full" onclick="showSection('resources',document.querySelectorAll('.tab-btn')[4])"><i class="fas fa-search"></i> Find Past Papers & Resources</button>
+        <button class="btn btn-ghost w-full" onclick="showSection('tools',document.querySelectorAll('.tab-btn')[5])"><i class="fas fa-clock"></i> Start Pomodoro Timer</button>
+        <button class="btn btn-ghost w-full" onclick="showSection('exams',document.querySelectorAll('.tab-btn')[2])"><i class="fas fa-plus"></i> Add Upcoming Exam</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SUBJECTS -->
+<section id="section-subjects" class="hidden">
+  <div class="sec-title"><i class="fas fa-book-open"></i> Subjects & Syllabus</div>
+  <p class="sec-sub">Full A Level syllabi extracted from your Cambridge textbooks. Click any chapter or topic to open an AI-powered notes page.</p>
+  <div class="grid-3" id="subjects-grid"></div>
+  <div class="modal-overlay" id="subject-modal">
+    <div class="modal">
+      <div class="modal-title" id="subject-modal-title">Subject</div>
+      <div class="content-tab-bar">
+        <button class="content-tab active" onclick="switchContentTab('syllabus',this)">📚 Syllabus</button>
+        <button class="content-tab" onclick="switchContentTab('resources',this)">🔗 Resources</button>
+        <button class="content-tab" onclick="switchContentTab('videos',this)">▶️ Videos</button>
+      </div>
+      <div id="syllabus-panel" class="content-panel active"></div>
+      <div id="resources-panel" class="content-panel"></div>
+      <div id="videos-panel" class="content-panel"></div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeSubjectModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXAMS -->
+<section id="section-exams" class="hidden">
+  <div class="sec-title"><i class="fas fa-calendar-alt"></i> My Exams</div>
+  <p class="sec-sub">Track all your upcoming A Level papers and never miss a deadline.</p>
+  <button class="btn btn-primary mb-4" onclick="openAddExamModal()"><i class="fas fa-plus"></i> Add Exam</button>
+  <div class="exam-cards-grid" id="exam-cards-grid"></div>
+  <div id="no-exams-msg" class="card text-center hidden" style="padding:38px">
+    <i class="fas fa-calendar-plus" style="font-size:2.8rem;color:var(--neon-purple);margin-bottom:14px;display:block"></i>
+    <p class="text-dim">No exams yet. Click <strong style="color:var(--neon-pink)">+ Add Exam</strong> to track your papers.</p>
+  </div>
+  <div class="modal-overlay" id="exam-modal">
+    <div class="modal" style="max-width:480px">
+      <div class="modal-title"><i class="fas fa-plus"></i> Add Exam</div>
+      <div style="display:grid;gap:14px">
+        <div><label class="lbl">Exam Name</label><input id="modal-exam-name" class="field" type="text" placeholder="e.g. Pure Mathematics 1 Paper"/></div>
+        <div><label class="lbl">Exam Date</label><input id="modal-exam-date" class="field" type="date"/></div>
+        <div><label class="lbl">Subject</label><input id="modal-exam-subject" class="field" type="text" placeholder="e.g. Mathematics"/></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeExamModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveExam()">Save Exam</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI TOOLS -->
+<section id="section-ai-tools" class="hidden">
+  <div class="sec-title"><i class="fas fa-magic"></i> AI Study Tools</div>
+  <p class="sec-sub">Powered by <span class="ai-badge" style="vertical-align:middle">🤗 GPT-OSS 120B via HuggingFace</span> — generate comprehensive notes, explain concepts, create quizzes, and more.</p>
+  <div class="subject-tabs mb-4">
+    <button class="subject-tab active" onclick="showAITool('notes',this)"><i class="fas fa-pen"></i> Note Generator</button>
+    <button class="subject-tab" onclick="showAITool('explain',this)"><i class="fas fa-lightbulb"></i> Concept Explainer</button>
+    <button class="subject-tab" onclick="showAITool('quiz',this)"><i class="fas fa-question-circle"></i> Quiz Creator</button>
+    <button class="subject-tab" onclick="showAITool('exam-tips',this)"><i class="fas fa-star"></i> Exam Tips</button>
+  </div>
+
+  <!-- Note Generator -->
+  <div id="ai-notes" class="grid-2" style="gap:22px">
+    <div class="card">
+      <label class="lbl">Topic</label>
+      <input id="note-topic" class="field mb-3" type="text" placeholder="e.g. Integration by parts"/>
+      <label class="lbl">Subject</label>
+      <select id="note-subject" class="field mb-3">
+        <option value="Pure Mathematics">Pure Mathematics</option>
+        <option value="Mechanics">Mechanics</option>
+        <option value="Probability & Statistics">Probability & Statistics</option>
+        <option value="Chemistry">Chemistry</option>
+        <option value="Computer Science">Computer Science</option>
+      </select>
+      <label class="lbl">Detail Level</label>
+      <select id="note-detail" class="field mb-3">
+        <option value="concise">Concise (exam revision)</option>
+        <option value="detailed">Detailed (full understanding)</option>
+        <option value="beginner">Beginner-friendly</option>
+      </select>
+      <button class="btn btn-primary w-full" id="gen-notes-btn" onclick="generateNotes()"><i class="fas fa-wand-magic-sparkles"></i> Generate Notes</button>
+    </div>
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:12px;color:var(--neon-cyan);display:flex;justify-content:space-between;align-items:center">
+        <span>📝 Generated Notes <span class="ai-badge">🤗 AI</span></span>
+        <button class="btn btn-secondary btn-sm" id="copy-notes-btn" onclick="copyOutput('notes-output')" style="display:none"><i class="fas fa-copy"></i> Copy</button>
+      </div>
+      <div id="notes-output" class="ai-response text-dim">Your AI-generated study notes will appear here...</div>
+    </div>
+  </div>
+
+  <!-- Concept Explainer -->
+  <div id="ai-explain" class="grid-2 hidden" style="gap:22px">
+    <div class="card">
+      <label class="lbl">Concept to explain</label>
+      <input id="explain-concept" class="field mb-3" type="text" placeholder="e.g. The Normal Distribution"/>
+      <label class="lbl">Subject</label>
+      <select id="explain-subject" class="field mb-3">
+        <option value="Pure Mathematics">Pure Mathematics</option>
+        <option value="Mechanics">Mechanics</option>
+        <option value="Probability & Statistics">Probability & Statistics</option>
+        <option value="Chemistry">Chemistry</option>
+        <option value="Computer Science">Computer Science</option>
+      </select>
+      <label class="lbl">Explain like I'm...</label>
+      <select id="explain-level" class="field mb-3">
+        <option value="a complete beginner">A complete beginner</option>
+        <option value="an A level student">An A Level student</option>
+        <option value="someone who already knows basics">Already know the basics</option>
+      </select>
+      <button class="btn btn-primary w-full" onclick="explainConcept()"><i class="fas fa-wand-magic-sparkles"></i> Explain It</button>
+    </div>
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:12px;color:var(--neon-purple);display:flex;justify-content:space-between;align-items:center">
+        <span>💡 Explanation <span class="ai-badge">🤗 AI</span></span>
+        <button class="btn btn-secondary btn-sm" id="copy-explain-btn" onclick="copyOutput('explain-output')" style="display:none"><i class="fas fa-copy"></i> Copy</button>
+      </div>
+      <div id="explain-output" class="ai-response text-dim">Your explanation will appear here...</div>
+    </div>
+  </div>
+
+  <!-- Quiz Creator -->
+  <div id="ai-quiz" class="grid-2 hidden" style="gap:22px">
+    <div class="card">
+      <label class="lbl">Topic</label>
+      <input id="quiz-topic" class="field mb-3" type="text" placeholder="e.g. Binomial Distribution"/>
+      <label class="lbl">Subject</label>
+      <select id="quiz-subject" class="field mb-3">
+        <option value="Pure Mathematics">Pure Mathematics</option>
+        <option value="Mechanics">Mechanics</option>
+        <option value="Probability & Statistics">Probability & Statistics</option>
+        <option value="Chemistry">Chemistry</option>
+        <option value="Computer Science">Computer Science</option>
+      </select>
+      <label class="lbl">Number of Questions</label>
+      <input id="quiz-count" class="field mb-3" type="number" min="3" max="15" value="5"/>
+      <label class="lbl">Difficulty</label>
+      <select id="quiz-diff" class="field mb-3">
+        <option value="AS Level">AS Level</option>
+        <option value="A Level">A Level</option>
+        <option value="Mixed AS and A Level">Mixed</option>
+      </select>
+      <button class="btn btn-primary w-full" onclick="createQuiz()"><i class="fas fa-wand-magic-sparkles"></i> Create Quiz</button>
+    </div>
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:12px;color:var(--neon-pink);display:flex;justify-content:space-between;align-items:center">
+        <span>❓ Quiz Questions <span class="ai-badge">🤗 AI</span></span>
+        <button class="btn btn-secondary btn-sm" id="copy-quiz-btn" onclick="copyOutput('quiz-output')" style="display:none"><i class="fas fa-copy"></i> Copy</button>
+      </div>
+      <div id="quiz-output" class="ai-response text-dim">Your quiz will appear here...</div>
+    </div>
+  </div>
+
+  <!-- Exam Tips -->
+  <div id="ai-exam-tips" class="grid-2 hidden" style="gap:22px">
+    <div class="card">
+      <label class="lbl">Subject / Topic</label>
+      <input id="tips-topic" class="field mb-3" type="text" placeholder="e.g. Differentiation, Organic Chemistry"/>
+      <label class="lbl">What do you need?</label>
+      <select id="tips-type" class="field mb-3">
+        <option value="common exam mistakes to avoid">Common mistakes to avoid</option>
+        <option value="exam technique and mark-scoring strategies">Exam technique & mark scoring</option>
+        <option value="key formulas and facts to memorize">Key formulas to memorize</option>
+        <option value="tricky topics and how to tackle them">Tricky topics breakdown</option>
+      </select>
+      <button class="btn btn-primary w-full" onclick="getExamTips()"><i class="fas fa-wand-magic-sparkles"></i> Get Tips</button>
+    </div>
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:12px;color:var(--neon-green);display:flex;justify-content:space-between;align-items:center">
+        <span>🎯 Exam Tips <span class="ai-badge">🤗 AI</span></span>
+        <button class="btn btn-secondary btn-sm" id="copy-tips-btn" onclick="copyOutput('tips-output')" style="display:none"><i class="fas fa-copy"></i> Copy</button>
+      </div>
+      <div id="tips-output" class="ai-response text-dim">Your exam tips will appear here...</div>
+    </div>
+  </div>
+</section>
+
+<!-- RESOURCES SEARCH -->
+<section id="section-resources" class="hidden">
+  <div class="sec-title"><i class="fas fa-search"></i> Resource Finder</div>
+  <p class="sec-sub">Search for past papers, study notes, and YouTube videos for any topic across your A Level subjects.</p>
+  <div class="card mb-4">
+    <div class="grid-3" style="gap:14px;margin-bottom:14px">
+      <div>
+        <label class="lbl">Topic / Keyword</label>
+        <input id="res-topic" class="field" type="text" placeholder="e.g. Integration, Equilibrium, Recursion..." onkeydown="if(event.key==='Enter')searchResources()"/>
+      </div>
+      <div>
+        <label class="lbl">Subject</label>
+        <select id="res-subject" class="field">
+          <option value="all">All Subjects</option>
+          <option value="mathematics">Mathematics (Pure / Mech / Stats)</option>
+          <option value="chemistry">Chemistry</option>
+          <option value="computer_science">Computer Science</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:flex-end">
+        <button class="btn btn-primary w-full" onclick="searchResources()"><i class="fas fa-search"></i> Find Resources</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <span style="font-size:0.82rem;color:var(--text-tertiary);margin-right:4px">Quick:</span>
+      <button class="res-tag pp" onclick="quickSearch('Integration')">Integration</button>
+      <button class="res-tag pp" onclick="quickSearch('Binomial Distribution')">Binomial</button>
+      <button class="res-tag pp" onclick="quickSearch('Differentiation')">Differentiation</button>
+      <button class="res-tag notes" onclick="quickSearch('Chemical Bonding')">Bonding</button>
+      <button class="res-tag notes" onclick="quickSearch('Equilibrium Chemistry')">Equilibrium</button>
+      <button class="res-tag yt" onclick="quickSearch('Recursion Computer Science')">Recursion</button>
+      <button class="res-tag sme" onclick="quickSearch('Mechanics Forces')">Forces</button>
+      <button class="res-tag sme" onclick="quickSearch('Normal Distribution')">Normal Dist.</button>
+    </div>
+  </div>
+  <div id="resource-results"></div>
+</section>
+
+<!-- TOOLS -->
+<section id="section-tools" class="hidden">
+  <div class="sec-title"><i class="fas fa-tools"></i> Study Tools</div>
+  <p class="sec-sub">Pomodoro timer, flashcards, notes, and study tracker.</p>
+  <div class="subject-tabs mb-4">
+    <button class="subject-tab active" onclick="showStudyTool('pomodoro',this)">⏱ Pomodoro</button>
+    <button class="subject-tab" onclick="showStudyTool('flashcards',this)">🃏 Flashcards</button>
+    <button class="subject-tab" onclick="showStudyTool('notes',this)">📝 Notes</button>
+    <button class="subject-tab" onclick="showStudyTool('tracker',this)">✅ Tracker</button>
+  </div>
+
+  <!-- Pomodoro -->
+  <div id="pomodoro-tool">
+    <div class="grid-2" style="gap:22px">
+      <div class="card flex-col items-center">
+        <div style="font-weight:700;margin-bottom:18px;font-size:1.15rem">⏱ Pomodoro Timer</div>
+        <div style="display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap;justify-content:center">
+          <button class="pomo-mode-btn active" id="pomo-focus-btn" onclick="setPomoMode('focus',this)">Focus 25m</button>
+          <button class="pomo-mode-btn" id="pomo-short-btn" onclick="setPomoMode('short',this)">Short 5m</button>
+          <button class="pomo-mode-btn" id="pomo-long-btn" onclick="setPomoMode('long',this)">Long 15m</button>
+        </div>
+        <div class="pomo-display" id="pomo-display">25:00</div>
+        <div style="margin-bottom:8px;font-size:0.82rem;color:var(--text-tertiary)" id="pomo-status">Ready to focus</div>
+        <div class="flex gap-2 mb-3">
+          <button class="btn btn-primary" id="pomo-toggle-btn" onclick="togglePomo()"><i class="fas fa-play" id="pomo-icon"></i> <span id="pomo-btn-text">Start</span></button>
+          <button class="btn btn-ghost" onclick="resetPomo()"><i class="fas fa-redo"></i> Reset</button>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-weight:700;margin-bottom:18px;font-size:1.15rem">📊 Focus Stats</div>
+        <div class="grid-2" style="gap:12px">
+          <div class="stat-box"><div class="stat-val" id="stat-sessions">0</div><div class="stat-lbl">Sessions</div></div>
+          <div class="stat-box"><div class="stat-val" id="stat-focus-mins">0</div><div class="stat-lbl">Focus Mins</div></div>
+        </div>
+        <div class="mt-4">
+          <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:10px;font-weight:600">Session Log</div>
+          <div id="pomo-log" style="max-height:180px;overflow-y:auto;display:flex;flex-direction:column;gap:6px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flashcards -->
+  <div id="flashcards-tool" class="hidden">
+    <div class="grid-2" style="gap:22px">
+      <div class="card">
+        <div style="font-weight:700;margin-bottom:14px">Create Flashcard</div>
+        <label class="lbl">Question / Term</label>
+        <input id="fc-question" class="field mb-3" type="text" placeholder="Enter question or term"/>
+        <label class="lbl">Answer / Definition</label>
+        <textarea id="fc-answer" class="field mb-3" placeholder="Enter answer or definition" style="min-height:90px"></textarea>
+        <label class="lbl">Tag (optional)</label>
+        <input id="fc-tag" class="field mb-3" type="text" placeholder="e.g. Pure Maths, Chemistry"/>
+        <button class="btn btn-primary w-full" onclick="addFlashcard()"><i class="fas fa-plus"></i> Add Card</button>
+        <hr class="divider"/>
+        <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:8px">All Cards (<span id="fc-total">0</span>)</div>
+        <div id="fc-list" style="max-height:180px;overflow-y:auto;display:flex;flex-direction:column;gap:6px"></div>
+      </div>
+      <div class="card flex-col items-center">
+        <div style="font-weight:700;margin-bottom:14px">Card <span id="fc-current">0</span> / <span id="fc-total-2">0</span></div>
+        <div class="flashcard-scene" onclick="flipCard()">
+          <div class="flashcard" id="flashcard">
+            <div class="flashcard-face flashcard-front" id="fc-front">No cards yet</div>
+            <div class="flashcard-face flashcard-back" id="fc-back">Add a card to start</div>
+          </div>
+        </div>
+        <div style="font-size:0.8rem;color:var(--text-tertiary);margin-bottom:12px">Click card to flip</div>
+        <div class="flex gap-2">
+          <button class="btn btn-secondary btn-sm" onclick="prevCard()"><i class="fas fa-chevron-left"></i> Prev</button>
+          <button class="btn btn-secondary btn-sm" onclick="nextCard()">Next <i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div id="notes-tool" class="hidden">
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
+        <span>📝 Quick Study Notes</span>
+        <div class="flex gap-2">
+          <button class="btn btn-ghost btn-sm" onclick="clearNotes()"><i class="fas fa-trash"></i></button>
+          <button class="btn btn-primary btn-sm" onclick="saveStudyNotes()"><i class="fas fa-save"></i> Save</button>
+        </div>
+      </div>
+      <textarea id="study-notes" class="field" style="min-height:380px" placeholder="Jot down your study notes, formulas, key points...&#10;&#10;Use this as a scratchpad while studying!"></textarea>
+      <p class="text-xs text-dim mt-2" id="notes-status"></p>
+    </div>
+  </div>
+
+  <!-- Tracker -->
+  <div id="tracker-tool" class="hidden">
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center">
+        <span>✅ Study Goal Tracker</span>
+        <button class="btn btn-primary btn-sm" onclick="showAddGoalModal()"><i class="fas fa-plus"></i> Add Goal</button>
+      </div>
+      <div id="tracker-list"></div>
+      <div id="no-goals-msg" class="text-center text-dim" style="padding:28px">No goals yet. Add one to get started!</div>
+    </div>
+    <div class="modal-overlay" id="goal-modal">
+      <div class="modal" style="max-width:420px">
+        <div class="modal-title">Add Study Goal</div>
+        <label class="lbl">Goal Description</label>
+        <input id="goal-input" class="field mb-3" type="text" placeholder="e.g. Finish Chapter 4 Integration"/>
+        <label class="lbl">Subject Tag</label>
+        <input id="goal-tag" class="field mb-3" type="text" placeholder="e.g. Pure Maths"/>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" onclick="closeGoalModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveGoal()">Add Goal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ZOHAIR SECTION -->
+<section id="section-zohair" class="hidden zohair-section">
+  <div class="crown">👑</div>
+  <div class="gold-title">ZOHAIR — THE CHOSEN ONE</div>
+  <div style="text-align:center;margin-bottom:28px">
+    <span class="sarcasm-badge"><i class="fas fa-exclamation-triangle"></i> WARNING: 100% Sarcasm-Certified™</span>
+    <p style="color:var(--text-secondary);font-size:0.9rem;margin-top:8px">The following praises are deeply heartfelt and in no way written out of obligation.</p>
+  </div>
+  <div class="zohair-card mb-4">
+    <div class="grid-2" style="gap:22px">
+      <div>
+        <div class="praise-block"><div class="praise-text">Zohair's intellectual prowess is so extraordinary that Cambridge had to add extra chapters to their textbooks just to keep up with his thirst for knowledge. The rest of us are merely students. He is the curriculum.</div></div>
+        <div class="praise-block"><div class="praise-text">When Zohair solves a quadratic equation, the quadratic feels grateful. When he balances a chemical equation, the atoms thank him personally. Pure Mathematics weeps with joy at the thought of him opening the textbook.</div></div>
+        <div class="praise-block"><div class="praise-text">His study sessions are so productive that even the Pomodoro timer gets tired before he does. Sleep? A concept for lesser minds. Zohair doesn't rest — he simply enters low-power computation mode.</div></div>
+      </div>
+      <div>
+        <div style="font-weight:700;color:var(--neon-gold);margin-bottom:14px;font-size:1rem">🏆 Legendary Achievements</div>
+        <div class="achievement"><div class="achievement-icon">🧠</div><div class="achievement-text"><div class="achievement-title">Galaxy-Brained Study God</div><div class="achievement-desc">Reportedly understood Complex Numbers before even opening the chapter. The chapter learned from him.</div></div></div>
+        <div class="achievement"><div class="achievement-icon">⚗️</div><div class="achievement-text"><div class="achievement-title">Chemistry Whisperer</div><div class="achievement-desc">Told to memorize the Periodic Table. Memorized the entire universe's elemental composition out of sheer boredom.</div></div></div>
+        <div class="achievement"><div class="achievement-icon">💻</div><div class="achievement-text"><div class="achievement-title">Code Overlord</div><div class="achievement-desc">Asked an AI for help once. The AI was so intimidated it built him an entire study platform. (This one, obviously.)</div></div></div>
+        <div class="achievement"><div class="achievement-icon">📊</div><div class="achievement-text"><div class="achievement-title">Probability Anomaly</div><div class="achievement-desc">Statistics says 1 in a million people are this talented. Zohair is that 1. He also got the other 999,999 covered, just in case.</div></div></div>
+        <div class="achievement"><div class="achievement-icon">⚙️</div><div class="achievement-text"><div class="achievement-title">Mechanics Maestro</div><div class="achievement-desc">Newton discovered gravity. Zohair improved it. F=ma now apologizes to him before being applied.</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:16px;padding:22px;text-align:center;margin-bottom:22px">
+    <div style="font-family:'Orbitron',sans-serif;font-size:1.2rem;font-weight:900;color:var(--neon-gold);margin-bottom:12px">🌟 OFFICIAL PROCLAMATION 🌟</div>
+    <p style="color:var(--text-secondary);line-height:1.8;max-width:700px;margin:0 auto;font-style:italic">"Let it be known across all A Level examination halls, from Cambridge to the farthest tutoring center in Karachi, that <strong style="color:var(--neon-gold)">Zohair</strong> is the undisputed owner, supreme ruler, and reluctant user of StudyOS Pro. His greatness transcends exam seasons. His knowledge surpasses syllabi. His dedication to avoiding actual revision by building study tools instead is, frankly, inspirational."</p>
+    <div style="margin-top:14px;font-size:0.78rem;color:var(--text-tertiary)">— ZOHAIR the best</div>
+  </div>
+  <div class="grid-3">
+    <div class="card text-center" style="border-color:rgba(251,191,36,0.3)"><div style="font-size:2rem;margin-bottom:8px">📈</div><div style="font-family:'Orbitron',sans-serif;font-size:1.5rem;color:var(--neon-gold);font-weight:900">A*</div><div style="color:var(--text-tertiary);font-size:0.82rem">Predicted Grade (obviously)</div></div>
+    <div class="card text-center" style="border-color:rgba(251,191,36,0.3)"><div style="font-size:2rem;margin-bottom:8px">☕</div><div style="font-family:'Orbitron',sans-serif;font-size:1.5rem;color:var(--neon-gold);font-weight:900">∞</div><div style="color:var(--text-tertiary);font-size:0.82rem">Cups of chai consumed studying</div></div>
+    <div class="card text-center" style="border-color:rgba(251,191,36,0.3)"><div style="font-size:2rem;margin-bottom:8px">🤝</div><div style="font-family:'Orbitron',sans-serif;font-size:1.5rem;color:var(--neon-gold);font-weight:900">100%</div><div style="color:var(--text-tertiary);font-size:0.82rem">Chance of acing every paper</div></div>
+  </div>
+</section>
+
+</main>
+
+<footer>StudyOS Pro · <span>A Level Edition</span> · Made by Zohair 👑 · Powered by Zohair 👑 (Duh)</footer>
+<div id="toast"><i class="fas fa-check-circle"></i><span id="toast-msg">Done!</span></div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// HuggingFace API CONFIG
+// ═══════════════════════════════════════
+const HF_API_URL = 'https://router.huggingface.co/v1/chat/completions';
+const HF_MODEL = 'openai/gpt-oss-120b:groq';
+
+function getApiKey() {
+  return localStorage.getItem('studyos_hf_token') || '';
+}
+
+function saveApiKey() {
+  const key = document.getElementById('hf-key-input').value.trim();
+  if (!key) { toast('Please enter your HuggingFace token', 'fa-exclamation-triangle'); return; }
+  localStorage.setItem('studyos_hf_token', key);
+  document.getElementById('api-banner').style.display = 'none';
+  toast('✅ API key saved! AI tools are now active.');
+}
+
+async function callHF(prompt, systemPrompt) {
+  const key = getApiKey();
+  if (!key) {
+    throw new Error('No HuggingFace API key found. Please enter your HF token in the Dashboard.');
+  }
+  const messages = [];
+  if (systemPrompt) messages.push({ role: 'system', content: systemPrompt });
+  messages.push({ role: 'user', content: prompt });
+
+  const res = await fetch(HF_API_URL, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${key}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: HF_MODEL,
+      messages,
+      stream: false,
+      max_tokens: 2048,
+      temperature: 0.7
+    })
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || `API error ${res.status}`);
+  }
+
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || 'No response received.';
+}
+
+// ═══════════════════════════════════════
+// DATA — Real syllabi from textbooks
+// ═══════════════════════════════════════
+const SUBJECTS = [
+  {
+    id: 'pure-maths-1', name: 'Pure Mathematics 1', code: '9709/P1', board: 'Cambridge', icon: '📐', color: 'var(--neon-purple)',
+    chapters: [
+      { title: 'Quadratics', topics: ['Solving quadratic equations by factorisation','Completing the square','The quadratic formula','Solving simultaneous equations (one linear, one quadratic)','Solving more complex quadratic equations','Maximum and minimum values of a quadratic function','Solving quadratic inequalities','The number of roots of a quadratic equation','Intersection of a line and a quadratic curve'] },
+      { title: 'Functions', topics: ['Definition of a function','Composite functions','Inverse functions','The graph of a function and its inverse','Transformations of functions','Reflections','Stretches','Combined transformations'] },
+      { title: 'Coordinate Geometry', topics: ['Length of a line segment and midpoint','Parallel and perpendicular lines','Equations of straight lines','The equation of a circle','Problems involving intersections of lines and circles'] },
+      { title: 'Circular Measure', topics: ['Radians','Length of an arc','Area of a sector'] },
+      { title: 'Trigonometry', topics: ['Angles between 0° and 90°','The general definition of an angle','Trigonometric ratios of general angles','Graphs of trigonometric functions','Inverse trigonometric functions','Trigonometric equations','Trigonometric identities','Further trigonometric equations'] },
+      { title: 'Series', topics: ['Binomial expansion of (a+b)^n','Binomial coefficients','Arithmetic progressions','Geometric progressions','Infinite geometric series','Further arithmetic and geometric series'] },
+      { title: 'Differentiation', topics: ['Derivatives and gradient functions','The chain rule','Tangents and normals','Second derivatives'] },
+      { title: 'Further Differentiation', topics: ['Increasing and decreasing functions','Stationary points','Practical maximum and minimum problems','Rates of change','Practical applications of connected rates of change'] },
+      { title: 'Integration', topics: ['Integration as the reverse of differentiation','Finding the constant of integration','Integration of expressions of the form (ax+b)^n','Further indefinite integration','Definite integration','Area under a curve','Area bounded by a curve and a line or two curves','Improper integrals','Volumes of revolution'] }
+    ],
+    pastPapers: [
+      { name: 'PapaCambridge — P1 Papers', url: 'https://papacambridge.com/9709/', icon: '📄' },
+      { name: 'Save My Exams — P1 Notes', url: 'https://www.savemyexams.com/a-level/maths/cie/9709/1/', icon: '📚' },
+      { name: 'Physics & Maths Tutor', url: 'https://www.physicsandmathstutor.com/maths-revision/a-level-cambridge-international/', icon: '🎓' },
+      { name: 'GCE Guide Papers', url: 'https://www.gceguide.com/', icon: '🗒️' }
+    ],
+    videos: ['Cambridge A Level Pure Maths 1 Quadratics','Integration A Level Cambridge 9709','Trigonometry A Level Pure Mathematics','Series and Binomial Theorem A Level','Differentiation techniques A Level Cambridge']
+  },
+  {
+    id: 'pure-maths-23', name: 'Pure Mathematics 2 & 3', code: '9709/P2+P3', board: 'Cambridge', icon: '∑', color: 'var(--neon-cyan)',
+    chapters: [
+      { title: 'Algebra (P2/P3)', topics: ['The modulus function','Graphs of y=|f(x)| where f(x) is linear','Solving modulus inequalities','Division of polynomials','The factor theorem','The remainder theorem'] },
+      { title: 'Logarithmic and Exponential Functions', topics: ['Logarithms to base 10','Logarithms to base a','The laws of logarithms','Solving logarithmic equations','Solving exponential equations','Solving exponential inequalities','Natural logarithms','Transforming a relationship to linear form'] },
+      { title: 'Trigonometry (P2/P3)', topics: ['The cosecant, secant and cotangent ratios','Compound angle formulae','Double angle formulae','Further trigonometric identities','Expressing a·sinθ + b·cosθ in the form R·sin(θ ± α) or R·cos(θ ± α)'] },
+      { title: 'Differentiation (P2/P3)', topics: ['The product rule','The quotient rule','Derivatives of exponential functions','Derivatives of natural logarithmic functions','Derivatives of trigonometric functions','Implicit differentiation','Parametric differentiation'] },
+      { title: 'Integration (P2/P3)', topics: ['Integration of exponential functions','Integration of 1/(ax+b)','Integration of sin(ax+b), cos(ax+b), sec²(ax+b)','Further integration of trigonometric functions','The trapezium rule'] },
+      { title: 'Numerical Solutions of Equations', topics: ['Finding a starting point','Improving your solution (iteration)','Using iterative processes to solve problems involving other areas of mathematics'] },
+      { title: 'Further Algebra (P3)', topics: ['Improper algebraic fractions','Partial fractions','Binomial expansion of (1+x)^n for non-integer n','Binomial expansion of (a+x)^n for non-integer n','Partial fractions and binomial expansions'] },
+      { title: 'Further Calculus (P3)', topics: ['Derivative of tan⁻¹x','Integration of 1/(x²+a²)','Integration of kf\'(x)/f(x)','Integration by substitution','Using partial fractions in integration','Integration by parts','Further integration'] },
+      { title: 'Vectors (P3)', topics: ['Displacement or translation vectors','Position vectors','The scalar product','The vector equation of a line','Intersection of two lines'] },
+      { title: 'Differential Equations (P3)', topics: ['The technique of separating the variables','Forming a differential equation from a problem'] },
+      { title: 'Complex Numbers (P3)', topics: ['Imaginary numbers','Complex numbers','The complex plane (Argand diagram)','Solving equations with complex roots','Loci in the complex plane'] }
+    ],
+    pastPapers: [
+      { name: 'PapaCambridge — P2 & P3 Papers', url: 'https://papacambridge.com/9709/', icon: '📄' },
+      { name: 'Save My Exams — P3', url: 'https://www.savemyexams.com/a-level/maths/cie/9709/3/', icon: '📚' },
+      { name: 'Physics & Maths Tutor', url: 'https://www.physicsandmathstutor.com/maths-revision/a-level-cambridge-international/', icon: '🎓' }
+    ],
+    videos: ['Pure Mathematics 2 Cambridge A Level','Complex Numbers A Level Cambridge','Differential Equations A Level','Vectors 3D A Level Cambridge','Integration by Parts A Level']
+  },
+  {
+    id: 'mechanics', name: 'Mechanics', code: '9709/M1', board: 'Cambridge', icon: '⚙️', color: 'var(--neon-pink)',
+    chapters: [
+      { title: 'Velocity and Acceleration', topics: ['Displacement and velocity','Acceleration','Equations of constant acceleration (SUVAT)','Displacement-time graphs and multi-stage problems','Velocity-time graphs and multi-stage problems','Graphs with discontinuities'] },
+      { title: 'Force and Motion in One Dimension', topics: ["Newton's first law and relation between force and acceleration",'Combinations of forces','Weight and motion due to gravity','Normal contact force and motion in a vertical line'] },
+      { title: 'Forces in Two Dimensions', topics: ['Resolving forces horizontally and vertically in equilibrium','Resolving forces at other angles in equilibrium',"Triangle of forces and Lami's theorem",'Non-equilibrium problems on slopes','Non-equilibrium: finding resultant forces and directions of acceleration'] },
+      { title: 'Friction', topics: ['Friction as part of the contact force','Limit of friction (μN)','Change of direction of friction in different stages','Angle of friction'] },
+      { title: 'Connected Particles', topics: ["Newton's third law",'Objects connected by rods','Objects connected by strings','Objects in moving lifts'] },
+      { title: 'General Motion in a Straight Line', topics: ['Velocity as the derivative of displacement with respect to time','Acceleration as the derivative of velocity','Displacement as the integral of velocity','Velocity as the integral of acceleration'] },
+      { title: 'Momentum', topics: ['Momentum (p = mv)','Collisions and conservation of momentum','Principle of conservation of momentum'] },
+      { title: 'Work and Energy', topics: ['Work done by a force','Kinetic energy (½mv²)','Gravitational potential energy (mgh)'] },
+      { title: 'Work-Energy Principle and Power', topics: ['The work-energy principle','Conservation of energy (conservative forces)','Conservation of energy (non-conservative forces)','Power (P = Fv)'] }
+    ],
+    pastPapers: [
+      { name: 'PapaCambridge — Mechanics Papers', url: 'https://papacambridge.com/9709/', icon: '📄' },
+      { name: 'Save My Exams — Mechanics', url: 'https://www.savemyexams.com/a-level/maths/cie/9709/4/', icon: '📚' },
+      { name: 'Physics & Maths Tutor', url: 'https://www.physicsandmathstutor.com/maths-revision/a-level-cambridge-international/', icon: '🎓' }
+    ],
+    videos: ['Cambridge A Level Mechanics SUVAT','Forces and Newton Laws A Level Cambridge','Momentum and Collisions A Level','Work Energy Power A Level Mechanics','Connected Particles A Level Cambridge']
+  },
+  {
+    id: 'stats-1-2', name: 'Probability & Statistics 1 & 2', code: '9709/S1+S2', board: 'Cambridge', icon: '📊', color: 'var(--neon-green)',
+    chapters: [
+      { title: 'Representation of Data (S1)', topics: ['Types of data','Stem-and-leaf diagrams','Histograms for continuous data','Cumulative frequency graphs','Comparing different data representations'] },
+      { title: 'Measures of Central Tendency (S1)', topics: ['The mode and modal class','The mean','The median'] },
+      { title: 'Measures of Variation (S1)', topics: ['The range','The interquartile range and percentiles','Variance and standard deviation'] },
+      { title: 'Probability (S1)', topics: ['Experiments, events and outcomes','Mutually exclusive events and the addition law','Independent events and the multiplication law','Conditional probability','Dependent events and conditional probability'] },
+      { title: 'Permutations and Combinations (S1)', topics: ['The factorial function (n!)','Permutations (ⁿPr)','Combinations (ⁿCr)','Problem solving with permutations and combinations'] },
+      { title: 'Probability Distributions (S1)', topics: ['Discrete random variables','Probability distributions','Expectation and variance of a discrete random variable'] },
+      { title: 'Binomial and Geometric Distributions (S1)', topics: ['The binomial distribution B(n,p)','The geometric distribution'] },
+      { title: 'The Normal Distribution (S1)', topics: ['Continuous random variables','The normal distribution N(μ,σ²)','Modelling with the normal distribution','Normal approximation to the binomial distribution'] },
+      { title: 'Hypothesis Testing (S2)', topics: ['Introduction to hypothesis testing','One-tailed and two-tailed tests','Type I and Type II errors'] },
+      { title: 'The Poisson Distribution (S2)', topics: ['Introduction to the Poisson distribution Po(λ)','Adapting Poisson for different intervals','Poisson as approximation to binomial','Normal approximation to Poisson','Hypothesis testing with Poisson'] },
+      { title: 'Linear Combinations of Random Variables (S2)', topics: ['Expectation and variance','Sum and difference of independent random variables','Working with normal distributions','Linear combinations of Poisson distributions'] },
+      { title: 'Continuous Random Variables (S2)', topics: ['Introduction to continuous random variables','Finding the median and percentiles','Finding the expectation and variance'] },
+      { title: 'Sampling (S2)', topics: ['Introduction to sampling','The distribution of sample means'] },
+      { title: 'Estimation (S2)', topics: ['Unbiased estimates of population mean and variance','Hypothesis testing of the population mean','Confidence intervals for population mean','Confidence intervals for population proportion'] }
+    ],
+    pastPapers: [
+      { name: 'PapaCambridge — S1 & S2 Papers', url: 'https://papacambridge.com/9709/', icon: '📄' },
+      { name: 'Save My Exams — Statistics', url: 'https://www.savemyexams.com/a-level/maths/cie/9709/5/', icon: '📚' },
+      { name: 'Physics & Maths Tutor — Stats', url: 'https://www.physicsandmathstutor.com/maths-revision/a-level-cambridge-international/', icon: '🎓' }
+    ],
+    videos: ['Binomial Distribution A Level Cambridge','Normal Distribution A Level Statistics','Hypothesis Testing A Level','Poisson Distribution A Level Cambridge','Probability Conditional A Level']
+  },
+  {
+    id: 'chemistry', name: 'Chemistry', code: '9701', board: 'Cambridge', icon: '⚗️', color: '#06d6d6',
+    chapters: [
+      { title: 'Atomic Structure', topics: ['Elements and atoms','Inside the atom','Isotopes','Atomic number, mass number'] },
+      { title: 'Electrons in Atoms', topics: ['Simple electronic structure','Sub-shells and atomic orbitals','Electronic configurations','Periodic patterns of atomic and ionic radii','Patterns in ionisation energies'] },
+      { title: 'Atoms, Molecules and Stoichiometry', topics: ['Masses of atoms and molecules','Amount of substance (moles)','Chemical formulae and equations','Solutions and concentration','Calculations involving gas volumes'] },
+      { title: 'Chemical Bonding', topics: ['Ionic bonding','Covalent bonding','Shapes of molecules (VSEPR)','σ bonds and π bonds','Metallic bonding','Intermolecular forces','Hydrogen bonding'] },
+      { title: 'States of Matter', topics: ['The gaseous state (ideal gas law)','The liquid state','The solid state','Fullerenes'] },
+      { title: 'Enthalpy Changes', topics: ['Standard enthalpy changes','Measuring enthalpy changes (calorimetry)',"Hess's law",'Bond energies and enthalpy changes'] },
+      { title: 'Redox Reactions', topics: ['Oxidation numbers','Oxidising and reducing agents','Balancing equations using oxidation numbers','Disproportionation'] },
+      { title: 'Equilibria', topics: ['Reversible reactions and equilibrium','Le Chatelier\'s principle','Equilibrium expressions and Kc','Equilibria in gas reactions: Kp','Acid-base equilibria'] },
+      { title: 'Rates of Reaction', topics: ['Effect of concentration on rate','Effect of temperature on rate','Catalysis'] },
+      { title: 'Periodicity', topics: ['Periodic patterns of physical properties','Periodic patterns of chemical properties','Oxides of Period 3 elements','Chlorides of Period 3 elements'] },
+      { title: 'Group 2', topics: ['Physical properties','Reactions with oxygen','Reactions with water'] },
+      { title: 'Group 17 (Halogens)', topics: ['Physical properties','Reactions of Group 17 elements','Reactions of the halide ions','Disproportionation reactions'] },
+      { title: 'Introduction to Organic Chemistry', topics: ['Homologous series','Naming organic compounds (IUPAC)','Structural isomerism','Stereoisomerism','Types of organic reaction and mechanisms'] },
+      { title: 'Hydrocarbons', topics: ['Alkanes — reactions','Alkenes','Addition polymerisation'] },
+      { title: 'Halogenoalkanes', topics: ['Nucleophilic substitution reactions','Mechanism of nucleophilic substitution','Elimination reactions'] },
+      { title: 'Alcohols, Esters and Carboxylic Acids', topics: ['Reactions of alcohols','Carboxylic acids'] },
+      { title: 'Carbonyl Compounds', topics: ['Aldehydes and ketones','Reduction of aldehydes and ketones','Nucleophilic addition with HCN','Testing for aldehydes and ketones','Infrared spectroscopy'] },
+      { title: 'Lattice Energy (A2)', topics: ['Born-Haber cycles','Enthalpy changes in solution'] },
+      { title: 'Electrochemistry (A2)', topics: ['Electrolysis','Electrode potentials','Using E° values'] },
+      { title: 'Further Aspects of Equilibria (A2)', topics: ['pH calculations','Weak acids and Ka','Buffer solutions','Solubility products'] },
+      { title: 'Reaction Kinetics (A2)', topics: ['Rate equations','Order of reaction','Rate constant k','Kinetics and reaction mechanisms'] },
+      { title: 'Entropy and Gibbs Free Energy (A2)', topics: ['Entropy changes','Gibbs free energy calculations'] },
+      { title: 'Transition Elements (A2)', topics: ['Properties of transition elements','Ligands and complex formation'] },
+      { title: 'Benzene and Compounds (A2)', topics: ['The benzene ring','Reactions of arenes','Phenol'] },
+      { title: 'Carboxylic Acids and Derivatives (A2)', topics: ['Acyl chlorides','Esters','Polyesters and polyamides'] }
+    ],
+    pastPapers: [
+      { name: 'PapaCambridge — Chemistry 9701', url: 'https://papacambridge.com/9701/', icon: '📄' },
+      { name: 'Save My Exams — A Level Chemistry', url: 'https://www.savemyexams.com/a-level/chemistry/cie/', icon: '📚' },
+      { name: 'ChemGuide', url: 'https://www.chemguide.co.uk/', icon: '🧪' },
+      { name: 'GCE Guide — Chemistry', url: 'https://www.gceguide.com/', icon: '🗒️' }
+    ],
+    videos: ['Cambridge A Level Chemistry Organic','A Level Chemistry Chemical Bonding','Equilibrium Kc Kp A Level Chemistry','Electrochemistry A Level Cambridge 9701','Transition Elements A Level Chemistry']
+  },
+  {
+    id: 'computer-science', name: 'Computer Science', code: '9618', board: 'Cambridge', icon: '💻', color: 'var(--neon-pink)',
+    chapters: [
+      { title: 'Information Representation & Multimedia (AS)', topics: ['Data representation (binary, hex, BCD, two\'s complement)','Multimedia (bitmap images, digital sound, video)','File compression (lossy and lossless)'] },
+      { title: 'Communication (AS)', topics: ['Networking (LAN, WAN, topologies, OSI model, TCP/IP)','The internet (DNS, HTTP, FTP, email protocols)'] },
+      { title: 'Hardware (AS)', topics: ['Computers and their components','Logic gates and logic circuits (Boolean algebra)'] },
+      { title: 'Processor Fundamentals (AS)', topics: ['CPU architecture (ALU, CU, registers, buses)','Assembly language (LDD, STO, ADD, SUB, CMP, JMP)','Bit manipulation (AND, OR, XOR, NOT, shifts)'] },
+      { title: 'System Software (AS)', topics: ['Operating systems (processes, memory management, scheduling)','Language translators (assembler, compiler, interpreter)'] },
+      { title: 'Security, Privacy and Data Integrity (AS)', topics: ['Data security (threats, firewalls, encryption, authentication)','Data integrity (checksums, hashing, validation)'] },
+      { title: 'Ethics and Ownership (AS)', topics: ['Legal, moral, ethical and cultural implications','Copyright issues and intellectual property','Artificial intelligence ethics'] },
+      { title: 'Databases (AS)', topics: ['Database concepts (entities, attributes, keys, relationships)','Database management systems','DDL and DML'] },
+      { title: 'Algorithm Design and Problem Solving (AS)', topics: ['Computational thinking (decomposition, abstraction, pattern recognition)','Algorithms (pseudocode, flowcharts, sorting, searching)'] },
+      { title: 'Data Types and Structures (AS)', topics: ['Data types and records','Arrays (1D and 2D)','Abstract data types: stack, queue, linked list, binary tree'] },
+      { title: 'Programming (AS)', topics: ['Programming constructs (sequence, selection, iteration)','Structured programming (procedures, functions, parameters)'] },
+      { title: 'Software Development (AS)', topics: ['Program development lifecycle','Program design (structure charts, pseudocode)','Program testing and maintenance'] },
+      { title: 'Data Representation (A Level)', topics: ['User-defined data types','File organisation and access','Floating-point numbers'] },
+      { title: 'Hardware (A Level)', topics: ['Processors and parallel processing (RISC vs CISC, pipelining)','Boolean algebra and Karnaugh maps'] },
+      { title: 'System Software and Virtual Machines (A Level)', topics: ['Operating system in detail','Virtual machines (VMs)','Compiler stages, symbol table'] },
+      { title: 'Security (A Level)', topics: ['Encryption (symmetric and asymmetric)','Digital signatures and digital certificates','Protocols (SSL/TLS, HTTPS)'] },
+      { title: 'Artificial Intelligence (A Level)', topics: ["Dijkstra's algorithm, A* algorithm",'Machine learning and deep learning'] },
+      { title: 'Computational Thinking (A Level)', topics: ['Big O notation, complexity','Recursion (base case, recursive case, call stack, trace)'] },
+      { title: 'Further Programming (A Level)', topics: ['Programming paradigms (procedural, OOP, declarative, functional)','File processing and exception handling'] }
+    ],
+    pastPapers: [
+      { name: 'PapaCambridge — CS 9618', url: 'https://papacambridge.com/9618/', icon: '📄' },
+      { name: 'Save My Exams — A Level CS', url: 'https://www.savemyexams.com/a-level/computer-science/cie/', icon: '📚' },
+      { name: 'GCE Guide — CS', url: 'https://www.gceguide.com/', icon: '🗒️' },
+      { name: 'CS Field Guide', url: 'https://www.csfieldguide.org.nz/', icon: '🖥️' }
+    ],
+    videos: ['Cambridge A Level Computer Science 9618','Recursion A Level Computer Science','OOP Object Oriented Programming A Level','Assembly Language Cambridge A Level','Data Structures A Level Computer Science']
+  }
+];
+
+// ═══════════════════════════════════════
+// OPEN AI NOTES PAGE IN NEW TAB
+// ═══════════════════════════════════════
+function openAINotesPage(subjectName, chapterTitle, topics) {
+  const hfToken = getApiKey();
+  const pageHTML = buildAINotesPage(subjectName, chapterTitle, topics, hfToken);
+  const blob = new Blob([pageHTML], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+}
+
+function buildAINotesPage(subjectName, chapterTitle, topics, hfToken) {
+  const topicsJSON = JSON.stringify(topics);
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>${chapterTitle} — ${subjectName} | StudyOS Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0e27;--bg2:#0f1438;--purple:#a78bfa;--pink:#f472b6;--cyan:#06d6d6;--green:#10b981;--border:rgba(147,112,219,0.25);--border-light:rgba(255,255,255,0.08);--text:#f8fafc;--text2:#cbd5e1;--text3:#64748b;}
+body{font-family:'Inter',sans-serif;background:linear-gradient(135deg,var(--bg) 0%,var(--bg2) 100%);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(167,139,250,0.12) 0%,transparent 50%);pointer-events:none;z-index:0}
+.container{max-width:1100px;margin:0 auto;padding:28px 20px 60px;position:relative;z-index:1;flex:1;display:flex;flex-direction:column;gap:24px}
+.page-header{background:rgba(20,27,60,0.7);border:1px solid var(--border);border-radius:20px;padding:28px;backdrop-filter:blur(10px)}
+.back-link{display:inline-flex;align-items:center;gap:8px;color:var(--text3);font-size:0.85rem;margin-bottom:16px;cursor:pointer;transition:color 0.2s}
+.back-link:hover{color:var(--cyan)}
+.subject-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:0.78rem;font-weight:700;background:rgba(167,139,250,0.15);color:var(--purple);border:1px solid rgba(167,139,250,0.3);margin-bottom:12px}
+.chapter-title{font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.ai-indicator{display:inline-flex;align-items:center;gap:7px;padding:5px 14px;border-radius:20px;font-size:0.78rem;font-weight:700;background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(6,214,214,0.15));color:#34d399;border:1px solid rgba(16,185,129,0.3);font-family:'JetBrains Mono',monospace}
+.ai-dot{width:8px;height:8px;border-radius:50%;background:#10b981;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+.topics-card{background:rgba(20,27,60,0.6);border:1px solid var(--border);border-radius:16px;padding:22px;backdrop-filter:blur(10px)}
+.topics-title{font-weight:700;font-size:1rem;color:var(--cyan);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.topics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
+.topic-chip{padding:8px 14px;border-radius:8px;background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);font-size:0.85rem;color:var(--text2);cursor:pointer;transition:all 0.2s ease;display:flex;align-items:center;gap:8px}
+.topic-chip:hover{background:rgba(167,139,250,0.18);border-color:var(--purple);color:var(--purple);transform:translateX(3px)}
+.topic-chip::before{content:'▸';color:var(--cyan);font-size:0.9rem;flex-shrink:0}
+.notes-card{background:rgba(20,27,60,0.6);border:1px solid var(--border);border-radius:16px;padding:24px;backdrop-filter:blur(10px);flex:1}
+.notes-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:8px}
+.notes-header-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap;gap:8px}
+.notes-title{font-weight:800;font-size:1.1rem;color:var(--text)}
+.notes-content{background:rgba(167,139,250,0.05);border:1px solid rgba(167,139,250,0.15);border-radius:12px;padding:20px;min-height:300px;line-height:1.85;font-size:0.93rem;color:var(--text2);white-space:pre-wrap;word-wrap:break-word;overflow-y:auto}
+.notes-content::-webkit-scrollbar{width:6px}
+.notes-content::-webkit-scrollbar-thumb{background:var(--purple);border-radius:99px}
+.loading{display:flex;flex-direction:column;align-items:center;gap:16px;padding:40px;color:var(--text3)}
+.loading-dots{display:flex;gap:8px}
+.loading-dots span{width:12px;height:12px;border-radius:50%;animation:bounce 1.4s ease infinite}
+.loading-dots span:nth-child(1){background:var(--purple)}
+.loading-dots span:nth-child(2){background:var(--pink);animation-delay:0.2s}
+.loading-dots span:nth-child(3){background:var(--cyan);animation-delay:0.4s}
+@keyframes bounce{0%,80%,100%{transform:scale(0.8);opacity:0.5}40%{transform:scale(1.2);opacity:1}}
+.loading-text{font-size:0.9rem;color:var(--purple);font-weight:600;animation:fadeText 2s ease infinite}
+@keyframes fadeText{0%,100%{opacity:0.5}50%{opacity:1}}
+.chat-card{background:rgba(20,27,60,0.6);border:1px solid var(--border);border-radius:16px;overflow:hidden;backdrop-filter:blur(10px)}
+.chat-header{padding:18px 22px;background:linear-gradient(135deg,rgba(16,185,129,0.1),rgba(6,214,214,0.08));border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between}
+.chat-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#10b981,#06d6d6);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.chat-messages{padding:18px;max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+.chat-messages::-webkit-scrollbar{width:5px}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--purple);border-radius:99px}
+.msg{display:flex;gap:10px;max-width:88%}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.msg-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;font-weight:700}
+.msg.ai .msg-avatar{background:linear-gradient(135deg,#10b981,#06d6d6);color:#fff}
+.msg.user .msg-avatar{background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff}
+.msg-bubble{padding:12px 16px;border-radius:14px;font-size:0.9rem;line-height:1.7;white-space:pre-wrap;word-wrap:break-word}
+.msg.ai .msg-bubble{background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.2);color:var(--text2);border-radius:4px 14px 14px 14px}
+.msg.user .msg-bubble{background:linear-gradient(135deg,rgba(167,139,250,0.25),rgba(244,114,182,0.2));border:1px solid rgba(244,114,182,0.3);color:var(--text);border-radius:14px 4px 14px 14px}
+.msg-meta{font-size:0.7rem;color:var(--text3);margin-top:5px}
+.chat-input-area{padding:16px 18px;border-top:1px solid var(--border-light);display:flex;gap:10px;background:rgba(10,14,39,0.5)}
+.chat-input{flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border-light);border-radius:12px;padding:11px 16px;color:var(--text);font-family:'Inter',sans-serif;font-size:0.92rem;outline:none;resize:none;transition:all 0.3s ease;max-height:120px;overflow-y:auto}
+.chat-input:focus{border-color:var(--purple);background:rgba(167,139,250,0.08);box-shadow:0 0 0 3px rgba(167,139,250,0.15)}
+.chat-input::placeholder{color:var(--text3)}
+.send-btn{padding:11px 20px;border-radius:12px;border:none;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;font-weight:700;cursor:pointer;transition:all 0.3s ease;display:flex;align-items:center;gap:7px;font-size:0.88rem;flex-shrink:0}
+.send-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 20px rgba(167,139,250,0.4)}
+.send-btn:disabled{opacity:0.5;cursor:not-allowed}
+.copy-btn{padding:7px 14px;border-radius:8px;border:1px solid var(--border-light);background:rgba(255,255,255,0.05);color:var(--text3);cursor:pointer;font-size:0.8rem;transition:all 0.2s;display:flex;align-items:center;gap:6px}
+.copy-btn:hover{border-color:var(--purple);color:var(--purple)}
+@media(max-width:640px){.container{padding:16px 12px 40px}.chapter-title{font-size:1.3rem}.topics-grid{grid-template-columns:1fr}.chat-messages{max-height:300px}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="page-header">
+    <div class="back-link" onclick="window.close()"><i class="fas fa-arrow-left"></i> Back to StudyOS Pro</div>
+    <div class="subject-badge">✦ ${subjectName}</div>
+    <div class="chapter-title">${chapterTitle}</div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px">
+      <div class="ai-indicator"><div class="ai-dot"></div> GPT-OSS 120B via HuggingFace</div>
+      <span style="color:var(--text3);font-size:0.82rem">Cambridge A Level syllabus notes generated for you</span>
+    </div>
+  </div>
+
+  <div class="topics-card">
+    <div class="topics-title"><i class="fas fa-list-ul"></i> Topics in this Chapter — Click any topic to ask the AI</div>
+    <div class="topics-grid" id="topics-grid"></div>
+  </div>
+
+  <div class="notes-card">
+    <div class="notes-header">
+      <div class="notes-header-left">
+        <div class="notes-title">📝 AI-Generated Notes</div>
+        <div class="ai-indicator"><div class="ai-dot"></div> GPT-OSS 120B</div>
+      </div>
+      <button class="copy-btn" onclick="copyNotes()"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    <div class="notes-content" id="notes-content">
+      <div class="loading">
+        <div class="loading-dots"><span></span><span></span><span></span></div>
+        <div class="loading-text">🤗 AI is generating your notes...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-card">
+    <div class="chat-header">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="chat-avatar">🤗</div>
+        <div>
+          <div style="font-weight:700;font-size:0.95rem">AI Tutor</div>
+          <div style="font-size:0.78rem;color:var(--text3)">Ask anything about ${chapterTitle}</div>
+        </div>
+      </div>
+      <div class="ai-indicator" style="font-size:0.72rem"><div class="ai-dot"></div> Online</div>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="msg ai">
+        <div class="msg-avatar">🤗</div>
+        <div>
+          <div class="msg-bubble">Hi! I'm your AI tutor for <strong>${chapterTitle}</strong> in ${subjectName}. I've generated your chapter notes above. Ask me anything — explanations, examples, quizzes, or clarifications!</div>
+          <div class="msg-meta">AI Tutor · just now</div>
+        </div>
+      </div>
+    </div>
+    <div class="chat-input-area">
+      <textarea class="chat-input" id="chat-input" placeholder="Ask anything about this chapter... (Enter to send)" rows="1" onkeydown="handleChatKey(event)"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendChat()"><i class="fas fa-paper-plane"></i> Send</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const HF_TOKEN = ${JSON.stringify(hfToken)};
+const HF_URL = 'https://router.huggingface.co/v1/chat/completions';
+const HF_MODEL = 'openai/gpt-oss-120b:groq';
+const subjectName = ${JSON.stringify(subjectName)};
+const chapterTitle = ${JSON.stringify(chapterTitle)};
+const topics = ${topicsJSON};
+let chatHistory = [];
+let notesText = '';
+
+async function hfCall(messages) {
+  const res = await fetch(HF_URL, {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + HF_TOKEN, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: HF_MODEL, messages, stream: false, max_tokens: 2048, temperature: 0.7 })
+  });
+  if (!res.ok) { const e = await res.json().catch(()=>{}); throw new Error(e?.error?.message || 'API error ' + res.status); }
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || 'No response.';
+}
+
+const topicsGrid = document.getElementById('topics-grid');
+topics.forEach(topic => {
+  const chip = document.createElement('div');
+  chip.className = 'topic-chip';
+  chip.textContent = topic;
+  chip.onclick = () => { document.getElementById('chat-input').value = 'Explain "' + topic + '" in detail with examples for Cambridge A Level.'; document.getElementById('chat-input').focus(); };
+  topicsGrid.appendChild(chip);
+});
+
+async function generateNotes() {
+  const topicsList = topics.map((t,i) => (i+1) + '. ' + t).join('\\n');
+  const sysPrompt = 'You are an expert Cambridge A Level ' + subjectName + ' teacher. Be precise, exam-focused, and thorough.';
+  const userPrompt = 'Generate comprehensive study notes for the chapter "' + chapterTitle + '" from Cambridge A Level ' + subjectName + '.\\n\\nTopics covered:\\n' + topicsList + '\\n\\nStructure as:\\n\\n📌 CHAPTER OVERVIEW\\nBrief intro.\\n\\n📚 KEY CONCEPTS\\nFor each topic: clear definition, formulas/rules, key points.\\n\\n✏️ WORKED EXAMPLES\\n2-3 representative Cambridge-style examples.\\n\\n⚠️ COMMON EXAM MISTAKES\\n4-5 mistakes students make.\\n\\n🎯 EXAM TIPS\\nSpecific advice for scoring marks in Cambridge exams.';
+  try {
+    const text = await hfCall([{ role: 'system', content: sysPrompt }, { role: 'user', content: userPrompt }]);
+    notesText = text;
+    document.getElementById('notes-content').textContent = text;
+  } catch(err) {
+    document.getElementById('notes-content').innerHTML = '<div style="color:#ff6b9d;padding:16px">Error: ' + err.message + '</div>';
+  }
+}
+
+function handleChatKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); } }
+
+function addMessage(role, text) {
+  const container = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg ' + (role === 'user' ? 'user' : 'ai');
+  const now = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  const avatar = role === 'user' ? 'Z' : '🤗';
+  div.innerHTML = '<div class="msg-avatar">' + avatar + '</div><div><div class="msg-bubble">' + text.replace(/\\n/g,'<br>') + '</div><div class="msg-meta">' + (role === 'user' ? 'You' : 'AI Tutor') + ' · ' + now + '</div></div>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function addLoadingMsg() {
+  const container = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  div.id = 'loading-msg';
+  div.innerHTML = '<div class="msg-avatar">🤗</div><div><div class="msg-bubble"><div class="loading-dots" style="justify-content:flex-start;padding:4px 0"><span></span><span></span><span></span></div></div><div class="msg-meta" style="color:var(--text3)">AI is thinking...</div></div>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const sendBtn = document.getElementById('send-btn');
+  const text = input.value.trim();
+  if (!text) return;
+  addMessage('user', text);
+  input.value = '';
+  sendBtn.disabled = true;
+  addLoadingMsg();
+  const sysPrompt = 'You are an expert Cambridge A Level ' + subjectName + ' tutor for the chapter "' + chapterTitle + '". Topics: ' + topics.join(', ') + '. Reference notes: ' + notesText.slice(0, 800) + '... Be helpful, precise, and exam-focused.';
+  chatHistory.push({ role: 'user', content: text });
+  const messages = [{ role: 'system', content: sysPrompt }, ...chatHistory.slice(-8)];
+  try {
+    const reply = await hfCall(messages);
+    chatHistory.push({ role: 'assistant', content: reply });
+    const loadingEl = document.getElementById('loading-msg');
+    if (loadingEl) loadingEl.remove();
+    addMessage('ai', reply);
+  } catch(err) {
+    const loadingEl = document.getElementById('loading-msg');
+    if (loadingEl) loadingEl.remove();
+    addMessage('ai', 'Error: ' + err.message);
+  }
+  sendBtn.disabled = false;
+}
+
+function copyNotes() {
+  if (!notesText) return;
+  navigator.clipboard.writeText(notesText).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> Copy'; }, 2000);
+  });
+}
+
+generateNotes();
+<\/script>
+</body>
+</html>`;
+}
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+const LS = {
+  get: k => { try { return JSON.parse(localStorage.getItem('studyos_'+k)); } catch { return null; } },
+  set: (k,v) => { try { localStorage.setItem('studyos_'+k, JSON.stringify(v)); } catch {} }
+};
+
+let exams = LS.get('exams') || [];
+let flashcards = LS.get('flashcards') || [];
+let trackerItems = LS.get('tracker') || [];
+let cardIndex = 0;
+let pomoMode = 'focus';
+const POMO_TIMES = { focus:25*60, short:5*60, long:15*60 };
+let pomoSecs = POMO_TIMES.focus;
+let pomoRunning = false;
+let pomoInterval = null;
+let pomoSessions = 0;
+let totalFocusMins = LS.get('focusMins') || 0;
+
+const $ = id => document.getElementById(id);
+
+// ═══════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════
+function showSection(name, btn) {
+  document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+  const el = $('section-' + name);
+  if (el) el.classList.remove('hidden');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  updateDashStats();
+}
+
+function updateDashStats() {
+  $('stat-total-exams').textContent = exams.length;
+  $('stat-focus-mins-dash').textContent = totalFocusMins;
+  $('stat-cards-dash').textContent = flashcards.length;
+}
+
+// ═══════════════════════════════════════
+// SUBJECTS
+// ═══════════════════════════════════════
+function renderSubjects() {
+  const grid = $('subjects-grid');
+  grid.innerHTML = '';
+  SUBJECTS.forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.cursor = 'pointer';
+    const totalTopics = s.chapters.reduce((acc, ch) => acc + ch.topics.length, 0);
+    card.innerHTML = `
+      <div style="font-size:2.2rem;margin-bottom:10px">${s.icon}</div>
+      <div style="font-weight:700;font-size:1.1rem;margin-bottom:4px">${s.name}</div>
+      <div style="color:var(--text-tertiary);font-size:0.82rem;margin-bottom:14px">${s.board} ${s.code}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <span class="chip">${s.chapters.length} Chapters</span>
+        <span class="chip">${totalTopics} Topics</span>
+        <span class="chip">${s.pastPapers.length} Resources</span>
+      </div>`;
+    card.onclick = () => openSubjectModal(s);
+    grid.appendChild(card);
+  });
+}
+
+function openSubjectModal(subject) {
+  $('subject-modal-title').textContent = subject.icon + ' ' + subject.name;
+  renderSyllabus(subject);
+  renderResources(subject);
+  renderVideos(subject);
+  $('subject-modal').classList.add('open');
+  // Reset tabs
+  document.querySelectorAll('.content-tab').forEach((t,i) => { t.classList.toggle('active', i===0); });
+  document.querySelectorAll('.content-panel').forEach((p,i) => { p.classList.toggle('active', i===0); });
+}
+
+function closeSubjectModal() { $('subject-modal').classList.remove('open'); }
+
+function switchContentTab(name, btn) {
+  document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.content-tab').forEach(t => t.classList.remove('active'));
+  $(name + '-panel').classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+function renderSyllabus(s) {
+  let html = '';
+  s.chapters.forEach((ch, i) => {
+    const safeSubject = s.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const safeChapter = ch.title.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const topicsArg = JSON.stringify(ch.topics).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    html += `<div class="syllabus-section">
+      <div class="chapter-header" onclick="openAINotesPage('${safeSubject}','${safeChapter}',${topicsArg})">
+        <div class="chapter-header-title">Chapter ${i+1}: ${ch.title}</div>
+        <span class="chapter-ai-btn"><i class="fas fa-wand-magic-sparkles"></i> Open AI Notes</span>
+      </div>
+      <ul class="topic-list">`;
+    ch.topics.forEach(t => {
+      html += `<li class="topic-item" onclick="openAINotesPage('${safeSubject}','${safeChapter}',${topicsArg})">${t}<span class="topic-ai-hint">🤗 AI Notes</span></li>`;
+    });
+    html += `</ul></div>`;
+  });
+  $('syllabus-panel').innerHTML = html;
+}
+
+function renderResources(s) {
+  let html = '<div style="display:flex;flex-direction:column;gap:10px">';
+  s.pastPapers.forEach(p => {
+    html += `<a href="${p.url}" target="_blank" class="resource-link"><div class="resource-icon">${p.icon}</div><span>${p.name}</span><i class="fas fa-external-link-alt" style="margin-left:auto;font-size:0.7rem"></i></a>`;
+  });
+  html += '</div>';
+  $('resources-panel').innerHTML = html;
+}
+
+function renderVideos(s) {
+  let html = '<div class="video-grid">';
+  s.videos.forEach(v => {
+    const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(v)}`;
+    html += `<div class="video-card"><div class="video-thumbnail">▶️</div><div class="video-info"><div class="video-title">${v}</div><div class="video-channel">YouTube Search</div><a href="${url}" target="_blank" class="btn btn-secondary btn-sm mt-2 w-full" style="justify-content:center">Watch Now</a></div></div>`;
+  });
+  html += '</div>';
+  $('videos-panel').innerHTML = html;
+}
+
+// ═══════════════════════════════════════
+// EXAMS
+// ═══════════════════════════════════════
+function openAddExamModal() {
+  $('modal-exam-name').value = ''; $('modal-exam-date').value = ''; $('modal-exam-subject').value = '';
+  $('exam-modal').classList.add('open');
+}
+function closeExamModal() { $('exam-modal').classList.remove('open'); }
+
+function saveExam() {
+  const name = $('modal-exam-name').value.trim();
+  const date = $('modal-exam-date').value;
+  if (!name || !date) { toast('Please fill in all fields', 'fa-exclamation-triangle'); return; }
+  exams.push({ id: Date.now(), name, date, subject: $('modal-exam-subject').value.trim() });
+  LS.set('exams', exams);
+  closeExamModal();
+  renderExams();
+  toast(`"${name}" added!`);
+}
+
+function renderExams() {
+  const grid = $('exam-cards-grid');
+  grid.innerHTML = '';
+  if (exams.length === 0) { $('no-exams-msg').classList.remove('hidden'); return; }
+  $('no-exams-msg').classList.add('hidden');
+  exams.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(exam => {
+    const daysLeft = Math.ceil((new Date(exam.date) - new Date()) / (1000*60*60*24));
+    const urgent = daysLeft <= 7 && daysLeft > 0;
+    const done = daysLeft <= 0;
+    const card = document.createElement('div');
+    card.className = 'exam-card';
+    card.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+        <div>
+          <div style="font-size:1.05rem;font-weight:700">${exam.name}</div>
+          <div style="font-size:0.8rem;color:var(--text-tertiary);margin-top:3px">${exam.subject || 'No subject'}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-tertiary);margin-top:3px">${exam.date}</div>
+        </div>
+      </div>
+      <div class="exam-card-days" style="${urgent?'background:linear-gradient(135deg,#ef4444,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;':''}">${done ? '✓' : daysLeft}</div>
+      <div style="font-size:0.7rem;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:1px;margin-top:4px">${done?'Complete':urgent?'⚠️ URGENT':'days left'}</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${done?100:Math.max(5,100-daysLeft)}%"></div></div>
+      <button class="btn btn-danger btn-sm w-full" onclick="deleteExam(${exam.id})"><i class="fas fa-trash"></i> Delete</button>`;
+    grid.appendChild(card);
+  });
+  $('stat-total-exams').textContent = exams.length;
+}
+
+function deleteExam(id) {
+  exams = exams.filter(e => e.id !== id);
+  LS.set('exams', exams);
+  renderExams();
+  toast('Exam removed');
+}
+
+// ═══════════════════════════════════════
+// AI TOOLS — HuggingFace API
+// ═══════════════════════════════════════
+async function callAITool(prompt, systemPrompt, outputId, copyBtnId) {
+  const outputEl = $(outputId);
+  const copyBtn = copyBtnId ? $(copyBtnId) : null;
+  outputEl.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div><div style="text-align:center;color:var(--text-tertiary);font-size:0.85rem;padding:8px">🤗 AI is thinking...</div>';
+  if (copyBtn) copyBtn.style.display = 'none';
+  if (!getApiKey()) {
+    outputEl.innerHTML = '<div style="color:#fbbf24;padding:16px">⚠️ No API key set. Please enter your HuggingFace token in the Dashboard banner at the top.</div>';
+    return;
+  }
+  try {
+    const text = await callHF(prompt, systemPrompt);
+    outputEl.textContent = text;
+    if (copyBtn) copyBtn.style.display = 'flex';
+    return text;
+  } catch (err) {
+    outputEl.innerHTML = `<div style="color:#ff6b9d;padding:16px">Error: ${err.message}</div>`;
+  }
+}
+
+function generateNotes() {
+  const topic = $('note-topic').value.trim();
+  const subject = $('note-subject').value;
+  const detail = $('note-detail').value;
+  if (!topic) { toast('Enter a topic first', 'fa-exclamation-triangle'); return; }
+  const sys = `You are an expert Cambridge A Level ${subject} teacher. Be precise and exam-focused.`;
+  const prompt = `Create ${detail} study notes for the topic: "${topic}" in Cambridge A Level ${subject}.
+
+Format your notes clearly with:
+- A brief introduction/definition
+- Key concepts and principles (numbered)
+- Important formulas or facts to memorize
+- Common exam mistakes to avoid
+- 2-3 worked example types (brief descriptions)
+- Connections to related topics
+
+Write for a Cambridge A Level student. Be precise and exam-focused.`;
+  callAITool(prompt, sys, 'notes-output', 'copy-notes-btn');
+}
+
+function explainConcept() {
+  const concept = $('explain-concept').value.trim();
+  const subject = $('explain-subject').value;
+  const level = $('explain-level').value;
+  if (!concept) { toast('Enter a concept first', 'fa-exclamation-triangle'); return; }
+  const sys = `You are an expert Cambridge A Level ${subject} tutor. Explain clearly and engagingly.`;
+  const prompt = `Explain "${concept}" from Cambridge A Level ${subject} as if talking to ${level}.
+
+Use:
+- A clear analogy or real-world connection
+- Step-by-step explanation
+- Why this matters in the broader subject
+- Common points of confusion and how to avoid them
+
+Be engaging and clear.`;
+  callAITool(prompt, sys, 'explain-output', 'copy-explain-btn');
+}
+
+function createQuiz() {
+  const topic = $('quiz-topic').value.trim();
+  const subject = $('quiz-subject').value;
+  const count = parseInt($('quiz-count').value) || 5;
+  const diff = $('quiz-diff').value;
+  if (!topic) { toast('Enter a topic first', 'fa-exclamation-triangle'); return; }
+  const sys = `You are an expert Cambridge A Level ${subject} examiner. Create realistic exam-style questions.`;
+  const prompt = `Create ${count} ${diff} Cambridge exam-style multiple choice questions on "${topic}" in ${subject}.
+
+For each question:
+Q[number]. [Question text]
+A) [option]
+B) [option]
+C) [option]
+D) [option]
+✓ Answer: [letter] — [Brief explanation why]
+
+Make questions challenging, exam-realistic, and cover different aspects. Include questions that test common misconceptions.`;
+  callAITool(prompt, sys, 'quiz-output', 'copy-quiz-btn');
+}
+
+function getExamTips() {
+  const topic = $('tips-topic').value.trim();
+  const type = $('tips-type').value;
+  if (!topic) { toast('Enter a topic first', 'fa-exclamation-triangle'); return; }
+  const sys = `You are an expert Cambridge A Level examiner who knows exactly what loses marks.`;
+  const prompt = `For Cambridge A Level students studying "${topic}", provide detailed ${type}.
+
+Be specific, practical, and concise. Use numbered lists. Focus on what examiners actually want to see and what marks are commonly lost. Reference Cambridge mark scheme expectations where relevant.`;
+  callAITool(prompt, sys, 'tips-output', 'copy-tips-btn');
+}
+
+function showAITool(name, btn) {
+  const map = { notes:'ai-notes', explain:'ai-explain', quiz:'ai-quiz', 'exam-tips':'ai-exam-tips' };
+  Object.values(map).forEach(v => $(v).classList.add('hidden'));
+  $(map[name]).classList.remove('hidden');
+  document.querySelectorAll('#section-ai-tools .subject-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+
+function copyOutput(id) {
+  const text = $(id).textContent;
+  navigator.clipboard.writeText(text).then(() => toast('Copied to clipboard!')).catch(() => toast('Copy failed'));
+}
+
+// ═══════════════════════════════════════
+// RESOURCE SEARCH
+// ═══════════════════════════════════════
+function quickSearch(query) {
+  $('res-topic').value = query;
+  searchResources();
+}
+
+function searchResources() {
+  const topic = $('res-topic').value.trim();
+  const subject = $('res-subject').value;
+  if (!topic) { toast('Enter a topic to search', 'fa-exclamation-triangle'); return; }
+  const container = $('resource-results');
+  const encoded = encodeURIComponent(topic);
+  const results = [];
+
+  if (subject === 'all' || subject === 'mathematics') {
+    results.push({
+      name: 'Mathematics — Past Papers (9709)',
+      desc: `Cambridge A Level Mathematics past papers and mark schemes for "${topic}"`,
+      links: [
+        { label: '📄 Past Papers', url: 'https://papacambridge.com/9709/', cls: 'pp' },
+        { label: '📚 Save My Exams', url: 'https://www.savemyexams.com/a-level/maths/cie/9709/', cls: 'sme' },
+        { label: '🎓 Physics & Maths Tutor', url: 'https://www.physicsandmathstutor.com/maths-revision/a-level-cambridge-international/', cls: 'notes' },
+        { label: '▶️ YouTube', url: `https://www.youtube.com/results?search_query=${encoded}+A+Level+Mathematics+Cambridge`, cls: 'yt' }
+      ]
+    });
+  }
+  if (subject === 'all' || subject === 'chemistry') {
+    results.push({
+      name: 'Chemistry — Past Papers (9701)',
+      desc: `Cambridge A Level Chemistry resources for "${topic}"`,
+      links: [
+        { label: '📄 Past Papers', url: 'https://papacambridge.com/9701/', cls: 'pp' },
+        { label: '📚 Save My Exams', url: 'https://www.savemyexams.com/a-level/chemistry/cie/', cls: 'sme' },
+        { label: '🧪 ChemGuide', url: 'https://www.chemguide.co.uk/', cls: 'notes' },
+        { label: '▶️ YouTube', url: `https://www.youtube.com/results?search_query=${encoded}+A+Level+Chemistry+Cambridge`, cls: 'yt' }
+      ]
+    });
+  }
+  if (subject === 'all' || subject === 'computer_science') {
+    results.push({
+      name: 'Computer Science — Past Papers (9618)',
+      desc: `Cambridge A Level Computer Science resources for "${topic}"`,
+      links: [
+        { label: '📄 Past Papers', url: 'https://papacambridge.com/9618/', cls: 'pp' },
+        { label: '📚 Save My Exams', url: 'https://www.savemyexams.com/a-level/computer-science/cie/', cls: 'sme' },
+        { label: '🖥️ CS Field Guide', url: 'https://www.csfieldguide.org.nz/', cls: 'notes' },
+        { label: '▶️ YouTube', url: `https://www.youtube.com/results?search_query=${encoded}+A+Level+Computer+Science+Cambridge`, cls: 'yt' }
+      ]
+    });
+  }
+
+  results.push({
+    name: `General Study Resources — "${topic}"`,
+    desc: `Additional learning resources, notes, and videos specifically about this topic`,
+    links: [
+      { label: '▶️ YouTube', url: `https://www.youtube.com/results?search_query=${encoded}+A+Level+Cambridge`, cls: 'yt' },
+      { label: '📖 GCE Guide', url: 'https://www.gceguide.com/', cls: 'pp' },
+      { label: '🔍 Google Scholar', url: `https://scholar.google.com/scholar?q=${encoded}`, cls: 'notes' },
+      { label: '📝 Physics & Maths Tutor', url: 'https://www.physicsandmathstutor.com/', cls: 'sme' }
+    ]
+  });
+
+  container.innerHTML = results.map(r => `
+    <div class="search-result-card">
+      <div class="search-result-title">${r.name}</div>
+      <div class="search-result-desc">${r.desc}</div>
+      <div class="search-result-links">${r.links.map(l => `<a href="${l.url}" target="_blank" class="res-tag ${l.cls}">${l.label}</a>`).join('')}</div>
+    </div>`).join('');
+  toast(`Found ${results.length} resource sets for "${topic}"`);
+}
+
+// ═══════════════════════════════════════
+// POMODORO
+// ═══════════════════════════════════════
+function setPomoMode(mode, btn) {
+  if (pomoRunning) return;
+  pomoMode = mode;
+  pomoSecs = POMO_TIMES[mode];
+  updatePomoDisplay();
+  document.querySelectorAll('.pomo-mode-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+
+function updatePomoDisplay() {
+  const m = String(Math.floor(pomoSecs/60)).padStart(2,'0');
+  const s = String(pomoSecs%60).padStart(2,'0');
+  $('pomo-display').textContent = `${m}:${s}`;
+  $('stat-sessions').textContent = pomoSessions;
+  $('stat-focus-mins').textContent = totalFocusMins;
+}
+
+function togglePomo() {
+  if (pomoRunning) {
+    clearInterval(pomoInterval); pomoRunning = false;
+    $('pomo-btn-text').textContent = 'Resume'; $('pomo-icon').className = 'fas fa-play'; $('pomo-status').textContent = 'Paused';
+    return;
+  }
+  pomoRunning = true;
+  $('pomo-btn-text').textContent = 'Pause'; $('pomo-icon').className = 'fas fa-pause';
+  $('pomo-status').textContent = pomoMode === 'focus' ? '🔥 Focus mode' : '☕ Break time';
+  pomoInterval = setInterval(() => {
+    pomoSecs--;
+    updatePomoDisplay();
+    if (pomoSecs <= 0) {
+      clearInterval(pomoInterval); pomoRunning = false;
+      $('pomo-btn-text').textContent = 'Start'; $('pomo-icon').className = 'fas fa-play';
+      if (pomoMode === 'focus') {
+        pomoSessions++; totalFocusMins += 25;
+        LS.set('focusMins', totalFocusMins); $('stat-focus-mins-dash').textContent = totalFocusMins;
+        addPomoLog('✅ Focus session completed! (25 min)');
+      } else { addPomoLog('💤 Break finished'); }
+      updatePomoDisplay(); $('pomo-status').textContent = 'Session complete!';
+      toast(pomoMode === 'focus' ? '🔥 Focus session done! Take a break.' : '☕ Break over — back to work!');
+    }
+  }, 1000);
+}
+
+function resetPomo() {
+  clearInterval(pomoInterval); pomoRunning = false; pomoSecs = POMO_TIMES[pomoMode]; updatePomoDisplay();
+  $('pomo-btn-text').textContent = 'Start'; $('pomo-icon').className = 'fas fa-play'; $('pomo-status').textContent = 'Ready to focus';
+}
+
+function addPomoLog(msg) {
+  const log = $('pomo-log');
+  const now = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  const el = document.createElement('div');
+  el.style.cssText = 'padding:7px 12px;background:rgba(255,255,255,0.03);border-radius:8px;font-size:0.82rem;color:var(--text-secondary);display:flex;justify-content:space-between';
+  el.innerHTML = `<span>${msg}</span><span style="color:var(--text-tertiary)">${now}</span>`;
+  log.insertBefore(el, log.firstChild);
+}
+
+// ═══════════════════════════════════════
+// FLASHCARDS
+// ═══════════════════════════════════════
+function addFlashcard() {
+  const q = $('fc-question').value.trim(), a = $('fc-answer').value.trim(), tag = $('fc-tag').value.trim();
+  if (!q || !a) { toast('Enter both question and answer', 'fa-exclamation-triangle'); return; }
+  flashcards.push({ id: Date.now(), q, a, tag });
+  LS.set('flashcards', flashcards);
+  $('fc-question').value = ''; $('fc-answer').value = ''; $('fc-tag').value = '';
+  cardIndex = flashcards.length - 1;
+  updateCardDisplay(); renderCardList(); toast('Card added!');
+}
+
+function updateCardDisplay() {
+  const total = flashcards.length;
+  $('fc-total').textContent = total; $('fc-total-2').textContent = total; $('fc-current').textContent = total > 0 ? cardIndex + 1 : 0;
+  if (total === 0) { $('fc-front').textContent = 'No cards yet'; $('fc-back').textContent = 'Add a card to start'; return; }
+  $('fc-front').textContent = flashcards[cardIndex].q;
+  $('fc-back').textContent = flashcards[cardIndex].a;
+  $('flashcard').classList.remove('flipped');
+}
+
+function renderCardList() {
+  $('fc-list').innerHTML = flashcards.map((c) => `
+    <div style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid var(--border-light)">
+      <span style="flex:1;font-size:0.82rem;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.q}</span>
+      ${c.tag ? `<span class="chip" style="font-size:0.7rem;padding:3px 8px">${c.tag}</span>` : ''}
+      <button onclick="deleteCard(${c.id})" style="background:none;border:none;color:#ff6b9d;cursor:pointer;font-size:0.9rem"><i class="fas fa-trash"></i></button>
+    </div>`).join('');
+}
+
+function flipCard() { if (flashcards.length === 0) return; $('flashcard').classList.toggle('flipped'); }
+function nextCard() { if (flashcards.length === 0) return; cardIndex = (cardIndex + 1) % flashcards.length; updateCardDisplay(); }
+function prevCard() { if (flashcards.length === 0) return; cardIndex = (cardIndex - 1 + flashcards.length) % flashcards.length; updateCardDisplay(); }
+
+function deleteCard(id) {
+  flashcards = flashcards.filter(c => c.id !== id);
+  LS.set('flashcards', flashcards);
+  if (cardIndex >= flashcards.length) cardIndex = Math.max(0, flashcards.length - 1);
+  updateCardDisplay(); renderCardList(); toast('Card deleted');
+}
+
+// ═══════════════════════════════════════
+// NOTES
+// ═══════════════════════════════════════
+function saveStudyNotes() {
+  LS.set('studyNotes', $('study-notes').value);
+  $('notes-status').textContent = '✓ Saved at ' + new Date().toLocaleTimeString();
+  toast('Notes saved!');
+}
+function clearNotes() {
+  if (!confirm('Clear all notes? This cannot be undone.')) return;
+  $('study-notes').value = ''; $('notes-status').textContent = ''; LS.set('studyNotes', ''); toast('Notes cleared');
+}
+
+// ═══════════════════════════════════════
+// TRACKER
+// ═══════════════════════════════════════
+function showAddGoalModal() { $('goal-modal').classList.add('open'); $('goal-input').focus(); }
+function closeGoalModal() { $('goal-modal').classList.remove('open'); }
+
+function saveGoal() {
+  const name = $('goal-input').value.trim();
+  if (!name) { toast('Enter a goal description', 'fa-exclamation-triangle'); return; }
+  trackerItems.push({ id: Date.now(), name, tag: $('goal-tag').value.trim(), completed: false });
+  LS.set('tracker', trackerItems); closeGoalModal(); renderTracker(); toast('Goal added!');
+}
+
+function renderTracker() {
+  const list = $('tracker-list'), msg = $('no-goals-msg');
+  if (trackerItems.length === 0) { list.innerHTML = ''; msg.classList.remove('hidden'); return; }
+  msg.classList.add('hidden');
+  list.innerHTML = trackerItems.map(item => `
+    <div style="display:flex;align-items:center;gap:12px;padding:13px;background:rgba(255,255,255,0.03);border-radius:12px;border:1px solid var(--border-light);margin-bottom:8px${item.completed?';opacity:0.6':''}">
+      <input type="checkbox" ${item.completed?'checked':''} onchange="toggleGoal(${item.id})" style="width:18px;height:18px;cursor:pointer;accent-color:var(--neon-purple)"/>
+      <span style="flex:1;font-size:0.92rem;${item.completed?'text-decoration:line-through;color:var(--text-tertiary)':''}">${item.name}</span>
+      ${item.tag?`<span class="chip" style="font-size:0.75rem;padding:3px 10px">${item.tag}</span>`:''}
+      <button onclick="deleteGoal(${item.id})" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+    </div>`).join('');
+}
+
+function toggleGoal(id) {
+  const item = trackerItems.find(i => i.id === id);
+  if (item) { item.completed = !item.completed; LS.set('tracker', trackerItems); renderTracker(); }
+}
+function deleteGoal(id) {
+  trackerItems = trackerItems.filter(i => i.id !== id);
+  LS.set('tracker', trackerItems); renderTracker(); toast('Goal removed');
+}
+
+function showStudyTool(name, btn) {
+  ['pomodoro-tool','flashcards-tool','notes-tool','tracker-tool'].forEach(id => $(id).classList.add('hidden'));
+  $(name + '-tool').classList.remove('hidden');
+  document.querySelectorAll('#section-tools .subject-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+
+// ═══════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════
+function toast(msg, icon = 'fa-check-circle') {
+  const el = $('toast');
+  $('toast-msg').textContent = msg;
+  el.querySelector('i').className = `fas ${icon}`;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+function init() {
+  // Hide API banner if key already saved
+  if (getApiKey()) $('api-banner').style.display = 'none';
+
+  renderSubjects();
+  renderExams();
+  updatePomoDisplay();
+  updateCardDisplay();
+  renderCardList();
+  renderTracker();
+  updateDashStats();
+
+  const savedNotes = LS.get('studyNotes');
+  if (savedNotes && $('study-notes')) $('study-notes').value = savedNotes;
+
+  totalFocusMins = LS.get('focusMins') || 0;
+  $('stat-focus-mins').textContent = totalFocusMins;
+  $('stat-focus-mins-dash').textContent = totalFocusMins;
+
+  const firstAITab = document.querySelector('#section-ai-tools .subject-tab');
+  if (firstAITab) firstAITab.classList.add('active');
+
+  ['subject-modal','exam-modal','goal-modal'].forEach(id => {
+    const el = $(id);
+    if (el) el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+  });
+}
+
+init();
+</script>
+</body>
+</html>
