@@ -1001,7 +1001,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="subject-badge">✦ ${subjectName}</div>
     <div class="chapter-title">${chapterTitle}</div>
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px">
-      <div class="ai-indicator"><div class="ai-dot"></div> GPT-OSS 120B via HuggingFace</div>
+      <div class="ai-indicator"><div class="ai-dot"></div> Qwen3-0.6B via HuggingFace</div>
       <span style="color:var(--text3);font-size:0.82rem">Cambridge A Level syllabus notes generated for you</span>
     </div>
   </div>
@@ -1015,7 +1015,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="notes-header">
       <div class="notes-header-left">
         <div class="notes-title">📝 AI-Generated Notes</div>
-        <div class="ai-indicator"><div class="ai-dot"></div> GPT-OSS 120B</div>
+        <div class="ai-indicator"><div class="ai-dot"></div> Qwen3-0.6B</div>
       </div>
       <button class="copy-btn" onclick="copyNotes()"><i class="fas fa-copy"></i> Copy</button>
     </div>
@@ -1057,7 +1057,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <script>
 const HF_TOKEN = ${JSON.stringify(hfToken)};
 const HF_URL = 'https://router.huggingface.co/v1/chat/completions';
-const HF_MODEL = 'openai/gpt-oss-120b:groq';
+const HF_MODEL = 'Qwen/Qwen3-0.6B:featherless-ai';
 const subjectName = ${JSON.stringify(subjectName)};
 const chapterTitle = ${JSON.stringify(chapterTitle)};
 const topics = ${topicsJSON};
