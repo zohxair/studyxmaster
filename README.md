@@ -25,7 +25,7 @@ StudyOS Pro is a high-performance, futuristic study dashboard specifically desig
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/yourusername/study-os-pro.git](https://github.com/yourusername/study-os-pro.git)
+    git clone [https://github.com/zohxair/study-os-pro.git](https://github.com/zohxair/study-os-pro.git)
     ```
 2.  **Open the project:**
     Simply open `index.html` in your favorite modern browser.
