@@ -40,4 +40,3 @@ StudyOS Pro is a high-performance, futuristic study dashboard specifically desig
 ```text
 ├── index.html       # Main application and UI
 ├── README.md        # Documentation
-└── assets/          # (Optional) Images, Icons, and Media
